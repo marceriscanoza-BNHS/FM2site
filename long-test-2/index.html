@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -34,13 +35,17 @@
     <style>
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: rgba(15, 23, 42, 0.1);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
         }
         @media print {
             .no-print { display: none !important; }
@@ -48,63 +53,73 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white transition-colors duration-200">
 
     <!-- TOP HEADER -->
-    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
+    <header class="bg-slate-900 dark:bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center space-x-2 sm:space-x-3 truncate">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg shrink-0 text-xs sm:text-base">
                     FM2
                 </div>
-                <div>
-                    <h1 class="text-base font-bold leading-tight">Bunsuran National High School</h1>
-                    <p class="text-xs text-slate-400">Finite Mathematics 2 • Long Test #2</p>
+                <div class="truncate">
+                    <h1 class="text-xs sm:text-base font-bold leading-tight truncate">Bunsuran National High School</h1>
+                    <p class="text-[10px] sm:text-xs text-slate-400 truncate">Finite Mathematics 2 • Long Test #2</p>
                 </div>
             </div>
 
-            <!-- Quiz Status Badge (Visible during exam) -->
-            <div id="quiz-header-info" class="hidden flex items-center space-x-4">
-                <div class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
-                    <i class="fa-solid fa-clock text-indigo-400 text-xs"></i>
-                    <span id="timer-display" class="font-mono text-sm font-semibold text-slate-200">00:00</span>
+            <!-- Header Right: Timer, Warning Badge & Dark Mode Toggle -->
+            <div class="flex items-center space-x-2 sm:space-x-4 shrink-0">
+                <!-- Quiz Status Badge (Visible during exam) -->
+                <div id="quiz-header-info" class="hidden flex items-center space-x-2 sm:space-x-4">
+                    <div class="flex items-center space-x-1.5 sm:space-x-2 bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-clock text-indigo-400 text-xs"></i>
+                        <span id="timer-display" class="font-mono text-xs sm:text-sm font-semibold text-slate-200">00:00</span>
+                    </div>
+                    <div id="tab-warning-badge" class="flex items-center space-x-1.5 sm:space-x-2 bg-emerald-950/80 border border-emerald-700/50 text-emerald-300 px-2 py-1.5 sm:px-3 rounded-lg text-[10px] sm:text-xs font-semibold">
+                        <i class="fa-solid fa-shield-halved text-xs"></i>
+                        <span id="warning-count-text" class="hidden xs:inline">Tab Switch: 0/3</span>
+                        <span id="warning-count-text-mobile" class="xs:hidden">0/3</span>
+                    </div>
                 </div>
-                <div id="tab-warning-badge" class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/50 text-emerald-300 px-3 py-1.5 rounded-lg text-xs font-semibold">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span id="warning-count-text">Tab Switch: 0/3</span>
-                </div>
+
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="p-2 sm:px-3 sm:py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 text-xs font-semibold transition flex items-center space-x-2" title="Toggle Theme">
+                    <i id="theme-toggle-icon" class="fa-solid fa-sun"></i>
+                    <span id="theme-toggle-text" class="hidden sm:inline text-slate-200">Light</span>
+                </button>
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+    <main class="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow w-full">
 
         <!-- SCREEN 1: REGISTRATION / START SCREEN -->
-        <section id="screen-welcome" class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
-            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 text-white relative">
-                <div class="absolute right-0 top-0 opacity-10 p-8">
+        <section id="screen-welcome" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 sm:p-8 text-white relative">
+                <div class="absolute right-0 top-0 opacity-10 p-8 hidden sm:block">
                     <i class="fa-solid fa-calculator text-9xl"></i>
                 </div>
-                <span class="inline-block bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                <span class="inline-block bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-[10px] sm:text-xs font-semibold px-3 py-1 rounded-full mb-2 sm:mb-3">
                     Official Assessment Module
                 </span>
-                <h2 class="text-3xl font-extrabold tracking-tight">Finite Mathematics 2 - Long Test #2</h2>
-                <p class="text-slate-300 mt-2 text-sm max-w-2xl">
+                <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight">Finite Mathematics 2 - Long Test #2</h2>
+                <p class="text-slate-300 mt-1 sm:mt-2 text-xs sm:text-sm max-w-2xl">
                     Combinatorics, Symmetry Properties, Pascal's Identity, Permutations & Classical Probability.
                 </p>
             </div>
 
-            <div class="p-8 space-y-8">
+            <div class="p-4 sm:p-8 space-y-6 sm:space-y-8">
                 <!-- Lock Notice (If already taken) -->
-                <div id="already-taken-banner" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 flex items-start space-x-4">
-                    <i class="fa-solid fa-lock text-amber-600 text-2xl mt-0.5"></i>
+                <div id="already-taken-banner" class="hidden bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 rounded-xl p-4 sm:p-5 text-amber-900 dark:text-amber-200 flex items-start space-x-3 sm:space-x-4">
+                    <i class="fa-solid fa-lock text-amber-600 dark:text-amber-400 text-xl sm:text-2xl mt-0.5"></i>
                     <div class="flex-grow">
-                        <h4 class="font-bold text-base">Quiz Already Submitted</h4>
-                        <p class="text-sm text-amber-800 mt-1">
+                        <h4 class="font-bold text-sm sm:text-base">Quiz Already Submitted</h4>
+                        <p class="text-xs sm:text-sm text-amber-800 dark:text-amber-300 mt-1">
                             This device has already recorded an attempt for this examination. Re-taking is strictly prohibited to maintain academic integrity.
                         </p>
-                        <button onclick="showRecordedResults()" class="mt-4 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition shadow-sm inline-flex items-center space-x-2">
+                        <button onclick="showRecordedResults()" class="mt-3 sm:mt-4 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition shadow-sm inline-flex items-center space-x-2">
                             <i class="fa-solid fa-file-invoice"></i>
                             <span>View Previous Result & Download Report</span>
                         </button>
@@ -113,55 +128,31 @@
 
                 <!-- Registration Form -->
                 <form id="registration-form" onsubmit="handleStartQuiz(event)" class="space-y-6">
-                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3">
-                        <h3 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
-                            <i class="fa-solid fa-shield-cat text-indigo-600"></i>
+                    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 space-y-3">
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-cat text-indigo-600 dark:text-indigo-400"></i>
                             <span>Examination Security Rules</span>
                         </h3>
-                        <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+                        <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-disc list-inside">
                             <li><strong>Single Attempt Constraint:</strong> You can only complete this test <u>once</u> on this device.</li>
                             <li><strong>Tab Switch Limit:</strong> Leaving or switching tabs/windows is tracked. Exceeding <strong>3 warnings</strong> automatically terminates and submits your exam immediately.</li>
-                            <li><strong>Identity Lock:</strong> Ensure your name and details match official class records for score accreditation.</li>
+                            <li><strong>Identity Lock:</strong> Ensure your name matches official class records for score accreditation.</li>
                         </ul>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                                Full Name <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                                <input type="text" id="student-name" required placeholder="e.g. Juan De La Cruz"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                                Grade & Section <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <i class="fa-solid fa-graduation-cap absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                                <input type="text" id="student-section" required placeholder="e.g. 12 - STEM Diamond"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                                LRN / Student ID Number <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <i class="fa-solid fa-id-card absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                                <input type="text" id="student-id" required placeholder="e.g. 109876543210"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
-                            </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Full Name <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                            <input type="text" id="student-name" required placeholder="e.g. Juan De La Cruz"
+                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
                         </div>
                     </div>
 
-                    <div class="pt-4 flex justify-end">
-                        <button type="submit" id="btn-start-exam" class="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center space-x-3 text-sm">
+                    <div class="pt-2 sm:pt-4 flex justify-end">
+                        <button type="submit" id="btn-start-exam" class="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition flex items-center justify-center space-x-3 text-sm">
                             <span>Start Examination</span>
                             <i class="fa-solid fa-arrow-right"></i>
                         </button>
@@ -172,53 +163,53 @@
 
 
         <!-- SCREEN 2: ACTIVE EXAMINATION SCREEN -->
-        <section id="screen-quiz" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <section id="screen-quiz" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
             
-            <!-- Left Side: Main Question Display (3 Columns) -->
-            <div class="lg:col-span-3 space-y-6">
+            <!-- Question Display Container (3 Columns) -->
+            <div class="lg:col-span-3 space-y-4 sm:space-y-6">
                 
                 <!-- Question Card -->
-                <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 relative">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200/80 dark:border-slate-800 p-4 sm:p-8 relative">
                     
                     <!-- Question Header & Flag -->
-                    <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
-                        <div class="flex items-center space-x-3">
-                            <span id="current-item-badge" class="px-3 py-1 bg-indigo-50 text-indigo-700 font-extrabold text-xs rounded-full border border-indigo-200">
+                    <div class="flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2 sm:space-x-3">
+                            <span id="current-item-badge" class="px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-extrabold text-[11px] sm:text-xs rounded-full border border-indigo-200 dark:border-indigo-800">
                                 Question 1 of 30
                             </span>
-                            <span id="flag-indicator" class="hidden px-2.5 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center gap-1">
-                                <i class="fa-solid fa-flag text-amber-600 text-[10px]"></i> Flagged
+                            <span id="flag-indicator" class="hidden px-2 py-0.5 bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[11px] font-semibold rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-flag text-amber-600 dark:text-amber-400 text-[10px]"></i> Flagged
                             </span>
                         </div>
-                        <button onclick="toggleFlagCurrentQuestion()" class="text-xs text-slate-500 hover:text-amber-600 flex items-center space-x-1.5 transition">
+                        <button onclick="toggleFlagCurrentQuestion()" class="text-xs text-slate-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 flex items-center space-x-1.5 transition">
                             <i class="fa-regular fa-flag text-sm"></i>
-                            <span id="flag-btn-text">Flag for Review</span>
+                            <span id="flag-btn-text" class="hidden xs:inline">Flag for Review</span>
                         </button>
                     </div>
 
                     <!-- Question Content -->
-                    <div class="space-y-4">
-                        <div id="question-scenario-box" class="hidden bg-slate-50 border-l-4 border-indigo-500 p-4 rounded-r-lg text-xs text-slate-700 leading-relaxed font-medium">
+                    <div class="space-y-3 sm:space-y-4">
+                        <div id="question-scenario-box" class="hidden bg-slate-50 dark:bg-slate-800/60 border-l-4 border-indigo-500 p-3 sm:p-4 rounded-r-lg text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                             <!-- Scenario text goes here -->
                         </div>
-                        <h3 id="question-text" class="text-lg font-bold text-slate-900 leading-snug">
+                        <h3 id="question-text" class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 leading-snug">
                             <!-- Question text goes here -->
                         </h3>
                     </div>
 
                     <!-- Options List -->
-                    <div id="options-container" class="mt-8 space-y-3">
+                    <div id="options-container" class="mt-6 sm:mt-8 space-y-2.5 sm:space-y-3">
                         <!-- Rendered dynamically -->
                     </div>
 
                     <!-- Navigation Footer -->
-                    <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center space-x-2">
+                    <div class="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-4 sm:px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center space-x-2">
                             <i class="fa-solid fa-chevron-left"></i>
                             <span>Previous</span>
                         </button>
 
-                        <button onclick="navigateQuestion(1)" id="btn-next" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center space-x-2">
+                        <button onclick="navigateQuestion(1)" id="btn-next" class="px-5 sm:px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center space-x-2">
                             <span>Next</span>
                             <i class="fa-solid fa-chevron-right"></i>
                         </button>
@@ -226,37 +217,37 @@
                 </div>
             </div>
 
-            <!-- Right Side: Sidebar Navigation Palette (1 Column) -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-5 sticky top-24">
-                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center justify-between">
+            <!-- Question Palette Sidebar / Horizontal Drawer on Mobile -->
+            <div class="lg:col-span-1 space-y-4 sm:space-y-6">
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 lg:sticky lg:top-24">
+                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3 sm:mb-4 flex items-center justify-between">
                         <span>Question Palette</span>
-                        <span id="answered-count-text" class="text-indigo-600 font-extrabold text-xs">0 / 30</span>
+                        <span id="answered-count-text" class="text-indigo-600 dark:text-indigo-400 font-extrabold text-xs">0 / 30</span>
                     </h4>
 
-                    <!-- 30 Buttons Grid -->
-                    <div id="question-palette-grid" class="grid grid-cols-5 gap-2">
+                    <!-- Dynamic Buttons Grid -->
+                    <div id="question-palette-grid" class="flex lg:grid lg:grid-cols-5 gap-2 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar">
                         <!-- Dynamic Buttons -->
                     </div>
 
                     <!-- Legend -->
-                    <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-[11px] text-slate-500">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded bg-indigo-600 inline-block"></span>
+                    <div class="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100 dark:border-slate-800 flex lg:flex-col justify-between sm:justify-start gap-2 text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">
+                        <div class="flex items-center space-x-1.5 sm:space-x-2">
+                            <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-indigo-600 inline-block"></span>
                             <span>Answered</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>
+                        <div class="flex items-center space-x-1.5 sm:space-x-2">
+                            <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-amber-400 inline-block"></span>
                             <span>Flagged</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"></span>
+                        <div class="flex items-center space-x-1.5 sm:space-x-2">
+                            <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 inline-block"></span>
                             <span>Unanswered</span>
                         </div>
                     </div>
 
                     <!-- Explicit Submit Button -->
-                    <div class="mt-6">
+                    <div class="mt-4 sm:mt-6">
                         <button onclick="confirmSubmitQuiz()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>Submit Examination</span>
@@ -268,25 +259,24 @@
 
 
         <!-- SCREEN 3: RESULTS & DOWNLOAD CERTIFICATE -->
-        <section id="screen-results" class="hidden space-y-8">
+        <section id="screen-results" class="hidden space-y-6 sm:space-y-8">
             
             <!-- Result Overview Banner -->
-            <div id="results-banner-card" class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                <div id="results-header-bg" class="bg-gradient-to-r from-slate-900 to-indigo-950 p-8 text-white relative">
+            <div id="results-banner-card" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div id="results-header-bg" class="bg-gradient-to-r from-slate-900 to-indigo-950 p-5 sm:p-8 text-white relative">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <span id="result-status-pill" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            <span id="result-status-pill" class="inline-block px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                 Examination Completed
                             </span>
-                            <h2 id="result-student-name" class="text-2xl sm:text-3xl font-extrabold mt-2">Juan De La Cruz</h2>
-                            <p id="result-student-meta" class="text-xs text-slate-300 mt-1">Grade 12 STEM • LRN: 1234567890</p>
+                            <h2 id="result-student-name" class="text-xl sm:text-3xl font-extrabold mt-2">Juan De La Cruz</h2>
                         </div>
 
                         <!-- Score Pill -->
-                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center min-w-[140px]">
-                            <p class="text-xs text-slate-300 uppercase tracking-widest font-semibold">Total Score</p>
-                            <p class="text-4xl font-extrabold text-white my-0.5">
-                                <span id="final-score-num">0</span><span class="text-lg text-slate-400">/30</span>
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center sm:min-w-[140px] shrink-0">
+                            <p class="text-[10px] sm:text-xs text-slate-300 uppercase tracking-widest font-semibold">Total Score</p>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-white my-0.5">
+                                <span id="final-score-num">0</span><span class="text-base sm:text-lg text-slate-400">/30</span>
                             </p>
                             <p id="final-percentage-text" class="text-xs font-bold text-emerald-400">0%</p>
                         </div>
@@ -294,32 +284,32 @@
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 border-b border-slate-200 text-center">
-                    <div class="p-3 bg-white rounded-xl border border-slate-200">
-                        <p class="text-[11px] text-slate-500 font-bold uppercase">Accuracy</p>
-                        <p id="stat-accuracy" class="text-lg font-extrabold text-slate-800">0%</p>
+                <div class="p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-center">
+                    <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase">Accuracy</p>
+                        <p id="stat-accuracy" class="text-base sm:text-lg font-extrabold text-slate-800 dark:text-slate-100">0%</p>
                     </div>
-                    <div class="p-3 bg-white rounded-xl border border-slate-200">
-                        <p class="text-[11px] text-slate-500 font-bold uppercase">Time Elapsed</p>
-                        <p id="stat-time" class="text-lg font-extrabold text-slate-800">00:00</p>
+                    <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase">Time Elapsed</p>
+                        <p id="stat-time" class="text-base sm:text-lg font-extrabold text-slate-800 dark:text-slate-100">00:00</p>
                     </div>
-                    <div class="p-3 bg-white rounded-xl border border-slate-200">
-                        <p class="text-[11px] text-slate-500 font-bold uppercase">Tab Warnings</p>
-                        <p id="stat-warnings" class="text-lg font-extrabold text-slate-800">0 / 3</p>
+                    <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase">Tab Warnings</p>
+                        <p id="stat-warnings" class="text-base sm:text-lg font-extrabold text-slate-800 dark:text-slate-100">0 / 3</p>
                     </div>
-                    <div class="p-3 bg-white rounded-xl border border-slate-200">
-                        <p class="text-[11px] text-slate-500 font-bold uppercase">Completion</p>
-                        <p id="stat-date" class="text-xs font-bold text-slate-800 mt-1">Oct 12, 2026</p>
+                    <div class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                        <p class="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase">Completion</p>
+                        <p id="stat-date" class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1">Oct 12, 2026</p>
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="p-6 flex flex-wrap items-center justify-between gap-4">
-                    <div class="text-xs text-slate-500">
-                        <i class="fa-solid fa-lock text-indigo-600 mr-1"></i> Result recorded & locked to this browser session.
+                <div class="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left">
+                        <i class="fa-solid fa-lock text-indigo-600 dark:text-indigo-400 mr-1"></i> Result recorded & locked to this browser session.
                     </div>
-                    <div class="flex items-center space-x-3">
-                        <button onclick="downloadScoreCertificate()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-2">
+                    <div class="w-full sm:w-auto">
+                        <button onclick="downloadScoreCertificate()" class="w-full sm:w-auto px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-download"></i>
                             <span>Download Official Score Report</span>
                         </button>
@@ -328,16 +318,16 @@
             </div>
 
             <!-- Detailed Answers Breakdown -->
-            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 space-y-6">
-                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-                    <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
-                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-200/80 dark:border-slate-800 p-4 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-indigo-600 dark:text-indigo-400"></i>
                         <span>Detailed Item Analysis</span>
                     </h3>
-                    <span class="text-xs text-slate-500">30 Items Evaluated</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">30 Items Evaluated</span>
                 </div>
 
-                <div id="results-breakdown-container" class="space-y-6">
+                <div id="results-breakdown-container" class="space-y-4 sm:space-y-6">
                     <!-- Dynamic review cards -->
                 </div>
             </div>
@@ -347,20 +337,20 @@
 
     <!-- TAB SWITCH WARNING MODAL -->
     <div id="modal-warning" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-500 animate-bounce-short">
-            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-500">
+            <div class="w-16 h-16 bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h3 class="text-xl font-extrabold text-slate-900">Security Violation Detected</h3>
-            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">Security Violation Detected</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
                 You switched tabs or lost window focus. Leaving the test window is prohibited during this assessment.
             </p>
             
-            <div class="my-5 p-3 bg-rose-50 border border-rose-200 rounded-xl">
-                <p class="text-xs font-bold text-rose-800">
+            <div class="my-5 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 rounded-xl">
+                <p class="text-xs font-bold text-rose-800 dark:text-rose-300">
                     Warning <span id="modal-warning-num">1</span> of 3
                 </p>
-                <p class="text-[11px] text-rose-600 mt-0.5">
+                <p class="text-[11px] text-rose-600 dark:text-rose-400 mt-0.5">
                     If warning count reaches 3, your exam will automatically terminate immediately.
                 </p>
             </div>
@@ -373,15 +363,15 @@
 
     <!-- TERMINATION MODAL -->
     <div id="modal-terminated" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-600">
-            <div class="w-16 h-16 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-rose-200">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-600">
+            <div class="w-16 h-16 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-rose-200 dark:shadow-none">
                 <i class="fa-solid fa-ban"></i>
             </div>
-            <h3 class="text-xl font-extrabold text-slate-900">Exam Terminated</h3>
-            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+            <h3 class="text-xl font-extrabold text-slate-900 dark:text-slate-100">Exam Terminated</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
                 You exceeded the maximum allowed tab switch warnings (3/3). Your exam has been force-submitted with current answers.
             </p>
-            <button onclick="acknowledgeTermination()" class="mt-6 w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-lg transition">
+            <button onclick="acknowledgeTermination()" class="mt-6 w-full py-3 bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs rounded-xl shadow-lg transition">
                 View Final Submitted Score
             </button>
         </div>
@@ -389,16 +379,16 @@
 
     <!-- SUBMIT CONFIRMATION MODAL -->
     <div id="modal-confirm-submit" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-200">
-            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div class="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
                 <i class="fa-solid fa-paper-plane"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-900">Submit Examination?</h3>
-            <p id="confirm-unanswered-text" class="text-xs text-slate-600 mt-2">
+            <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">Submit Examination?</h3>
+            <p id="confirm-unanswered-text" class="text-xs text-slate-600 dark:text-slate-300 mt-2">
                 Are you sure you want to finish and finalize your answers?
             </p>
             <div class="mt-6 flex items-center space-x-3">
-                <button onclick="closeSubmitConfirmModal()" class="flex-1 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                <button onclick="closeSubmitConfirmModal()" class="flex-1 py-2.5 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition">
                     Continue Exam
                 </button>
                 <button onclick="finalizeAndSubmitExam(false)" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">
@@ -416,7 +406,7 @@
 
     <!-- QUIZ JAVASCRIPT LOGIC -->
     <script>
-        // QUIZ DATA DIRECTLY FROM SLIDESHOW SOURCE
+        // QUIZ DATA
         const QUIZ_QUESTIONS = [
             {
                 id: 1,
@@ -760,8 +750,6 @@
 
         let appState = {
             studentName: "",
-            studentSection: "",
-            studentId: "",
             currentIdx: 0,
             userAnswers: Array(30).fill(null),
             flaggedItems: Array(30).fill(false),
@@ -773,11 +761,42 @@
             isTerminated: false
         };
 
-        // INITIALIZATION
+        // INITIALIZATION & DARK MODE SETUP
         window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
             checkExistingAttempt();
             setupAntiCheatingListeners();
         });
+
+        // THEME LOGIC
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateThemeToggleUI(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                updateThemeToggleUI(false);
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeToggleUI(isDark);
+        }
+
+        function updateThemeToggleUI(isDark) {
+            const icon = document.getElementById('theme-toggle-icon');
+            const text = document.getElementById('theme-toggle-text');
+            if (isDark) {
+                icon.className = 'fa-solid fa-sun';
+                text.textContent = 'Light';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+                text.textContent = 'Dark';
+            }
+        }
 
         // CHECK IF ATTEMPT ALREADY EXISTS IN LOCAL STORAGE
         function checkExistingAttempt() {
@@ -787,16 +806,10 @@
                     const parsed = JSON.parse(savedData);
                     appState = { ...appState, ...parsed };
                     
-                    // Show locked state on welcome screen
                     document.getElementById('already-taken-banner').classList.remove('hidden');
                     document.getElementById('student-name').value = appState.studentName || "";
-                    document.getElementById('student-section').value = appState.studentSection || "";
-                    document.getElementById('student-id').value = appState.studentId || "";
                     
-                    // Disable editing input fields
                     document.getElementById('student-name').disabled = true;
-                    document.getElementById('student-section').disabled = true;
-                    document.getElementById('student-id').disabled = true;
                     document.getElementById('btn-start-exam').disabled = true;
                     document.getElementById('btn-start-exam').classList.add('opacity-50', 'cursor-not-allowed');
                 } catch(e) {
@@ -815,24 +828,18 @@
             }
 
             const nameInput = document.getElementById('student-name').value.trim();
-            const sectionInput = document.getElementById('student-section').value.trim();
-            const idInput = document.getElementById('student-id').value.trim();
 
-            if (!nameInput || !sectionInput || !idInput) {
-                alert("Please fill in all student details before starting.");
+            if (!nameInput) {
+                alert("Please enter your full name before starting.");
                 return;
             }
 
             appState.studentName = nameInput;
-            appState.studentSection = sectionInput;
-            appState.studentId = idInput;
 
-            // Switch to Quiz Screen
             document.getElementById('screen-welcome').classList.add('hidden');
             document.getElementById('screen-quiz').classList.remove('hidden');
             document.getElementById('quiz-header-info').classList.remove('hidden');
 
-            // Render Palette and Question
             renderPaletteGrid();
             renderCurrentQuestion();
             startTimer();
@@ -860,10 +867,8 @@
         function renderCurrentQuestion() {
             const q = QUIZ_QUESTIONS[appState.currentIdx];
             
-            // Header & badges
             document.getElementById('current-item-badge').textContent = `Question ${appState.currentIdx + 1} of 30`;
             
-            // Scenario
             const scenarioBox = document.getElementById('question-scenario-box');
             if (q.scenario) {
                 scenarioBox.textContent = q.scenario;
@@ -872,10 +877,8 @@
                 scenarioBox.classList.add('hidden');
             }
 
-            // Question Text
             document.getElementById('question-text').textContent = q.question;
 
-            // Flag indicator & button
             const isFlagged = appState.flaggedItems[appState.currentIdx];
             const flagIndicator = document.getElementById('flag-indicator');
             const flagBtnText = document.getElementById('flag-btn-text');
@@ -888,7 +891,6 @@
                 flagBtnText.textContent = "Flag for Review";
             }
 
-            // Render Options
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
@@ -900,25 +902,25 @@
                 optBtn.type = "button";
                 optBtn.onclick = () => selectOption(optIdx);
                 
-                optBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between group ${
+                optBtn.className = `w-full text-left p-3.5 sm:p-4 rounded-xl border transition flex items-center justify-between group ${
                     isSelected 
-                        ? 'bg-indigo-50/80 border-indigo-600 ring-2 ring-indigo-500/20 text-indigo-950 font-bold' 
-                        : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium'
+                        ? 'bg-indigo-50/90 dark:bg-indigo-950/70 border-indigo-600 dark:border-indigo-500 ring-2 ring-indigo-500/20 text-indigo-950 dark:text-indigo-100 font-bold' 
+                        : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium'
                 }`;
 
                 optBtn.innerHTML = `
-                    <div class="flex items-center space-x-3.5">
-                        <span class="w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition ${
+                    <div class="flex items-center space-x-3 sm:space-x-3.5 pr-2">
+                        <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 transition ${
                             isSelected 
                                 ? 'bg-indigo-600 text-white' 
-                                : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 group-hover:bg-slate-200 dark:group-hover:bg-slate-600'
                         }">
                             ${keys[optIdx]}
                         </span>
-                        <span class="text-sm leading-snug">${optText}</span>
+                        <span class="text-xs sm:text-sm leading-snug">${optText}</span>
                     </div>
-                    <div class="w-5 h-5 rounded-full border flex items-center justify-center ${
-                        isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300'
+                    <div class="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                        isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 dark:border-slate-600'
                     }">
                         ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
                     </div>
@@ -927,7 +929,6 @@
                 optionsContainer.appendChild(optBtn);
             });
 
-            // Update Navigation Prev/Next state
             document.getElementById('btn-prev').disabled = appState.currentIdx === 0;
             
             const btnNext = document.getElementById('btn-next');
@@ -979,12 +980,12 @@
                 const isAnswered = appState.userAnswers[idx] !== null;
                 const isFlagged = appState.flaggedItems[idx];
 
-                let bgClasses = "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+                let bgClasses = "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700";
                 
                 if (isCurrent) {
-                    bgClasses = "bg-slate-900 text-white border-slate-900 font-extrabold ring-2 ring-slate-400";
+                    bgClasses = "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100 font-extrabold ring-2 ring-slate-400 dark:ring-slate-500";
                 } else if (isFlagged) {
-                    bgClasses = "bg-amber-400 text-amber-950 border-amber-500 font-bold";
+                    bgClasses = "bg-amber-400 dark:bg-amber-500 text-amber-950 font-bold border-amber-500";
                 } else if (isAnswered) {
                     bgClasses = "bg-indigo-600 text-white border-indigo-700 font-bold";
                 }
@@ -992,11 +993,11 @@
                 const btn = document.createElement('button');
                 btn.type = "button";
                 btn.onclick = () => jumpToQuestion(idx);
-                btn.className = `h-9 text-xs rounded-lg border transition flex items-center justify-center relative ${bgClasses}`;
+                btn.className = `h-9 min-w-[36px] sm:min-w-0 text-xs rounded-lg border transition flex items-center justify-center shrink-0 relative ${bgClasses}`;
                 btn.textContent = idx + 1;
 
                 if (isFlagged && !isCurrent) {
-                    btn.innerHTML += `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-600 rounded-full border border-white"></span>`;
+                    btn.innerHTML += `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-600 rounded-full border border-white dark:border-slate-900"></span>`;
                 }
 
                 grid.appendChild(btn);
@@ -1015,7 +1016,7 @@
             
             const msgEl = document.getElementById('confirm-unanswered-text');
             if (unanswered > 0) {
-                msgEl.innerHTML = `<span class="text-rose-600 font-bold">You have ${unanswered} unanswered question(s).</span> Are you sure you want to finalize and submit?`;
+                msgEl.innerHTML = `<span class="text-rose-600 dark:text-rose-400 font-bold">You have ${unanswered} unanswered question(s).</span> Are you sure you want to finalize and submit?`;
             } else {
                 msgEl.textContent = "All 30 items answered! Are you ready to finalize and view your score?";
             }
@@ -1030,25 +1031,23 @@
         // ANTI-CHEATING TAB SWITCH LISTENER
         function setupAntiCheatingListeners() {
             const triggerWarning = () => {
-                // Ignore if not on active quiz or already submitted
                 if (document.getElementById('screen-quiz').classList.contains('hidden') || appState.isSubmitted) {
                     return;
                 }
 
                 appState.tabWarnings++;
                 
-                // Update Badge in header
                 const badge = document.getElementById('tab-warning-badge');
                 document.getElementById('warning-count-text').textContent = `Tab Switch: ${appState.tabWarnings}/3`;
+                document.getElementById('warning-count-text-mobile').textContent = `${appState.tabWarnings}/3`;
 
                 if (appState.tabWarnings === 1) {
-                    badge.className = "flex items-center space-x-2 bg-amber-950/80 border border-amber-700/50 text-amber-300 px-3 py-1.5 rounded-lg text-xs font-semibold";
+                    badge.className = "flex items-center space-x-1.5 sm:space-x-2 bg-amber-950/80 border border-amber-700/50 text-amber-300 px-2 py-1.5 sm:px-3 rounded-lg text-[10px] sm:text-xs font-semibold";
                 } else if (appState.tabWarnings >= 2) {
-                    badge.className = "flex items-center space-x-2 bg-rose-950/80 border border-rose-700/50 text-rose-300 px-3 py-1.5 rounded-lg text-xs font-semibold animate-pulse";
+                    badge.className = "flex items-center space-x-1.5 sm:space-x-2 bg-rose-950/80 border border-rose-700/50 text-rose-300 px-2 py-1.5 sm:px-3 rounded-lg text-[10px] sm:text-xs font-semibold animate-pulse";
                 }
 
                 if (appState.tabWarnings >= 3) {
-                    // Terminate exam
                     appState.isTerminated = true;
                     document.getElementById('modal-terminated').classList.remove('hidden');
                     finalizeAndSubmitExam(true);
@@ -1058,14 +1057,12 @@
                 }
             };
 
-            // Visibility Change
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     triggerWarning();
                 }
             });
 
-            // Blur Window
             window.addEventListener('blur', () => {
                 triggerWarning();
             });
@@ -1092,7 +1089,6 @@
                 timeStyle: 'short' 
             });
 
-            // Calculate Score
             let totalScore = 0;
             QUIZ_QUESTIONS.forEach((q, idx) => {
                 if (appState.userAnswers[idx] === q.correctKey) {
@@ -1101,7 +1097,6 @@
             });
             appState.score = totalScore;
 
-            // Lock in LocalStorage
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
             } catch(e) {
@@ -1125,11 +1120,8 @@
             document.getElementById('screen-welcome').classList.add('hidden');
             document.getElementById('screen-results').classList.remove('hidden');
 
-            // Student metadata
             document.getElementById('result-student-name').textContent = appState.studentName || "Student";
-            document.getElementById('result-student-meta').textContent = `${appState.studentSection || 'N/A'} • LRN/ID: ${appState.studentId || 'N/A'}`;
 
-            // Score and percentage
             const score = appState.score || 0;
             const pct = Math.round((score / 30) * 100);
             
@@ -1137,14 +1129,12 @@
             document.getElementById('final-percentage-text').textContent = `${pct}% Overall Rating`;
             document.getElementById('stat-accuracy').textContent = `${pct}%`;
 
-            // Time & Date
             const mins = String(Math.floor(appState.timerSeconds / 60)).padStart(2, '0');
             const secs = String(appState.timerSeconds % 60).padStart(2, '0');
             document.getElementById('stat-time').textContent = `${mins}:${secs}`;
             document.getElementById('stat-warnings').textContent = `${appState.tabWarnings} / 3`;
             document.getElementById('stat-date').textContent = appState.submissionDate || "Oct 12, 2026";
 
-            // Status Pill
             const statusPill = document.getElementById('result-status-pill');
             if (appState.isTerminated) {
                 statusPill.textContent = "Terminated (Tab Limits Exceeded)";
@@ -1157,7 +1147,6 @@
                 statusPill.className = "inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30";
             }
 
-            // Render Detailed Breakdown Cards
             renderResultsBreakdown();
         }
 
@@ -1174,57 +1163,57 @@
                 const isUnanswered = userChoice === null;
 
                 const card = document.createElement('div');
-                card.className = `p-5 rounded-2xl border transition ${
+                card.className = `p-4 sm:p-5 rounded-2xl border transition ${
                     isCorrect 
-                        ? 'bg-slate-50/50 border-slate-200' 
-                        : 'bg-rose-50/30 border-rose-200'
+                        ? 'bg-slate-50/50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800' 
+                        : 'bg-rose-50/30 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60'
                 }`;
 
                 let badgeHTML = '';
                 if (isCorrect) {
-                    badgeHTML = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Correct</span>`;
+                    badgeHTML = `<span class="px-2.5 py-1 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-bold rounded-lg border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1 shrink-0"><i class="fa-solid fa-circle-check"></i> Correct</span>`;
                 } else if (isUnanswered) {
-                    badgeHTML = `<span class="px-2.5 py-1 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 inline-flex items-center gap-1"><i class="fa-solid fa-circle-minus"></i> Unanswered</span>`;
+                    badgeHTML = `<span class="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 inline-flex items-center gap-1 shrink-0"><i class="fa-solid fa-circle-minus"></i> Unanswered</span>`;
                 } else {
-                    badgeHTML = `<span class="px-2.5 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-lg border border-rose-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>`;
+                    badgeHTML = `<span class="px-2.5 py-1 bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 text-xs font-bold rounded-lg border border-rose-200 dark:border-rose-800 inline-flex items-center gap-1 shrink-0"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>`;
                 }
 
                 card.innerHTML = `
-                    <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center space-x-2">
-                            <span class="font-extrabold text-sm text-slate-900">Item ${idx + 1}</span>
-                            <span class="text-xs text-slate-500">• ${q.title.split(':')[1] || q.title}</span>
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span class="font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100">Item ${idx + 1}</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">• ${q.title.split(':')[1] || q.title}</span>
                         </div>
                         ${badgeHTML}
                     </div>
 
-                    ${q.scenario ? `<p class="mt-2 text-xs italic text-slate-600 bg-white p-3 rounded-lg border border-slate-100">${q.scenario}</p>` : ''}
+                    ${q.scenario ? `<p class="mt-2 text-xs italic text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700/60">${q.scenario}</p>` : ''}
 
-                    <p class="mt-3 text-sm font-bold text-slate-800">${q.question}</p>
+                    <p class="mt-3 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">${q.question}</p>
 
                     <!-- Choice Options Summary -->
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div class="mt-3 sm:mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                         ${q.options.map((opt, oIdx) => {
-                            let optBg = "bg-white border-slate-200 text-slate-600";
+                            let optBg = "bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300";
                             if (oIdx === q.correctKey) {
-                                optBg = "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-1 ring-emerald-500/30";
+                                optBg = "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-bold ring-1 ring-emerald-500/30";
                             } else if (oIdx === userChoice && !isCorrect) {
-                                optBg = "bg-rose-50 border-rose-400 text-rose-950 font-bold";
+                                optBg = "bg-rose-50 dark:bg-rose-950/60 border-rose-400 dark:border-rose-800 text-rose-950 dark:text-rose-200 font-bold";
                             }
 
                             return `
-                                <div class="p-2.5 rounded-lg border ${optBg} flex items-center justify-between">
-                                    <span class="truncate"><strong class="mr-1.5">${keys[oIdx]}.</strong> ${opt}</span>${oIdx === q.correctKey ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}
-                                    ${oIdx === userChoice && !isCorrect ? '<i class="fa-solid fa-xmark text-rose-600"></i>' : ''}
+                                <div class="p-2.5 rounded-lg border ${optBg} flex items-center justify-between gap-2">
+                                    <span class="truncate"><strong class="mr-1.5">${keys[oIdx]}.</strong> ${opt}</span>${oIdx === q.correctKey ? '<i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 shrink-0"></i>' : ''}
+                                    ${oIdx === userChoice && !isCorrect ? '<i class="fa-solid fa-xmark text-rose-600 dark:text-rose-400 shrink-0"></i>' : ''}
                                 </div>
                             `;
                         }).join('')}
                     </div>
 
                     <!-- Rationale / Explanation -->
-                    <div class="mt-4 p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed">
-                        <span class="font-bold flex items-center gap-1.5 mb-1 text-indigo-950">
-                            <i class="fa-solid fa-lightbulb text-indigo-600"></i> Explanation / Solution Key:
+                    <div class="mt-3 sm:mt-4 p-3 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 rounded-xl text-xs text-indigo-900 dark:text-indigo-200 leading-relaxed">
+                        <span class="font-bold flex items-center gap-1.5 mb-1 text-indigo-950 dark:text-indigo-100">
+                            <i class="fa-solid fa-lightbulb text-indigo-600 dark:text-indigo-400"></i> Explanation / Solution Key:
                         </span>
                         ${q.explanation}
                     </div>
@@ -1248,20 +1237,20 @@
     <meta charset="utf-8">
     <title>Score Report - ${appState.studentName}</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #1e293b; background: #fff; }
-        .certificate-box { border: 8px solid #312e81; padding: 40px; border-radius: 12px; max-w: 800px; margin: 0 auto; position: relative; }
-        .header { text-align: center; border-b: 2px solid #e2e8f0; padding-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 24px; color: #312e81; text-transform: uppercase; letter-spacing: 1px; }
-        .header h2 { margin: 5px 0 0 0; font-size: 16px; color: #475569; font-weight: 500; }
-        .details { margin: 30px 0; }
-        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .field { background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #1e293b; background: #fff; }
+        .certificate-box { border: 8px solid #312e81; padding: 30px; border-radius: 12px; max-width: 800px; margin: 0 auto; position: relative; }
+        .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 22px; color: #312e81; text-transform: uppercase; letter-spacing: 1px; }
+        .header h2 { margin: 5px 0 0 0; font-size: 15px; color: #475569; font-weight: 500; }
+        .details { margin: 25px 0; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .field { background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; }
         .field label { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; display: block; }
-        .field span { font-size: 14px; font-weight: bold; color: #0f172a; margin-top: 2px; display: block; }
-        .score-banner { background: #312e81; color: white; text-align: center; padding: 25px; border-radius: 12px; margin: 30px 0; }
-        .score-banner .big-score { font-size: 48px; font-weight: 800; line-height: 1; }
-        .score-banner .rating { font-size: 16px; color: #a5b4fc; margin-top: 8px; font-weight: 600; }
-        .footer-note { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 40px; border-t: 1px solid #e2e8f0; padding-top: 15px; }
+        .field span { font-size: 13px; font-weight: bold; color: #0f172a; margin-top: 2px; display: block; }
+        .score-banner { background: #312e81; color: white; text-align: center; padding: 20px; border-radius: 12px; margin: 25px 0; }
+        .score-banner .big-score { font-size: 42px; font-weight: 800; line-height: 1; }
+        .score-banner .rating { font-size: 15px; color: #a5b4fc; margin-top: 8px; font-weight: 600; }
+        .footer-note { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
         @media print {
             body { padding: 0; }
             .no-print { display: none; }
@@ -1284,17 +1273,9 @@
 
         <div class="details">
             <div class="details-grid">
-                <div class="field">
+                <div class="field" style="grid-column: span 2;">
                     <label>Student Name</label>
                     <span>${appState.studentName}</span>
-                </div>
-                <div class="field">
-                    <label>Grade & Section</label>
-                    <span>${appState.studentSection}</span>
-                </div>
-                <div class="field">
-                    <label>LRN / Student ID</label>
-                    <span>${appState.studentId}</span>
                 </div>
                 <div class="field">
                     <label>Date & Time Completed</label>
@@ -1304,7 +1285,7 @@
                     <label>Time Elapsed</label>
                     <span>${mins} mins ${secs} secs</span>
                 </div>
-                <div class="field">
+                <div class="field" style="grid-column: span 2;">
                     <label>Security Status</label>
                     <span>${appState.isTerminated ? 'Terminated (Tab Limits Exceeded)' : appState.tabWarnings + ' Tab Warning(s)'}</span>
                 </div>
@@ -1312,7 +1293,7 @@
         </div>
 
         <div class="score-banner">
-            <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Final Score</div>
+            <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase;">Final Score</div>
             <div class="big-score">${score} / 30</div>
             <div class="rating">Percentage Rating: ${pct}%</div>
         </div>
@@ -1330,7 +1311,6 @@
             const url = URL.createObjectURL(blob);
             const win = window.open(url, '_blank');
             if (!win) {
-                // Fallback download if popup blocked
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `Score_Report_${appState.studentName.replace(/\s+/g, '_')}.html`;
