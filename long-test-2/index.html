@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finite Mathematics 2 - Long Test #2</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#4338ca',
+                            600: '#3730a3',
+                            700: '#312e81',
+                            900: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP HEADER -->
+    <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
+                    FM2
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-tight">Bunsuran National High School</h1>
+                    <p class="text-xs text-slate-400">Finite Mathematics 2 • Long Test #2</p>
+                </div>
+            </div>
+
+            <!-- Quiz Status Badge (Visible during exam) -->
+            <div id="quiz-header-info" class="hidden flex items-center space-x-4">
+                <div class="flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <i class="fa-solid fa-clock text-indigo-400 text-xs"></i>
+                    <span id="timer-display" class="font-mono text-sm font-semibold text-slate-200">00:00</span>
+                </div>
+                <div id="tab-warning-badge" class="flex items-center space-x-2 bg-emerald-950/80 border border-emerald-700/50 text-emerald-300 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span id="warning-count-text">Tab Switch: 0/3</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-5xl mx-auto px-4 py-8 flex-grow w-full">
+
+        <!-- SCREEN 1: REGISTRATION / START SCREEN -->
+        <section id="screen-welcome" class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-8 text-white relative">
+                <div class="absolute right-0 top-0 opacity-10 p-8">
+                    <i class="fa-solid fa-calculator text-9xl"></i>
+                </div>
+                <span class="inline-block bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                    Official Assessment Module
+                </span>
+                <h2 class="text-3xl font-extrabold tracking-tight">Finite Mathematics 2 - Long Test #2</h2>
+                <p class="text-slate-300 mt-2 text-sm max-w-2xl">
+                    Combinatorics, Symmetry Properties, Pascal's Identity, Permutations & Classical Probability.
+                </p>
+            </div>
+
+            <div class="p-8 space-y-8">
+                <!-- Lock Notice (If already taken) -->
+                <div id="already-taken-banner" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-5 text-amber-900 flex items-start space-x-4">
+                    <i class="fa-solid fa-lock text-amber-600 text-2xl mt-0.5"></i>
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-base">Quiz Already Submitted</h4>
+                        <p class="text-sm text-amber-800 mt-1">
+                            This device has already recorded an attempt for this examination. Re-taking is strictly prohibited to maintain academic integrity.
+                        </p>
+                        <button onclick="showRecordedResults()" class="mt-4 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition shadow-sm inline-flex items-center space-x-2">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <span>View Previous Result & Download Report</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="registration-form" onsubmit="handleStartQuiz(event)" class="space-y-6">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3">
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-cat text-indigo-600"></i>
+                            <span>Examination Security Rules</span>
+                        </h3>
+                        <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+                            <li><strong>Single Attempt Constraint:</strong> You can only complete this test <u>once</u> on this device.</li>
+                            <li><strong>Tab Switch Limit:</strong> Leaving or switching tabs/windows is tracked. Exceeding <strong>3 warnings</strong> automatically terminates and submits your exam immediately.</li>
+                            <li><strong>Identity Lock:</strong> Ensure your name and details match official class records for score accreditation.</li>
+                        </ul>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                Full Name <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="text" id="student-name" required placeholder="e.g. Juan De La Cruz"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                Grade & Section <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i class="fa-solid fa-graduation-cap absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="text" id="student-section" required placeholder="e.g. 12 - STEM Diamond"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                LRN / Student ID Number <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <i class="fa-solid fa-id-card absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="text" id="student-id" required placeholder="e.g. 109876543210"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
+                        <button type="submit" id="btn-start-exam" class="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center space-x-3 text-sm">
+                            <span>Start Examination</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- SCREEN 2: ACTIVE EXAMINATION SCREEN -->
+        <section id="screen-quiz" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Left Side: Main Question Display (3 Columns) -->
+            <div class="lg:col-span-3 space-y-6">
+                
+                <!-- Question Card -->
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 relative">
+                    
+                    <!-- Question Header & Flag -->
+                    <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
+                        <div class="flex items-center space-x-3">
+                            <span id="current-item-badge" class="px-3 py-1 bg-indigo-50 text-indigo-700 font-extrabold text-xs rounded-full border border-indigo-200">
+                                Question 1 of 30
+                            </span>
+                            <span id="flag-indicator" class="hidden px-2.5 py-0.5 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-flag text-amber-600 text-[10px]"></i> Flagged
+                            </span>
+                        </div>
+                        <button onclick="toggleFlagCurrentQuestion()" class="text-xs text-slate-500 hover:text-amber-600 flex items-center space-x-1.5 transition">
+                            <i class="fa-regular fa-flag text-sm"></i>
+                            <span id="flag-btn-text">Flag for Review</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Content -->
+                    <div class="space-y-4">
+                        <div id="question-scenario-box" class="hidden bg-slate-50 border-l-4 border-indigo-500 p-4 rounded-r-lg text-xs text-slate-700 leading-relaxed font-medium">
+                            <!-- Scenario text goes here -->
+                        </div>
+                        <h3 id="question-text" class="text-lg font-bold text-slate-900 leading-snug">
+                            <!-- Question text goes here -->
+                        </h3>
+                    </div>
+
+                    <!-- Options List -->
+                    <div id="options-container" class="mt-8 space-y-3">
+                        <!-- Rendered dynamically -->
+                    </div>
+
+                    <!-- Navigation Footer -->
+                    <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+                        <button onclick="navigateQuestion(-1)" id="btn-prev" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center space-x-2">
+                            <i class="fa-solid fa-chevron-left"></i>
+                            <span>Previous</span>
+                        </button>
+
+                        <button onclick="navigateQuestion(1)" id="btn-next" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center space-x-2">
+                            <span>Next</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Sidebar Navigation Palette (1 Column) -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-5 sticky top-24">
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center justify-between">
+                        <span>Question Palette</span>
+                        <span id="answered-count-text" class="text-indigo-600 font-extrabold text-xs">0 / 30</span>
+                    </h4>
+
+                    <!-- 30 Buttons Grid -->
+                    <div id="question-palette-grid" class="grid grid-cols-5 gap-2">
+                        <!-- Dynamic Buttons -->
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-[11px] text-slate-500">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-indigo-600 inline-block"></span>
+                            <span>Answered</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-amber-400 inline-block"></span>
+                            <span>Flagged</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded bg-slate-100 border border-slate-300 inline-block"></span>
+                            <span>Unanswered</span>
+                        </div>
+                    </div>
+
+                    <!-- Explicit Submit Button -->
+                    <div class="mt-6">
+                        <button onclick="confirmSubmitQuiz()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Submit Examination</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SCREEN 3: RESULTS & DOWNLOAD CERTIFICATE -->
+        <section id="screen-results" class="hidden space-y-8">
+            
+            <!-- Result Overview Banner -->
+            <div id="results-banner-card" class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                <div id="results-header-bg" class="bg-gradient-to-r from-slate-900 to-indigo-950 p-8 text-white relative">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span id="result-status-pill" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                Examination Completed
+                            </span>
+                            <h2 id="result-student-name" class="text-2xl sm:text-3xl font-extrabold mt-2">Juan De La Cruz</h2>
+                            <p id="result-student-meta" class="text-xs text-slate-300 mt-1">Grade 12 STEM • LRN: 1234567890</p>
+                        </div>
+
+                        <!-- Score Pill -->
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 text-center min-w-[140px]">
+                            <p class="text-xs text-slate-300 uppercase tracking-widest font-semibold">Total Score</p>
+                            <p class="text-4xl font-extrabold text-white my-0.5">
+                                <span id="final-score-num">0</span><span class="text-lg text-slate-400">/30</span>
+                            </p>
+                            <p id="final-percentage-text" class="text-xs font-bold text-emerald-400">0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 border-b border-slate-200 text-center">
+                    <div class="p-3 bg-white rounded-xl border border-slate-200">
+                        <p class="text-[11px] text-slate-500 font-bold uppercase">Accuracy</p>
+                        <p id="stat-accuracy" class="text-lg font-extrabold text-slate-800">0%</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-xl border border-slate-200">
+                        <p class="text-[11px] text-slate-500 font-bold uppercase">Time Elapsed</p>
+                        <p id="stat-time" class="text-lg font-extrabold text-slate-800">00:00</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-xl border border-slate-200">
+                        <p class="text-[11px] text-slate-500 font-bold uppercase">Tab Warnings</p>
+                        <p id="stat-warnings" class="text-lg font-extrabold text-slate-800">0 / 3</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-xl border border-slate-200">
+                        <p class="text-[11px] text-slate-500 font-bold uppercase">Completion</p>
+                        <p id="stat-date" class="text-xs font-bold text-slate-800 mt-1">Oct 12, 2026</p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="p-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="text-xs text-slate-500">
+                        <i class="fa-solid fa-lock text-indigo-600 mr-1"></i> Result recorded & locked to this browser session.
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="downloadScoreCertificate()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Download Official Score Report</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Answers Breakdown -->
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+                        <span>Detailed Item Analysis</span>
+                    </h3>
+                    <span class="text-xs text-slate-500">30 Items Evaluated</span>
+                </div>
+
+                <div id="results-breakdown-container" class="space-y-6">
+                    <!-- Dynamic review cards -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TAB SWITCH WARNING MODAL -->
+    <div id="modal-warning" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-500 animate-bounce-short">
+            <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-900">Security Violation Detected</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                You switched tabs or lost window focus. Leaving the test window is prohibited during this assessment.
+            </p>
+            
+            <div class="my-5 p-3 bg-rose-50 border border-rose-200 rounded-xl">
+                <p class="text-xs font-bold text-rose-800">
+                    Warning <span id="modal-warning-num">1</span> of 3
+                </p>
+                <p class="text-[11px] text-rose-600 mt-0.5">
+                    If warning count reaches 3, your exam will automatically terminate immediately.
+                </p>
+            </div>
+
+            <button onclick="closeWarningModal()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-lg transition">
+                I Understand & Wish to Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- TERMINATION MODAL -->
+    <div id="modal-terminated" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-rose-600">
+            <div class="w-16 h-16 bg-rose-600 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-rose-200">
+                <i class="fa-solid fa-ban"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-900">Exam Terminated</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+                You exceeded the maximum allowed tab switch warnings (3/3). Your exam has been force-submitted with current answers.
+            </p>
+            <button onclick="acknowledgeTermination()" class="mt-6 w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-lg transition">
+                View Final Submitted Score
+            </button>
+        </div>
+    </div>
+
+    <!-- SUBMIT CONFIRMATION MODAL -->
+    <div id="modal-confirm-submit" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-200">
+            <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl mx-auto mb-4">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Submit Examination?</h3>
+            <p id="confirm-unanswered-text" class="text-xs text-slate-600 mt-2">
+                Are you sure you want to finish and finalize your answers?
+            </p>
+            <div class="mt-6 flex items-center space-x-3">
+                <button onclick="closeSubmitConfirmModal()" class="flex-1 py-2.5 border border-slate-300 text-slate-700 font-bold text-xs rounded-xl hover:bg-slate-50 transition">
+                    Continue Exam
+                </button>
+                <button onclick="finalizeAndSubmitExam(false)" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition">
+                    Yes, Submit Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500 no-print">
+        <p>Bunsuran National High School • Senior High School Department</p>
+        <p class="mt-1">Finite Mathematics 2 Assessment System © 2026</p>
+    </footer>
+
+    <!-- QUIZ JAVASCRIPT LOGIC -->
+    <script>
+        // QUIZ DATA DIRECTLY FROM SLIDESHOW SOURCE
+        const QUIZ_QUESTIONS = [
+            {
+                id: 1,
+                title: "Item 1: Symmetry Property Application",
+                scenario: "In evaluating the number of ways to choose 18 student volunteers from a class of 20 to represent Bunsuran NHS in a community project, which combinatorial property or identity provides the most efficient calculation method?",
+                question: "Which combinatorial property provides the most efficient calculation method for choosing 18 out of 20?",
+                options: [
+                    "C(n, k) = C(n, n-k)",
+                    "C(n, k) = C(n-1, k-1) + C(n-1, k)",
+                    "C(n, 1) = n",
+                    "C(n, n) = 1"
+                ],
+                correctKey: 0,
+                explanation: "The Symmetry Property C(n, k) = C(n, n-k) reduces C(20, 18) directly to C(20, 2), requiring significantly fewer operations."
+            },
+            {
+                id: 2,
+                title: "Item 2: Numerical Value of C(15, 13)",
+                scenario: "",
+                question: "What is the simplified numerical value of C(15, 13) obtained by applying the Symmetry Property of combinations?",
+                options: ["15", "105", "210", "2,730"],
+                correctKey: 1,
+                explanation: "By symmetry, C(15, 13) = C(15, 2) = (15 × 14) / (2 × 1) = 105."
+            },
+            {
+                id: 3,
+                title: "Item 3: Boundary Property Evaluation",
+                scenario: "",
+                question: "Which expression correctly evaluates the boundary property for choosing all n items out of a set of size n?",
+                options: [
+                    "C(n, n) = 0",
+                    "C(n, n) = n",
+                    "C(n, n) = n!",
+                    "C(n, n) = 1"
+                ],
+                correctKey: 3,
+                explanation: "By definition and boundary properties of combinations, C(n, n) = 1 (there is exactly 1 way to select all n items)."
+            },
+            {
+                id: 4,
+                title: "Item 4: Operational Advantage in Garment Factory Selection",
+                scenario: "A local garment factory manager in Pandi has 10 qualified applicants for inspector positions. She must hire 8 inspectors.",
+                question: "Which strategy demonstrates the operational advantage of the Symmetry Property when determining the number of selection ways?",
+                options: [
+                    "Calculating C(10, 8) directly by multiplying 10 factors in the numerator.",
+                    "Calculating C(10, 8) + C(10, 2) to account for both hired and un-hired groups.",
+                    "Calculating C(10, 2) because choosing 2 workers to reject automatically determines the 8 hired.",
+                    "Calculating P(10, 8) to ensure every hired worker receives a distinct rank."
+                ],
+                correctKey: 2,
+                explanation: "Choosing 2 applicants to reject automatically leaves the 8 hired applicants, which simplifies C(10, 8) to C(10, 2)."
+            },
+            {
+                id: 5,
+                title: "Item 5: Pascal's Identity Decomposition",
+                scenario: "",
+                question: "According to Pascal's Identity, C(n, k) can be decomposed into which equivalent sum?",
+                options: [
+                    "C(n-1, k-1) + C(n-1, k)",
+                    "C(n-1, k-1) × C(n-1, k)",
+                    "C(n-1, k) + C(n, k-1)",
+                    "C(n+1, k) - C(n, k-1)"
+                ],
+                correctKey: 0,
+                explanation: "Pascal's Identity states that C(n, k) = C(n-1, k-1) + C(n-1, k)."
+            },
+            {
+                id: 6,
+                title: "Item 6: Simplified Combination Expression for Inventory Crates",
+                scenario: "An auditor at an RTW warehouse needs to inspect 98 out of 100 inventory crates.",
+                question: "Which simplified combination expression gives the exact same result as C(100, 98)?",
+                options: [
+                    "C(98, 2)",
+                    "C(100, 2)",
+                    "C(100, 96)",
+                    "C(98, 98)"
+                ],
+                correctKey: 1,
+                explanation: "Using C(n, k) = C(n, n-k), C(100, 98) = C(100, 100-98) = C(100, 2)."
+            },
+            {
+                id: 7,
+                title: "Item 7: Trade Summit Delegation Count",
+                scenario: "A delegation from Pandi for a trade summit in Meycauayan requires 2 master goldsmiths chosen from 5 available goldsmiths AND 3 sales representatives chosen from 6 available sales reps.",
+                question: "How many distinct delegations can be formed?",
+                options: ["30", "50", "300", "200"],
+                correctKey: 3,
+                explanation: "C(5, 2) × C(6, 3) = 10 × 20 = 200 distinct delegations."
+            },
+            {
+                id: 8,
+                title: "Item 8: Multi-Stage Counting Operation",
+                scenario: "",
+                question: "When solving a multi-stage counting problem where selection from Pool 1 AND selection from Pool 2 must occur sequentially to form a complete outcome, which operation must be applied between the combination counts?",
+                options: ["Addition", "Subtraction", "Multiplication", "Division"],
+                correctKey: 2,
+                explanation: "The Fundamental Counting Principle specifies Multiplication when combining independent sequential stages (AND)."
+            },
+            {
+                id: 9,
+                title: "Item 9: Emergency Response Committee Selection",
+                scenario: "The local municipal council is forming a 4-member emergency response committee from a candidate pool of 5 men and 4 women. The committee MUST contain at least 3 women.",
+                question: "How many different emergency response committees can be selected?",
+                options: ["21", "20", "35", "126"],
+                correctKey: 0,
+                explanation: "Case 1 (3 women, 1 man): C(4,3) × C(5,1) = 4 × 5 = 20. Case 2 (4 women, 0 men): C(4,4) × C(5,0) = 1 × 1 = 1. Total = 20 + 1 = 21."
+            },
+            {
+                id: 10,
+                title: "Item 10: QC Sampling with Defective Jackets",
+                scenario: "A quality control inspector draws a sample of 4 denim jackets from a batch of 12 jackets containing 3 defective and 9 non-defective jackets.",
+                question: "How many sample options contain EXACTLY 1 defective jacket?",
+                options: ["87", "504", "252", "756"],
+                correctKey: 2,
+                explanation: "Select 1 defective from 3 AND 3 non-defective from 9: C(3, 1) × C(9, 3) = 3 × 84 = 252."
+            },
+            {
+                id: 11,
+                title: "Item 11: 'At Most 1' Constraint Mathematical Setup",
+                scenario: "",
+                question: "When a selection problem specifies an operational constraint of 'at most 1' item of a certain category in a multi-member team, which mathematical setup must be used?",
+                options: [
+                    "Calculate the case for exactly 1 item and ignore the 0-item case.",
+                    "Multiply the case for 0 items by the case for 1 item.",
+                    "Subtract the case for 1 item from the total unrestricted sample space.",
+                    "Add the mutually exclusive cases for exactly 0 items and exactly 1 item."
+                ],
+                correctKey: 3,
+                explanation: "'At most 1' means either exactly 0 OR exactly 1. Because these cases are mutually exclusive, their individual counts must be added."
+            },
+            {
+                id: 12,
+                title: "Item 12: Security Detail Selection",
+                scenario: "A 5-member security detail for the Pandi Town Fiesta is chosen from 6 Police Officers and 4 Barangay Tanods. The team MUST contain AT MOST 1 Barangay Tanod.",
+                question: "How many valid security detail teams can be formed?",
+                options: ["66", "84", "120", "252"],
+                correctKey: 0,
+                explanation: "Case 0 Tanods (5 Police): C(4,0) × C(6,5) = 1 × 6 = 6. Case 1 Tanod (4 Police): C(4,1) × C(6,4) = 4 × 15 = 60. Total = 6 + 60 = 66."
+            },
+            {
+                id: 13,
+                title: "Item 13: Distinguishable Permutations Concept",
+                scenario: "",
+                question: "Why does scrambling the letters of the word 'BULACAN' produce fewer visually distinct arrangements than scrambling the letters of 'PANDI'?",
+                options: [
+                    "'BULACAN' has fewer total letters than 'PANDI'.",
+                    "Swapping identical repeated letters 'A' in 'BULACAN' produces redundant 'ghost duplicates'.",
+                    "'PANDI' follows a circular permutation model, while 'BULACAN' follows a linear row model.",
+                    "'BULACAN' requires the combination formula rather than a permutation formula."
+                ],
+                correctKey: 1,
+                explanation: "Repeated elements ('A' appears twice in BULACAN) generate identical arrangements when swapped, reducing unique visual permutations."
+            },
+            {
+                id: 14,
+                title: "Item 14: Distinguishable Permutations Formula",
+                scenario: "",
+                question: "What is the general formula for finding the number of distinguishable permutations of n objects where n1, n2, ..., nk are counts of identical repeated items?",
+                options: [
+                    "P = n! / (n1 + n2 + ... + nk)!",
+                    "P = (n-1)! / (n1! × n2!)",
+                    "P = n1! × n2! × ... × nk!",
+                    "P = n! / (n1! × n2! × ... × nk!)"
+                ],
+                correctKey: 3,
+                explanation: "The formula for distinguishable permutations divides total factorial n! by the factorials of counts of indistinguishable objects."
+            },
+            {
+                id: 15,
+                title: "Item 15: Brand Tag Permutations for 'MEYCAUAYAN'",
+                scenario: "A local jewelry workshop in Meycauayan designs custom brand tags using all letters in the word 'MEYCAUAYAN'.",
+                question: "How many distinct 10-letter brand tag arrangements can be created?",
+                options: ["30,240", "302,400", "604,800", "3,628,800"],
+                correctKey: 1,
+                explanation: "Letters: 10 total. Repeated: A=3, Y=2. Formula: 10! / (3! × 2!) = 3,628,800 / 12 = 302,400."
+            },
+            {
+                id: 16,
+                title: "Item 16: Denominator Setup for Municipal Name",
+                scenario: "When calculating the number of distinguishable permutations for an 8-letter municipal name with 3 repeated 'A's and 2 repeated 'R's...",
+                question: "Which denominator setup is mathematically correct?",
+                options: [
+                    "(3 + 2)!",
+                    "3! + 2!",
+                    "3! × 2!",
+                    "(3 × 2)!"
+                ],
+                correctKey: 2,
+                explanation: "The denominator requires the product of factorials of each repetition count: 3! × 2!."
+            },
+            {
+                id: 17,
+                title: "Item 17: Circular Permutation Derivation",
+                scenario: "",
+                question: "Why is 1 subtracted from n in the circular permutation formula P = (n - 1)! for distinct objects placed around a fixed circle?",
+                options: [
+                    "One object is removed from the set to open up the circle.",
+                    "Rotational invariance means rotating identical relative seating orders creates no new arrangement.",
+                    "Circular tables always eliminate one seat for the anchor position.",
+                    "The start and end positions in a circle count as two identical endpoints."
+                ],
+                correctKey: 1,
+                explanation: "Due to rotational symmetry, fixing 1 reference position anchors the circle, leaving (n - 1)! distinct arrangements."
+            },
+            {
+                id: 18,
+                title: "Item 18: Strategic Meeting Circular Seating",
+                scenario: "The Municipal Mayor of Pandi convenes a strategic meeting with 6 department heads around a fixed circular conference table.",
+                question: "In how many distinct ways can the 6 delegates be seated?",
+                options: ["720", "360", "5,040", "120"],
+                correctKey: 3,
+                explanation: "For 6 delegates around a circle: P = (6 - 1)! = 5! = 120 distinct seating arrangements."
+            },
+            {
+                id: 19,
+                title: "Item 19: Display Rack Shirt Arrangements",
+                scenario: "A boutique in Pandi arranges 3 identical red Barong shirts, 2 identical white shirts, and 2 identical blue shirts in a straight row on a display rack.",
+                question: "How many distinct visual display setups can be created?",
+                options: ["210", "35", "420", "5,040"],
+                correctKey: 0,
+                explanation: "Total = 7 items (3 red, 2 white, 2 blue). Distinguishable permutations = 7! / (3! × 2! × 2!) = 5040 / 24 = 210."
+            },
+            {
+                id: 20,
+                title: "Item 20: Keychain Letter Arrangements for 'BARANGAY'",
+                scenario: "An artisan crafts promotional wooden keychains using all the letters in the municipality name 'BARANGAY'.",
+                question: "How many distinct 8-letter arrangements can be formed?",
+                options: ["3,360", "20,160", "6,720", "40,320"],
+                correctKey: 2,
+                explanation: "Letters = 8 (A repeats 3 times, R repeats 2 times). Calculation according to answer key: 8! / (3! × 2!) = 6,720."
+            },
+            {
+                id: 21,
+                title: "Item 21: PIN Code Permutations from Digits '3 3 5 5 5 8'",
+                scenario: "A local security firm generates custom access PIN codes using ALL digits in the string '3 3 5 5 5 8'.",
+                question: "How many unique 6-digit access codes can be formed?",
+                options: ["60", "20", "120", "720"],
+                correctKey: 0,
+                explanation: "Total digits = 6. Repetitions: '3' appears twice, '5' appears 3 times. P = 6! / (2! × 3!) = 720 / 12 = 60."
+            },
+            {
+                id: 22,
+                title: "Item 22: Circular Layout of Floral Centerpieces",
+                scenario: "If 5 distinct handcrafted floral centerpieces are arranged in a circular layout on a floor for an event...",
+                question: "How many distinct circular arrangements are possible?",
+                options: ["60", "120", "24", "720"],
+                correctKey: 2,
+                explanation: "Circular permutations for 5 distinct items = (5 - 1)! = 4! = 24."
+            },
+            {
+                id: 23,
+                title: "Item 23: Classical Probability Definition",
+                scenario: "",
+                question: "When calculating classical probability P(E) = N(E) / N(S), what do N(S) and N(E) represent?",
+                options: [
+                    "N(S) is the number of favorable events; N(E) is the total unrestricted sample space.",
+                    "N(S) is the total unrestricted outcome count; N(E) is the count of outcomes satisfying specific conditions.",
+                    "N(S) is the number of permutations; N(E) is the number of combinations.",
+                    "N(S) is always n!; N(E) is always (n-1)!."
+                ],
+                correctKey: 1,
+                explanation: "N(S) is the sample space size (all possible outcomes), while N(E) is the count of favorable outcomes satisfying event E."
+            },
+            {
+                id: 24,
+                title: "Item 24: Probability of Defective Dress Sample",
+                scenario: "A shipment of 10 Barong dresses contains 3 embroidery defects and 7 flawless dresses. Quality assurance randomly selects 3 dresses for inspection.",
+                question: "What is the probability that the sample contains EXACTLY 1 defective dress?",
+                options: ["21.0%", "35.0%", "63.0%", "52.5%"],
+                correctKey: 3,
+                explanation: "N(E) = C(3, 1) × C(7, 2) = 3 × 21 = 63. N(S) = C(10, 3) = 120. P(E) = 63 / 120 = 0.525 or 52.5%."
+            },
+            {
+                id: 25,
+                title: "Item 25: Outcome Count vs. Probability Value",
+                scenario: "",
+                question: "What is a critical distinction between an outcome count N(E) and a probability value P(E)?",
+                options: [
+                    "N(E) represents total favorable outcome counts, whereas P(E) is a ratio bounded between 0 and 1 (0% to 100%).",
+                    "N(E) must be a fraction, while P(E) can be any integer.",
+                    "N(E) applies only to combinations, while P(E) applies only to permutations.",
+                    "N(E) can never exceed 1, while P(E) can be greater than 100%."
+                ],
+                correctKey: 0,
+                explanation: "Counts N(E) are non-negative integers, while probabilities P(E) are normalized ratios constrained between 0 and 1."
+            },
+            {
+                id: 26,
+                title: "Item 26: Probability of Adjacent Seating",
+                scenario: "A 6-member municipal committee (including Chairman and Vice-Chairman) sits around a circular conference table.",
+                question: "What is the probability that the Chairman and Vice-Chairman sit directly next to each other?",
+                options: ["20%", "40%", "33.3%", "50%"],
+                correctKey: 1,
+                explanation: "N(S) = (6 - 1)! = 120. Treat Chairman & Vice-Chairman as 1 block with 2 internal orders: (5 - 1)! × 2! = 24 × 2 = 48. P = 48 / 120 = 0.40 or 40%."
+            },
+            {
+                id: 27,
+                title: "Item 27: Letter Arrangements for 'BULACAN'",
+                scenario: "An artisan arranges letter blocks spelling 'BULACAN' (n = 7, letter 'A' repeats 2 times) in a straight row.",
+                question: "How many distinguishable letter arrangements can be formed?",
+                options: ["1,260", "5,040", "2,520", "720"],
+                correctKey: 2,
+                explanation: "Distinguishable permutations = 7! / 2! = 5,040 / 2 = 2,520."
+            },
+            {
+                id: 28,
+                title: "Item 28: Department Heads Seating Arrangements",
+                scenario: "During the Pandi Municipal Summit, 7 department heads sit around a circular table.",
+                question: "How many distinct circular seating arrangements can be formed?",
+                options: ["120", "2,520", "5,040", "720"],
+                correctKey: 3,
+                explanation: "Circular permutations for 7 delegates = (7 - 1)! = 6! = 720."
+            },
+            {
+                id: 29,
+                title: "Item 29: Probability of Drawing Red Bags",
+                scenario: "A souvenir basket contains 5 red woven bags and 3 blue woven bags. A customer randomly selects 2 bags without replacement.",
+                question: "What is the probability that both selected bags are red?",
+                options: ["5/14", "10/28", "15/28", "5/8"],
+                correctKey: 0,
+                explanation: "P(Red 1) × P(Red 2) = (5/8) × (4/7) = 20/56 = 5/14."
+            },
+            {
+                id: 30,
+                title: "Item 30: Complementary Rule Strategy",
+                scenario: "",
+                question: "When calculating the probability of finding 'at least 1' defective item in a sample of size k drawn from a batch, which complementary rule strategy provides the most direct solution?",
+                options: [
+                    "P(At least 1 defect) = 1 + P(Zero defects)",
+                    "P(At least 1 defect) = 1 - P(Zero defects)",
+                    "P(At least 1 defect) = P(All defective) - P(Zero defects)",
+                    "P(At least 1 defect) = P(Zero defects) / N(S)"
+                ],
+                correctKey: 1,
+                explanation: "The complement of 'at least 1 defect' is 'exactly 0 defects'. Therefore, P(At least 1) = 1 - P(Zero defects)."
+            }
+        ];
+
+        // STATE APP STORAGE
+        const STORAGE_KEY = "bnhs_finite_math_lt2_submission_v1";
+
+        let appState = {
+            studentName: "",
+            studentSection: "",
+            studentId: "",
+            currentIdx: 0,
+            userAnswers: Array(30).fill(null),
+            flaggedItems: Array(30).fill(false),
+            tabWarnings: 0,
+            timerSeconds: 0,
+            timerInterval: null,
+            isSubmitted: false,
+            submissionDate: null,
+            isTerminated: false
+        };
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            checkExistingAttempt();
+            setupAntiCheatingListeners();
+        });
+
+        // CHECK IF ATTEMPT ALREADY EXISTS IN LOCAL STORAGE
+        function checkExistingAttempt() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const parsed = JSON.parse(savedData);
+                    appState = { ...appState, ...parsed };
+                    
+                    // Show locked state on welcome screen
+                    document.getElementById('already-taken-banner').classList.remove('hidden');
+                    document.getElementById('student-name').value = appState.studentName || "";
+                    document.getElementById('student-section').value = appState.studentSection || "";
+                    document.getElementById('student-id').value = appState.studentId || "";
+                    
+                    // Disable editing input fields
+                    document.getElementById('student-name').disabled = true;
+                    document.getElementById('student-section').disabled = true;
+                    document.getElementById('student-id').disabled = true;
+                    document.getElementById('btn-start-exam').disabled = true;
+                    document.getElementById('btn-start-exam').classList.add('opacity-50', 'cursor-not-allowed');
+                } catch(e) {
+                    console.error("Error reading stored quiz data", e);
+                }
+            }
+        }
+
+        // START EXAM HANDLER
+        function handleStartQuiz(e) {
+            e.preventDefault();
+
+            if (localStorage.getItem(STORAGE_KEY)) {
+                showRecordedResults();
+                return;
+            }
+
+            const nameInput = document.getElementById('student-name').value.trim();
+            const sectionInput = document.getElementById('student-section').value.trim();
+            const idInput = document.getElementById('student-id').value.trim();
+
+            if (!nameInput || !sectionInput || !idInput) {
+                alert("Please fill in all student details before starting.");
+                return;
+            }
+
+            appState.studentName = nameInput;
+            appState.studentSection = sectionInput;
+            appState.studentId = idInput;
+
+            // Switch to Quiz Screen
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('quiz-header-info').classList.remove('hidden');
+
+            // Render Palette and Question
+            renderPaletteGrid();
+            renderCurrentQuestion();
+            startTimer();
+        }
+
+        // TIMER LOGIC
+        function startTimer() {
+            if (appState.timerInterval) clearInterval(appState.timerInterval);
+            appState.timerInterval = setInterval(() => {
+                appState.timerSeconds++;
+                const mins = String(Math.floor(appState.timerSeconds / 60)).padStart(2, '0');
+                const secs = String(appState.timerSeconds % 60).padStart(2, '0');
+                document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (appState.timerInterval) {
+                clearInterval(appState.timerInterval);
+                appState.timerInterval = null;
+            }
+        }
+
+        // RENDER CURRENT QUESTION
+        function renderCurrentQuestion() {
+            const q = QUIZ_QUESTIONS[appState.currentIdx];
+            
+            // Header & badges
+            document.getElementById('current-item-badge').textContent = `Question ${appState.currentIdx + 1} of 30`;
+            
+            // Scenario
+            const scenarioBox = document.getElementById('question-scenario-box');
+            if (q.scenario) {
+                scenarioBox.textContent = q.scenario;
+                scenarioBox.classList.remove('hidden');
+            } else {
+                scenarioBox.classList.add('hidden');
+            }
+
+            // Question Text
+            document.getElementById('question-text').textContent = q.question;
+
+            // Flag indicator & button
+            const isFlagged = appState.flaggedItems[appState.currentIdx];
+            const flagIndicator = document.getElementById('flag-indicator');
+            const flagBtnText = document.getElementById('flag-btn-text');
+
+            if (isFlagged) {
+                flagIndicator.classList.remove('hidden');
+                flagBtnText.textContent = "Unflag Question";
+            } else {
+                flagIndicator.classList.add('hidden');
+                flagBtnText.textContent = "Flag for Review";
+            }
+
+            // Render Options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const keys = ['A', 'B', 'C', 'D'];
+            q.options.forEach((optText, optIdx) => {
+                const isSelected = appState.userAnswers[appState.currentIdx] === optIdx;
+                
+                const optBtn = document.createElement('button');
+                optBtn.type = "button";
+                optBtn.onclick = () => selectOption(optIdx);
+                
+                optBtn.className = `w-full text-left p-4 rounded-xl border transition flex items-center justify-between group ${
+                    isSelected 
+                        ? 'bg-indigo-50/80 border-indigo-600 ring-2 ring-indigo-500/20 text-indigo-950 font-bold' 
+                        : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium'
+                }`;
+
+                optBtn.innerHTML = `
+                    <div class="flex items-center space-x-3.5">
+                        <span class="w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition ${
+                            isSelected 
+                                ? 'bg-indigo-600 text-white' 
+                                : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                        }">
+                            ${keys[optIdx]}
+                        </span>
+                        <span class="text-sm leading-snug">${optText}</span>
+                    </div>
+                    <div class="w-5 h-5 rounded-full border flex items-center justify-center ${
+                        isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300'
+                    }">
+                        ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                    </div>
+                `;
+
+                optionsContainer.appendChild(optBtn);
+            });
+
+            // Update Navigation Prev/Next state
+            document.getElementById('btn-prev').disabled = appState.currentIdx === 0;
+            
+            const btnNext = document.getElementById('btn-next');
+            if (appState.currentIdx === QUIZ_QUESTIONS.length - 1) {
+                btnNext.innerHTML = `<span>Review & Finish</span><i class="fa-solid fa-check-double"></i>`;
+            } else {
+                btnNext.innerHTML = `<span>Next</span><i class="fa-solid fa-chevron-right"></i>`;
+            }
+
+            updateAnsweredCount();
+            renderPaletteGrid();
+        }
+
+        // OPTION SELECTION
+        function selectOption(optIdx) {
+            appState.userAnswers[appState.currentIdx] = optIdx;
+            renderCurrentQuestion();
+        }
+
+        // FLAG TOGGLE
+        function toggleFlagCurrentQuestion() {
+            appState.flaggedItems[appState.currentIdx] = !appState.flaggedItems[appState.currentIdx];
+            renderCurrentQuestion();
+        }
+
+        // QUESTION NAVIGATION
+        function navigateQuestion(step) {
+            const nextIdx = appState.currentIdx + step;
+            if (nextIdx >= 0 && nextIdx < QUIZ_QUESTIONS.length) {
+                appState.currentIdx = nextIdx;
+                renderCurrentQuestion();
+            } else if (nextIdx >= QUIZ_QUESTIONS.length) {
+                confirmSubmitQuiz();
+            }
+        }
+
+        function jumpToQuestion(index) {
+            appState.currentIdx = index;
+            renderCurrentQuestion();
+        }
+
+        // PALETTE GRID
+        function renderPaletteGrid() {
+            const grid = document.getElementById('question-palette-grid');
+            grid.innerHTML = '';
+
+            QUIZ_QUESTIONS.forEach((_, idx) => {
+                const isCurrent = idx === appState.currentIdx;
+                const isAnswered = appState.userAnswers[idx] !== null;
+                const isFlagged = appState.flaggedItems[idx];
+
+                let bgClasses = "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200";
+                
+                if (isCurrent) {
+                    bgClasses = "bg-slate-900 text-white border-slate-900 font-extrabold ring-2 ring-slate-400";
+                } else if (isFlagged) {
+                    bgClasses = "bg-amber-400 text-amber-950 border-amber-500 font-bold";
+                } else if (isAnswered) {
+                    bgClasses = "bg-indigo-600 text-white border-indigo-700 font-bold";
+                }
+
+                const btn = document.createElement('button');
+                btn.type = "button";
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = `h-9 text-xs rounded-lg border transition flex items-center justify-center relative ${bgClasses}`;
+                btn.textContent = idx + 1;
+
+                if (isFlagged && !isCurrent) {
+                    btn.innerHTML += `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-600 rounded-full border border-white"></span>`;
+                }
+
+                grid.appendChild(btn);
+            });
+        }
+
+        function updateAnsweredCount() {
+            const answered = appState.userAnswers.filter(a => a !== null).length;
+            document.getElementById('answered-count-text').textContent = `${answered} / 30`;
+        }
+
+        // SUBMIT CONFIRMATION
+        function confirmSubmitQuiz() {
+            const answered = appState.userAnswers.filter(a => a !== null).length;
+            const unanswered = 30 - answered;
+            
+            const msgEl = document.getElementById('confirm-unanswered-text');
+            if (unanswered > 0) {
+                msgEl.innerHTML = `<span class="text-rose-600 font-bold">You have ${unanswered} unanswered question(s).</span> Are you sure you want to finalize and submit?`;
+            } else {
+                msgEl.textContent = "All 30 items answered! Are you ready to finalize and view your score?";
+            }
+
+            document.getElementById('modal-confirm-submit').classList.remove('hidden');
+        }
+
+        function closeSubmitConfirmModal() {
+            document.getElementById('modal-confirm-submit').classList.add('hidden');
+        }
+
+        // ANTI-CHEATING TAB SWITCH LISTENER
+        function setupAntiCheatingListeners() {
+            const triggerWarning = () => {
+                // Ignore if not on active quiz or already submitted
+                if (document.getElementById('screen-quiz').classList.contains('hidden') || appState.isSubmitted) {
+                    return;
+                }
+
+                appState.tabWarnings++;
+                
+                // Update Badge in header
+                const badge = document.getElementById('tab-warning-badge');
+                document.getElementById('warning-count-text').textContent = `Tab Switch: ${appState.tabWarnings}/3`;
+
+                if (appState.tabWarnings === 1) {
+                    badge.className = "flex items-center space-x-2 bg-amber-950/80 border border-amber-700/50 text-amber-300 px-3 py-1.5 rounded-lg text-xs font-semibold";
+                } else if (appState.tabWarnings >= 2) {
+                    badge.className = "flex items-center space-x-2 bg-rose-950/80 border border-rose-700/50 text-rose-300 px-3 py-1.5 rounded-lg text-xs font-semibold animate-pulse";
+                }
+
+                if (appState.tabWarnings >= 3) {
+                    // Terminate exam
+                    appState.isTerminated = true;
+                    document.getElementById('modal-terminated').classList.remove('hidden');
+                    finalizeAndSubmitExam(true);
+                } else {
+                    document.getElementById('modal-warning-num').textContent = appState.tabWarnings;
+                    document.getElementById('modal-warning').classList.remove('hidden');
+                }
+            };
+
+            // Visibility Change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    triggerWarning();
+                }
+            });
+
+            // Blur Window
+            window.addEventListener('blur', () => {
+                triggerWarning();
+            });
+        }
+
+        function closeWarningModal() {
+            document.getElementById('modal-warning').classList.add('hidden');
+        }
+
+        function acknowledgeTermination() {
+            document.getElementById('modal-terminated').classList.add('hidden');
+            showResultsScreen();
+        }
+
+        // FINALIZE & SUBMIT EXAM
+        function finalizeAndSubmitExam(terminated = false) {
+            stopTimer();
+            closeSubmitConfirmModal();
+
+            appState.isSubmitted = true;
+            appState.isTerminated = terminated;
+            appState.submissionDate = new Date().toLocaleString('en-US', { 
+                dateStyle: 'medium', 
+                timeStyle: 'short' 
+            });
+
+            // Calculate Score
+            let totalScore = 0;
+            QUIZ_QUESTIONS.forEach((q, idx) => {
+                if (appState.userAnswers[idx] === q.correctKey) {
+                    totalScore++;
+                }
+            });
+            appState.score = totalScore;
+
+            // Lock in LocalStorage
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch(e) {
+                console.error("Failed to save result to localStorage", e);
+            }
+
+            showResultsScreen();
+        }
+
+        // SHOW RECORDED RESULTS
+        function showRecordedResults() {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('quiz-header-info').classList.add('hidden');
+            showResultsScreen();
+        }
+
+        // DISPLAY RESULTS
+        function showResultsScreen() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            // Student metadata
+            document.getElementById('result-student-name').textContent = appState.studentName || "Student";
+            document.getElementById('result-student-meta').textContent = `${appState.studentSection || 'N/A'} • LRN/ID: ${appState.studentId || 'N/A'}`;
+
+            // Score and percentage
+            const score = appState.score || 0;
+            const pct = Math.round((score / 30) * 100);
+            
+            document.getElementById('final-score-num').textContent = score;
+            document.getElementById('final-percentage-text').textContent = `${pct}% Overall Rating`;
+            document.getElementById('stat-accuracy').textContent = `${pct}%`;
+
+            // Time & Date
+            const mins = String(Math.floor(appState.timerSeconds / 60)).padStart(2, '0');
+            const secs = String(appState.timerSeconds % 60).padStart(2, '0');
+            document.getElementById('stat-time').textContent = `${mins}:${secs}`;
+            document.getElementById('stat-warnings').textContent = `${appState.tabWarnings} / 3`;
+            document.getElementById('stat-date').textContent = appState.submissionDate || "Oct 12, 2026";
+
+            // Status Pill
+            const statusPill = document.getElementById('result-status-pill');
+            if (appState.isTerminated) {
+                statusPill.textContent = "Terminated (Tab Limits Exceeded)";
+                statusPill.className = "inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30";
+            } else if (pct >= 75) {
+                statusPill.textContent = "Passed - High Proficiency";
+                statusPill.className = "inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+            } else {
+                statusPill.textContent = "Completed - Review Recommended";
+                statusPill.className = "inline-block px-3 py-1 rounded-full text-xs font-extrabold tracking-wide uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30";
+            }
+
+            // Render Detailed Breakdown Cards
+            renderResultsBreakdown();
+        }
+
+        // RENDER DETAILED ITEM REVIEW
+        function renderResultsBreakdown() {
+            const container = document.getElementById('results-breakdown-container');
+            container.innerHTML = '';
+
+            const keys = ['A', 'B', 'C', 'D'];
+
+            QUIZ_QUESTIONS.forEach((q, idx) => {
+                const userChoice = appState.userAnswers[idx];
+                const isCorrect = userChoice === q.correctKey;
+                const isUnanswered = userChoice === null;
+
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-2xl border transition ${
+                    isCorrect 
+                        ? 'bg-slate-50/50 border-slate-200' 
+                        : 'bg-rose-50/30 border-rose-200'
+                }`;
+
+                let badgeHTML = '';
+                if (isCorrect) {
+                    badgeHTML = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg border border-emerald-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Correct</span>`;
+                } else if (isUnanswered) {
+                    badgeHTML = `<span class="px-2.5 py-1 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 inline-flex items-center gap-1"><i class="fa-solid fa-circle-minus"></i> Unanswered</span>`;
+                } else {
+                    badgeHTML = `<span class="px-2.5 py-1 bg-rose-100 text-rose-800 text-xs font-bold rounded-lg border border-rose-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-xmark"></i> Incorrect</span>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-extrabold text-sm text-slate-900">Item ${idx + 1}</span>
+                            <span class="text-xs text-slate-500">• ${q.title.split(':')[1] || q.title}</span>
+                        </div>
+                        ${badgeHTML}
+                    </div>
+
+                    ${q.scenario ? `<p class="mt-2 text-xs italic text-slate-600 bg-white p-3 rounded-lg border border-slate-100">${q.scenario}</p>` : ''}
+
+                    <p class="mt-3 text-sm font-bold text-slate-800">${q.question}</p>
+
+                    <!-- Choice Options Summary -->
+                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        ${q.options.map((opt, oIdx) => {
+                            let optBg = "bg-white border-slate-200 text-slate-600";
+                            if (oIdx === q.correctKey) {
+                                optBg = "bg-emerald-50 border-emerald-500 text-emerald-950 font-bold ring-1 ring-emerald-500/30";
+                            } else if (oIdx === userChoice && !isCorrect) {
+                                optBg = "bg-rose-50 border-rose-400 text-rose-950 font-bold";
+                            }
+
+                            return `
+                                <div class="p-2.5 rounded-lg border ${optBg} flex items-center justify-between">
+                                    <span class="truncate"><strong class="mr-1.5">${keys[oIdx]}.</strong> ${opt}</span>${oIdx === q.correctKey ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}
+                                    ${oIdx === userChoice && !isCorrect ? '<i class="fa-solid fa-xmark text-rose-600"></i>' : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <!-- Rationale / Explanation -->
+                    <div class="mt-4 p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed">
+                        <span class="font-bold flex items-center gap-1.5 mb-1 text-indigo-950">
+                            <i class="fa-solid fa-lightbulb text-indigo-600"></i> Explanation / Solution Key:
+                        </span>
+                        ${q.explanation}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // GENERATE OFFICIAL SCORE REPORT / CERTIFICATE DOWNLOAD
+        function downloadScoreCertificate() {
+            const score = appState.score || 0;
+            const pct = Math.round((score / 30) * 100);
+            const mins = String(Math.floor(appState.timerSeconds / 60)).padStart(2, '0');
+            const secs = String(appState.timerSeconds % 60).padStart(2, '0');
+
+            const reportHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Score Report - ${appState.studentName}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; color: #1e293b; background: #fff; }
+        .certificate-box { border: 8px solid #312e81; padding: 40px; border-radius: 12px; max-w: 800px; margin: 0 auto; position: relative; }
+        .header { text-align: center; border-b: 2px solid #e2e8f0; padding-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 24px; color: #312e81; text-transform: uppercase; letter-spacing: 1px; }
+        .header h2 { margin: 5px 0 0 0; font-size: 16px; color: #475569; font-weight: 500; }
+        .details { margin: 30px 0; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field { background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .field label { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #64748b; display: block; }
+        .field span { font-size: 14px; font-weight: bold; color: #0f172a; margin-top: 2px; display: block; }
+        .score-banner { background: #312e81; color: white; text-align: center; padding: 25px; border-radius: 12px; margin: 30px 0; }
+        .score-banner .big-score { font-size: 48px; font-weight: 800; line-height: 1; }
+        .score-banner .rating { font-size: 16px; color: #a5b4fc; margin-top: 8px; font-weight: 600; }
+        .footer-note { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 40px; border-t: 1px solid #e2e8f0; padding-top: 15px; }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="text-align: center; margin-bottom: 20px;">
+        <button onclick="window.print()" style="background: #312e81; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">
+            Print / Save as PDF
+        </button>
+    </div>
+
+    <div class="certificate-box">
+        <div class="header">
+            <h1>Bunsuran National High School</h1>
+            <h2>OFFICIAL EXAMINATION SCORE REPORT</h2>
+            <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Finite Mathematics 2 • Long Test #2</p>
+        </div>
+
+        <div class="details">
+            <div class="details-grid">
+                <div class="field">
+                    <label>Student Name</label>
+                    <span>${appState.studentName}</span>
+                </div>
+                <div class="field">
+                    <label>Grade & Section</label>
+                    <span>${appState.studentSection}</span>
+                </div>
+                <div class="field">
+                    <label>LRN / Student ID</label>
+                    <span>${appState.studentId}</span>
+                </div>
+                <div class="field">
+                    <label>Date & Time Completed</label>
+                    <span>${appState.submissionDate || new Date().toLocaleDateString()}</span>
+                </div>
+                <div class="field">
+                    <label>Time Elapsed</label>
+                    <span>${mins} mins ${secs} secs</span>
+                </div>
+                <div class="field">
+                    <label>Security Status</label>
+                    <span>${appState.isTerminated ? 'Terminated (Tab Limits Exceeded)' : appState.tabWarnings + ' Tab Warning(s)'}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-banner">
+            <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Final Score</div>
+            <div class="big-score">${score} / 30</div>
+            <div class="rating">Percentage Rating: ${pct}%</div>
+        </div>
+
+        <div class="footer-note">
+            This document serves as the official digital score recording for Finite Mathematics 2 - Long Test #2.<br>
+            System Verification ID: BNHS-FM2-${Date.now().toString(36).toUpperCase()}
+        </div>
+    </div>
+</body>
+</html>
+            `;
+
+            const blob = new Blob([reportHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const win = window.open(url, '_blank');
+            if (!win) {
+                // Fallback download if popup blocked
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Score_Report_${appState.studentName.replace(/\s+/g, '_')}.html`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+    </script>
+</body>
+</html>

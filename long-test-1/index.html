@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Permutations & Combinations - Quiz Viewer</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="initApp();"></script>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .katex { font-size: 1.1em !important; }
+  </style>
+</head>
+<body class="min-h-full bg-slate-950 text-slate-100 flex flex-col justify-between select-none">
+
+  <!-- REGISTRATION MODAL -->
+  <div id="modal-registration" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 text-center">
+      <div class="w-16 h-16 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-3xl shadow-lg shadow-blue-600/30">
+        <i class="fa-solid fa-user-pen text-white"></i>
+      </div>
+      <div>
+        <h2 class="text-2xl font-black text-white">Student Registration</h2>
+        <p class="text-slate-400 text-sm mt-1">Please enter your full name to start the exam. You can only attempt this exam once on this device.</p>
+      </div>
+      <form onsubmit="startExam(event)" class="space-y-4">
+        <input id="input-student-name" type="text" required placeholder="Enter Full Name..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 font-semibold focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all">
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition-all">
+          Start Examination
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- LOCKED ATTEMPT MODAL -->
+  <div id="modal-locked" class="hidden fixed inset-0 z-50 bg-slate-950/98 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-red-900/50 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-6 text-center">
+      <div class="w-16 h-16 bg-red-600/20 border border-red-500/40 rounded-2xl mx-auto flex items-center justify-center text-3xl text-red-400 shadow-lg">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div>
+        <h2 class="text-2xl font-black text-white">Attempt Already Used</h2>
+        <p class="text-slate-400 text-sm mt-1">This device has already completed this examination.</p>
+      </div>
+      <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 text-left space-y-2">
+        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Previous Submission Record</p>
+        <p id="lbl-locked-name" class="text-sm font-semibold text-slate-300">Name: -</p>
+        <p id="lbl-locked-score" class="text-base font-extrabold text-emerald-400">Score: -</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS SUMMARY SCREEN -->
+  <div id="screen-results" class="hidden min-h-screen bg-slate-950 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 max-w-xl w-full shadow-2xl space-y-6 text-center">
+      <div class="w-20 h-20 bg-emerald-600/20 border border-emerald-500/40 rounded-3xl mx-auto flex items-center justify-center text-4xl text-emerald-400 shadow-lg">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div>
+        <h2 class="text-3xl font-black text-white">Examination Completed</h2>
+        <p class="text-slate-400 text-sm mt-1">Your responses have been recorded successfully.</p>
+      </div>
+      
+      <div class="bg-slate-950 rounded-2xl p-6 border border-slate-800 space-y-4">
+        <div class="border-b border-slate-800 pb-3">
+          <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Examinee</p>
+          <p id="lbl-result-name" class="text-xl font-extrabold text-white">Student Name</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <p class="text-xs text-slate-400 font-bold uppercase">Final Score</p>
+            <p id="lbl-result-score" class="text-3xl font-black text-emerald-400 mt-1">0 / 30</p>
+          </div>
+          <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+            <p class="text-xs text-slate-400 font-bold uppercase">Percentage</p>
+            <p id="lbl-result-percent" class="text-3xl font-black text-blue-400 mt-1">0%</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500">Note: Your score has been saved locally on this device.</p>
+    </div>
+  </div>
+
+  <!-- TOP BAR -->
+  <header id="quiz-header" class="bg-slate-900 border-b border-slate-800 px-4 py-3 md:px-6 md:py-4 flex flex-col sm:flex-row items-center justify-between shrink-0 shadow-md gap-3">
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+      <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-xl md:text-2xl shadow-lg shadow-blue-600/30 shrink-0">
+        <i class="fa-solid fa-square-root-variable"></i>
+      </div>
+      <div>
+        <h1 class="text-base md:text-xl font-extrabold text-white tracking-tight leading-tight">
+          Counting Principles & Combinatorics
+        </h1>
+        <p id="lbl-header-candidate" class="text-xs md:text-sm font-semibold text-slate-400">Timed Quiz</p>
+      </div>
+    </div>
+
+    <!-- Controls & Timer -->
+    <div class="flex items-center justify-between w-full sm:w-auto gap-2 md:gap-4">
+      <div id="timer-box" class="bg-red-950/80 border border-red-600/50 text-red-300 font-extrabold px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-base md:text-lg flex items-center gap-2 shadow-inner">
+        <i class="fa-solid fa-clock text-red-400 animate-pulse"></i>
+        <span id="timer-display">01:00</span>
+      </div>
+
+      <div class="flex items-center gap-1.5 bg-slate-800/80 px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-slate-700">
+        <span class="text-xs md:text-sm font-bold text-slate-400">Jump:</span>
+        <select id="question-select" onchange="jumpToQuestion(this.value)" class="bg-slate-900 text-blue-400 font-extrabold text-sm md:text-base rounded-lg border border-slate-700 px-2 py-0.5 outline-none cursor-pointer">
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main id="quiz-main" class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8 flex flex-col justify-start space-y-4 md:space-y-6">
+
+    <!-- Metadata Badges -->
+    <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800/80 pb-3">
+      <div class="flex items-center gap-2 md:gap-3">
+        <span id="badge-item-number" class="bg-blue-600 text-white font-black text-sm md:text-lg px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl shadow-md shadow-blue-600/20">
+          Item 1 of 30
+        </span>
+        <span id="badge-solo" class="bg-purple-950 text-purple-300 border border-purple-800/60 font-bold text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl">
+          Unistructural
+        </span>
+      </div>
+
+      <div class="hidden sm:flex text-slate-400 font-semibold text-xs md:text-sm items-center gap-2">
+        <i class="fa-solid fa-keyboard text-slate-500"></i> Keys <kbd class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-white">←</kbd> <kbd class="bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700 text-white">→</kbd>
+      </div>
+    </div>
+
+    <!-- Scenario Card -->
+    <div id="scenario-card" class="hidden bg-slate-900/90 border-l-4 md:border-l-8 border-indigo-500 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-xl space-y-1.5">
+      <div class="flex items-center gap-2 text-indigo-400 font-extrabold text-xs md:text-sm uppercase tracking-wider">
+        <i class="fa-solid fa-bars-staggered"></i> Scenario / Stimulus Context
+      </div>
+      <div id="scenario-text" class="text-base md:text-xl text-slate-200 font-medium leading-relaxed"></div>
+    </div>
+
+    <!-- Question Stem -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-2xl space-y-4 md:space-y-6">
+      <h2 id="question-stem" class="text-lg md:text-2xl font-extrabold text-white leading-snug tracking-tight"></h2>
+      <div id="options-grid" class="grid grid-cols-1 gap-3 md:gap-4 pt-1"></div>
+    </div>
+
+  </main>
+
+  <!-- NAVIGATION FOOTER -->
+  <footer id="quiz-footer" class="bg-slate-900 border-t border-slate-800 px-4 py-3 md:px-8 md:py-4 flex items-center justify-between shrink-0 sticky bottom-0 z-10 shadow-lg">
+    <button id="btn-prev" onclick="navigate(-1)" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-white font-extrabold text-sm md:text-lg px-4 py-2.5 md:px-6 md:py-3 rounded-xl md:rounded-2xl border border-slate-700 transition-all duration-200 flex items-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed shadow-md">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Prev</span>
+    </button>
+
+    <div class="text-slate-400 font-bold text-sm md:text-base">
+      <span id="lbl-current-page" class="text-white font-extrabold">1</span> / <span id="lbl-total-pages">30</span>
+    </div>
+
+    <button id="btn-next" onclick="navigate(1)" class="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold text-sm md:text-lg px-5 py-2.5 md:px-8 md:py-3 rounded-xl md:rounded-2xl shadow-lg shadow-blue-600/30 transition-all duration-200 flex items-center gap-2">
+      <span id="lbl-next-btn">Next</span>
+      <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = 'quiz_exam_submission_record';
+
+    const rawQuizData = [
+      { id: 1, solo: "Unistructural", scenario: null, question: "Which counting principle applies when completing a multi-step task where choices are made sequentially using the word \"AND\"?", options: { A: "Division Principle", B: "Multiplication Principle", C: "Addition Principle", D: "Subtraction Principle" }, correct: "B" },
+      { id: 2, solo: "Multistructural", scenario: "A food stall at the Bunsuran Canteen offers a merienda combo where a student must select 1 snack from {Inipit, Minasa, Pastillas} AND 1 beverage from {Buko Juice, Softdrink}.", question: "How many total complete merienda combos can a student select from this menu?", options: { A: "5", B: "8", C: "6", D: "9" }, correct: "C" },
+      { id: 3, solo: "Relational", scenario: null, question: "In a student ID code system, each code consists of 1 letter chosen from {A, B, C} followed by 1 odd digit and 1 even digit. Why is the Multiplication Principle used instead of the Addition Principle to find the total possible codes?", options: { A: "The digits and letters are chosen from non-overlapping categories.", B: "The total outcome is formed by making independent choices in sequence across multiple decision slots.", C: "The problem asks for the single overall total of choices available across all categories.", D: "The digits can be repeated across different positions within the same ID code." }, correct: "B" },
+      { id: 4, solo: "Unistructural", scenario: null, question: "What is the primary purpose of constructing a tree diagram in systematic counting?", options: { A: "To calculate the standard deviation of compound events", B: "To illustrate all possible outcomes cleanly and systematically", C: "To solve algebraic equations involving factorials", D: "To convert permutations directly into combination formulas" }, correct: "B" },
+      { id: 5, solo: "Relational", scenario: "A student needs to travel from Pandi Crossing to BSU Malolos.<br>• Step 1 (Pandi Crossing to Tabang Exit): 2 jeepney routes<br>• Step 2 (Tabang Exit to BSU Malolos): 2 bus options<br>Alternatively, the student can take 1 direct van route from Pandi Crossing straight to BSU Malolos.", question: "How many total unique travel routes exist to reach BSU Malolos from Pandi Crossing?", options: { A: "5", B: "4", C: "8", D: "6" }, correct: "A" },
+      { id: 6, solo: "Multistructural", scenario: null, question: "A 4-digit security PIN is created using digits 0 through 9. If repetition of digits is allowed, how many distinct PINs can be formed?", options: { A: "5,040", B: "6,561", C: "40,000", D: "10,000" }, correct: "D" },
+      { id: 7, solo: "Relational", scenario: null, question: "A baker offers cakes where a customer chooses 1 flavor out of 3, 1 frosting color out of 4, and 1 topping out of 2. Which decision process explains why the total number of unique cakes is 24?", options: { A: "The customer chooses only 1 component out of 9 total available options.", B: "Each of the 3 sequential steps expands the sample space multiplicatively.", C: "The options across the 3 categories are mutually exclusive choices.", D: "The frosting color and topping selections represent non-overlapping sets." }, correct: "B" },
+      { id: 8, solo: "Unistructural", scenario: null, question: "Which of the following is the defining mathematical characteristic of a permutation?", options: { A: "The order or arrangement of the selected items strictly matters.", B: "The order of items does not affect the outcome of the set.", C: "It represents a simple group selection without position assignments.", D: "The number of items selected must always equal the total pool size." }, correct: "A" },
+      { id: 9, solo: "Multistructural", scenario: null, question: "What is the value of 0! according to standard mathematical definition?", options: { A: "0", B: "Undefined", C: "Infinite", D: "1" }, correct: "D" },
+      { id: 10, solo: "Relational", scenario: "A local Pandi RTW shop has 8 new garment styles.<br>• Task A: Select and arrange 3 outfits on front window mannequins (Left, Center, Right).<br>• Task B: Select 3 garment samples to put in a buyer's sample bag.", question: "Why does Task A yield more outcomes than Task B?", options: { A: "Task A allows repetition of garments whereas Task B prohibits repetition.", B: "Task A is an ordered permutation while Task B is an unordered combination.", C: "Task A uses the Addition Principle while Task B uses the Multiplication Principle.", D: "Task A selects from a larger total pool of items than Task B." }, correct: "B" },
+      { id: 11, solo: "Multistructural", scenario: null, question: "In how many ways can a municipal council award 1st Place, 2nd Place, and 3rd Place trophies among 10 competing parade float entries?", options: { A: "120", B: "240", C: "720", D: "504" }, correct: "C" },
+      { id: 12, solo: "Relational", scenario: null, question: "What is the mathematical connection between $P(n, k)$ and $C(n, k)$ for any given $n$ and $k$?", options: { A: "$C(n, k) = P(n, k) \\times k!$", B: "$C(n, k) = P(n, k) + k!$", C: "$C(n, k) = \\frac{P(n, k)}{k!}$", D: "$C(n, k) = P(n, k) - k!$" }, correct: "C" },
+      { id: 13, solo: "Unistructural", scenario: null, question: "Which key phrase or concept usually indicates that a counting problem requires a Combination?", options: { A: "Assign specific titles", B: "Rank positions in order", C: "Line up in sequence", D: "Select a group or committee" }, correct: "D" },
+      { id: 14, solo: "Multistructural", scenario: "An executive board composed of 7 members needs to elect a President and a Vice-President from among themselves.", question: "How many different executive officer pairings can be elected?", options: { A: "21", B: "14", C: "42", D: "35" }, correct: "C" },
+      { id: 15, solo: "Extended Abstract", scenario: null, question: "Everyday language often refers to a \"combination lock\" used for securing lockers. Why is this term mathematically inaccurate?", options: { A: "The numbers on the lock are selected from non-overlapping sets.", B: "The total number of possible codes is calculated using addition.", C: "The sequence of the entered numbers strictly matters to open the lock.", D: "The digits on the lock cannot be repeated in any valid security code." }, correct: "C" },
+      { id: 16, solo: "Multistructural", scenario: null, question: "Evaluate the permutation expression $P(6, 3)$.", options: { A: "120", B: "20", C: "720", D: "360" }, correct: "A" },
+      { id: 17, solo: "Relational", scenario: "A boutique owner has 8 footwear models.<br>• Option 1: Arrange 4 models on a display rack ($P(8,4) = 1,680$).<br>• Option 2: Select 4 models for a promo package flyer ($C(8,4) = 70$).", question: "Why is $P(8,4)$ exactly 24 times larger than $C(8,4)$?", options: { A: "Displaying items on a rack requires selecting from a pool that is 4 times larger.", B: "The promo package flyer uses the Addition Principle across 4 non-overlapping groups.", C: "The permutation formula includes an extra factor of $n!$ in its numerator.", D: "Each chosen group of 4 footwear models can be arranged in $4!$ (24) distinct ways." }, correct: "D" },
+      { id: 18, solo: "Unistructural", scenario: null, question: "According to the Symmetry Property of Combinations, $C(n, k)$ is identical to which expression?", options: { A: "$C(n, k - 1)$", B: "$C(n, n - k)$", C: "$C(n - 1, k)$", D: "$C(n + 1, k)$" }, correct: "B" },
+      { id: 19, solo: "Multistructural", scenario: null, question: "Using the Symmetry Property, simplify and evaluate $C(15, 13)$ without calculating large factorials.", options: { A: "210", B: "15", C: "105", D: "45" }, correct: "C" },
+      { id: 20, solo: "Unistructural", scenario: null, question: "What is the value of $C(n, 0)$ for any positive integer $n$?", options: { A: "1", B: "$n$", C: "0", D: "Undefined" }, correct: "A" },
+      { id: 21, solo: "Relational", scenario: "A plant manager receives 10 job applicants for quality inspectors. She needs to hire 8 inspectors.<br>• Method A: Directly choose 8 applicants to hire using $C(10, 8)$.<br>• Method B: Choose 2 applicants to reject using $C(10, 2)$.", question: "Why do both methods give the exact same result of 45 hiring combinations?", options: { A: "The Addition Principle combines the hired and rejected groups into one total set.", B: "Both methods utilize permutation formulas that divide out duplicate ordered positions.", C: "Hiring and rejecting are sequential stages that must be multiplied together.", D: "Selecting 8 people to hire automatically leaves behind a unique complementary group of 2 rejected applicants." }, correct: "D" },
+      { id: 22, solo: "Multistructural", scenario: "A trade delegation requires 2 master goldsmiths selected from a pool of 5 goldsmiths AND 3 sales representatives selected from a pool of 6 sales reps.", question: "How many total distinct trade delegations can be formed?", options: { A: "30", B: "200", C: "150", D: "120" }, correct: "B" },
+      { id: 23, solo: "Relational", scenario: null, question: "When solving compound selection problems, when should combination choices be MULTIPLIED versus when should they be ADDED?", options: { A: "Multiply when choices are mutually exclusive (OR); Add when choices occur in sequence (AND).", B: "Multiply when steps occur together in sequence (AND); Add when combining separate cases (OR).", C: "Multiply when order strictly matters; Add when selecting items without order.", D: "Multiply when evaluating factorials; Add when using Pascal's Triangle identity." }, correct: "B" },
+      { id: 24, solo: "Multistructural", scenario: "A municipal council forms a 4-member committee from 5 men and 4 women. The operational constraint requires that the committee must contain AT LEAST 3 women.", question: "How many valid committees can be selected under this constraint?", options: { A: "21", B: "20", C: "25", D: "126" }, correct: "A" },
+      { id: 25, solo: "Relational", scenario: "A quality auditor inspects a box containing 12 denim jackets: 3 have stitching defects and 9 are non-defective. The auditor selects a sample of 4 jackets.", question: "Which correct mathematical expression determines the number of sample options containing EXACTLY 1 defective jacket?", options: { A: "$C(3, 1) + C(9, 3)$", B: "$P(3, 1) \\times P(9, 3)$", C: "$C(12, 4) - C(3, 1)$", D: "$C(3, 1) \\times C(9, 3)$" }, correct: "D" },
+      { id: 26, solo: "Multistructural", scenario: null, question: "Evaluate $C(7, 4)$ using standard combination formulas.", options: { A: "210", B: "840", C: "35", D: "70" }, correct: "C" },
+      { id: 27, solo: "Relational", scenario: null, question: "A committee setup requires \"AT MOST 1\" representative from a specific category. What non-overlapping cases must be calculated and added together?", options: { A: "Exactly 1 representative AND Exactly 2 representatives", B: "Exactly 0 representatives AND Exactly 1 representative", C: "Exactly 1 representative up to the maximum committee capacity", D: "Exactly 0 representatives up to the total number of candidates" }, correct: "B" },
+      { id: 28, solo: "Multistructural", scenario: "A town forms a 5-member security team from 6 Police Officers and 4 Barangay Tanods. The team must contain AT MOST 1 Barangay Tanod.", question: "How many distinct security teams can be formed?", options: { A: "60", B: "126", C: "36", D: "66" }, correct: "D" },
+      { id: 29, solo: "Extended Abstract", scenario: "An inventory manager in Pandi has 10 warehouse styles. He notices that selecting 8 garments to put on display yields the exact same number of choices as selecting 2 garments to leave in storage.", question: "What fundamental mathematical concept explains this inventory phenomenon?", options: { A: "The Multiplication Principle forces sequential choices to equal their inverse subsets.", B: "Arranging items in a linear order divides out duplicate permutations automatically.", C: "The sum of choices across all subset sizes always equals $2^n$ in finite sets.", D: "Every subset of size $k$ chosen from $n$ items creates a complementary subset of size $n-k$." }, correct: "D" },
+      { id: 30, solo: "Extended Abstract", scenario: null, question: "A local boutique owner has 5 distinct garment accessories. She can create promotional bundle options containing 0, 1, 2, 3, 4, or 5 accessories. Why does the total number of possible bundle options equal $2^5 = 32$?", options: { A: "Each accessory has exactly 2 options: it is either included in or excluded from the bundle.", B: "The 5 accessories are arranged in sequence using 2 decision slots per promo package.", C: "The permutation of 5 items divided by 2 gives the total number of combination bundles.", D: "Selecting accessories sequentially follows an addition pattern across 5 non-overlapping sets." }, correct: "A" }
+    ];
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    let quizData = [];
+    let studentName = "";
+    let userAnswers = {};
+    let currentIndex = 0;
+    let timerInterval = null;
+    let timeLeft = 60;
+
+    function initApp() {
+      const existingRecord = localStorage.getItem(STORAGE_KEY);
+      if (existingRecord) {
+        const record = JSON.parse(existingRecord);
+        document.getElementById('lbl-locked-name').textContent = `Name: ${record.name}`;
+        document.getElementById('lbl-locked-score').textContent = `Score: ${record.score} / ${record.total} (${record.percentage}%)`;
+        document.getElementById('modal-registration').classList.add('hidden');
+        document.getElementById('modal-locked').classList.remove('hidden');
+        return;
+      }
+
+      quizData = shuffleArray(rawQuizData);
+      
+      const selectElem = document.getElementById('question-select');
+      document.getElementById('lbl-total-pages').textContent = quizData.length;
+      selectElem.innerHTML = '';
+      quizData.forEach((_, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = `Item ${idx + 1}`;
+        selectElem.appendChild(opt);
+      });
+    }
+
+    function startExam(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('input-student-name').value.trim();
+      if (!nameInput) return;
+
+      studentName = nameInput;
+      document.getElementById('lbl-header-candidate').textContent = `Candidate: ${studentName}`;
+      document.getElementById('modal-registration').classList.add('hidden');
+      
+      loadQuestion(0);
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 60;
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (currentIndex < quizData.length - 1) {
+            navigate(1);
+          } else {
+            finishExam();
+          }
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const timerDisplay = document.getElementById('timer-display');
+      const timerBox = document.getElementById('timer-box');
+
+      timerDisplay.textContent = formatted;
+
+      if (timeLeft <= 10) {
+        timerBox.className = "bg-red-600 border border-red-400 text-white font-extrabold px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-base md:text-lg flex items-center gap-2 animate-bounce";
+      } else {
+        timerBox.className = "bg-red-950/80 border border-red-600/50 text-red-300 font-extrabold px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-base md:text-lg flex items-center gap-2 shadow-inner";
+      }
+    }
+
+    function loadQuestion(index) {
+      if (index < 0 || index >= quizData.length) return;
+      currentIndex = index;
+
+      const q = quizData[index];
+      const selectElem = document.getElementById('question-select');
+      selectElem.value = index;
+
+      document.getElementById('badge-item-number').textContent = `Item ${index + 1} of ${quizData.length}`;
+      document.getElementById('badge-solo').textContent = q.solo;
+      document.getElementById('lbl-current-page').textContent = index + 1;
+
+      const soloBadge = document.getElementById('badge-solo');
+      if (q.solo === 'Unistructural') {
+        soloBadge.className = "bg-blue-950 text-blue-300 border border-blue-800/60 font-bold text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl";
+      } else if (q.solo === 'Multistructural') {
+        soloBadge.className = "bg-emerald-950 text-emerald-300 border border-emerald-800/60 font-bold text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl";
+      } else if (q.solo === 'Relational') {
+        soloBadge.className = "bg-amber-950 text-amber-300 border border-amber-800/60 font-bold text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl";
+      } else {
+        soloBadge.className = "bg-purple-950 text-purple-300 border border-purple-800/60 font-bold text-xs md:text-sm px-3 py-1 md:px-4 md:py-1.5 rounded-xl md:rounded-2xl";
+      }
+
+      const scenarioCard = document.getElementById('scenario-card');
+      const scenarioText = document.getElementById('scenario-text');
+      if (q.scenario) {
+        scenarioText.innerHTML = q.scenario;
+        scenarioCard.classList.remove('hidden');
+      } else {
+        scenarioCard.classList.add('hidden');
+      }
+
+      document.getElementById('question-stem').innerHTML = q.question;
+      renderOptions();
+
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ]
+        });
+      }
+
+      document.getElementById('btn-prev').disabled = index === 0;
+
+      const nextBtnLbl = document.getElementById('lbl-next-btn');
+      if (index === quizData.length - 1) {
+        nextBtnLbl.textContent = "Submit";
+      } else {
+        nextBtnLbl.textContent = "Next";
+      }
+
+      startTimer();
+    }
+
+    function renderOptions() {
+      const q = quizData[currentIndex];
+      const grid = document.getElementById('options-grid');
+      grid.innerHTML = '';
+
+      Object.entries(q.options).forEach(([letter, text]) => {
+        const btn = document.createElement('div');
+        btn.onclick = () => selectChoice(letter);
+
+        let borderStyle = "border-slate-800 bg-slate-900/90 hover:border-slate-700 hover:bg-slate-800/90";
+        let letterBadgeStyle = "bg-slate-800 text-slate-300 border-slate-700";
+
+        if (userAnswers[q.id] === letter) {
+          borderStyle = "border-blue-500 bg-blue-950/60 ring-2 ring-blue-500/50";
+          letterBadgeStyle = "bg-blue-600 text-white border-blue-400";
+        }
+
+        btn.className = `p-3.5 md:p-5 rounded-xl md:rounded-2xl border-2 cursor-pointer transition-all duration-200 flex items-center gap-3 md:gap-4 ${borderStyle}`;
+        btn.innerHTML = `
+          <div class="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl border-2 font-black text-base md:text-xl flex items-center justify-center shrink-0 ${letterBadgeStyle}">
+            ${letter}
+          </div>
+          <div class="text-sm md:text-xl font-semibold text-slate-100 leading-snug flex-1">
+            ${text}
+          </div>
+        `;
+
+        grid.appendChild(btn);
+      });
+    }
+
+    function selectChoice(letter) {
+      const q = quizData[currentIndex];
+      userAnswers[q.id] = letter;
+      renderOptions();
+      if (window.renderMathInElement) {
+        renderMathInElement(document.getElementById('options-grid'));
+      }
+    }
+
+    function navigate(direction) {
+      const newIdx = currentIndex + direction;
+      if (newIdx >= 0 && newIdx < quizData.length) {
+        loadQuestion(newIdx);
+      } else if (newIdx >= quizData.length) {
+        finishExam();
+      }
+    }
+
+    function jumpToQuestion(val) {
+      loadQuestion(parseInt(val, 10));
+    }
+
+    function finishExam() {
+      clearInterval(timerInterval);
+
+      let score = 0;
+      quizData.forEach(q => {
+        if (userAnswers[q.id] === q.correct) {
+          score++;
+        }
+      });
+
+      const percentage = Math.round((score / quizData.length) * 100);
+
+      const record = {
+        name: studentName,
+        score: score,
+        total: quizData.length,
+        percentage: percentage,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+
+      document.getElementById('quiz-header').classList.add('hidden');
+      document.getElementById('quiz-main').classList.add('hidden');
+      document.getElementById('quiz-footer').classList.add('hidden');
+
+      document.getElementById('lbl-result-name').textContent = studentName;
+      document.getElementById('lbl-result-score').textContent = `${score} / ${quizData.length}`;
+      document.getElementById('lbl-result-percent').textContent = `${percentage}%`;
+
+      document.getElementById('screen-results').classList.remove('hidden');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('quiz-main').classList.contains('hidden')) return;
+      if (e.key === 'ArrowLeft') {
+        navigate(-1);
+      } else if (e.key === 'ArrowRight') {
+        navigate(1);
+      }
+    });
+
+    // Offline Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swCode = `
+          const CACHE_NAME = 'quiz-v1';
+          self.addEventListener('install', e => {
+            e.waitUntil(
+              caches.open(CACHE_NAME).then(cache => {
+                return cache.addAll(['./']);
+              })
+            );
+          });
+          self.addEventListener('fetch', e => {
+            e.respondWith(
+              caches.match(e.request).then(response => response || fetch(e.request))
+            );
+          });
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const blobURL = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(blobURL).catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
