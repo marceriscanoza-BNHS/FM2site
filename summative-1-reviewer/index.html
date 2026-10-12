@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MathQuest Arcade: FM2 Summative Reviewer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        arcade: {
+                            cyan: '#06b6d4',
+                            magenta: '#e11d48',
+                            purple: '#a855f7',
+                            yellow: '#f59e0b',
+                            green: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.6)); }
+            50% { filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.8)); }
+        }
+        .arcade-glow {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+        .touch-none {
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        @media (max-height: 720px) {
+            .mobile-compact-py {
+                padding-top: 0.375rem !important;
+                padding-bottom: 0.375rem !important;
+            }
+            .mobile-compact-gap {
+                gap: 0.375rem !important;
+            }
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.4);
+            border-radius: 4px;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col min-h-screen select-none overflow-x-hidden touch-none">
+
+    <!-- Top Header HUD -->
+    <header class="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-cyan-500/30 shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="app.navTo('home')">
+                <div class="p-1.5 bg-gradient-to-tr from-cyan-500 to-purple-600 rounded-lg text-white text-lg">
+                    🚀
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs sm:text-base tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-mono">
+                        MATHQUEST <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-500/40">FM2 SUMMATIVE</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Stats & Sound Controls -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-slate-800 border border-emerald-500/40 text-emerald-400 text-xs font-bold font-mono">
+                    <span>🏆</span> <span id="high-score">0</span>%
+                </div>
+                
+                <!-- Sound Toggle Button -->
+                <button id="btn-sound" onclick="app.toggleSound()" class="p-1.5 text-slate-300 hover:text-cyan-400 rounded-lg transition" title="Toggle Sound">
+                    <svg id="icon-sound-on" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+                    <svg id="icon-sound-off" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main id="main-container" class="flex-grow max-w-4xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-center">
+
+        <!-- ========================================================================================= -->
+        <!-- VIEW 1: HOME SCREEN -->
+        <!-- ========================================================================================= -->
+        <section id="view-home" class="space-y-6 text-center animate-fade-in my-auto">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900 border border-cyan-500/40 p-6 sm:p-10 shadow-2xl space-y-6">
+                <div class="inline-block p-4 bg-cyan-500/10 rounded-2xl border border-cyan-500/30 text-4xl arcade-glow">
+                    📐
+                </div>
+                
+                <div class="space-y-2">
+                    <h2 class="text-2xl sm:text-4xl font-black text-white tracking-wider font-mono">
+                        FM2 SUMMATIVE 1 EXAM REVIEWER
+                    </h2>
+                    <p class="text-xs sm:text-sm text-cyan-300 font-mono">
+                        COMBINATORICS • PERMUTATIONS • COMBINATIONS • COUNTING PRINCIPLES
+                    </p>
+                </div>
+
+                <p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+                    Master counting principles, permutations, circular arrangements, and combinations! Pilot your spaceship and shoot down the alien target carrying the correct answer letter (<span class="text-cyan-400 font-bold">A</span>, <span class="text-rose-400 font-bold">B</span>, <span class="text-amber-400 font-bold">C</span>, or <span class="text-emerald-400 font-bold">D</span>).
+                </p>
+
+                <div class="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <button onclick="app.startGame()" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-cyan-500 via-blue-600 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-black text-lg rounded-2xl shadow-xl shadow-cyan-500/25 transition transform active:scale-95 font-mono tracking-wider">
+                        ▶ START EXAM GAME
+                    </button>
+                    <button onclick="app.openFlashcards()" class="w-full sm:w-auto px-6 py-4 bg-slate-800 hover:bg-slate-700 text-purple-300 font-bold rounded-2xl transition border border-purple-500/30 font-mono text-sm">
+                        🎴 Flashcards Study Mode
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================================= -->
+        <!-- VIEW 2: GAMEPLAY SCREEN -->
+        <!-- ========================================================================================= -->
+        <section id="view-game" class="hidden space-y-2 sm:space-y-3 max-w-3xl mx-auto w-full my-auto mobile-compact-gap">
+            
+            <!-- Game HUD -->
+            <div class="bg-slate-900/90 border border-cyan-500/40 rounded-xl p-2 sm:p-3 shadow-lg flex items-center justify-between text-xs font-mono mobile-compact-py">
+                <div id="game-level-text" class="text-cyan-400 font-bold text-xs sm:text-sm tracking-wider">
+                    QUESTION 1 / 30
+                </div>
+
+                <!-- Active Power-Up HUD Indicator -->
+                <div id="active-powerup-badge" class="hidden flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-purple-950 border border-purple-400 text-purple-200 text-[10px] font-bold font-mono animate-pulse shadow-md shadow-purple-500/20">
+                    <span id="powerup-icon" class="text-xs">❄️</span> 
+                    <span id="powerup-text">FREEZE</span>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 text-[10px]">HEALTH:</span>
+                    <div id="player-lives-display" class="text-rose-400 text-sm sm:text-base">
+                        ❤️❤️❤️
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Display Box -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 sm:p-4 shadow-md space-y-1 mobile-compact-py">
+                <div class="flex items-center justify-between">
+                    <div id="q-category-badge" class="inline-block px-2 py-0.5 bg-cyan-950 text-cyan-300 text-[9px] sm:text-[10px] rounded-md font-semibold border border-cyan-500/30">
+                        Counting Principle
+                    </div>
+                    <div id="q-difficulty-badge" class="text-[9px] text-slate-400 font-mono">
+                        Difficulty: Easy | Level: Remembering
+                    </div>
+                </div>
+                <h3 id="question-text" class="text-xs sm:text-base font-bold text-white leading-snug line-clamp-3">
+                    Loading exam question...
+                </h3>
+            </div>
+
+            <!-- Arcade Shooter Canvas Area -->
+            <div class="relative w-full aspect-[16/10] sm:aspect-[4/3] max-h-[220px] xs:max-h-[260px] sm:max-h-[340px] bg-slate-950 rounded-2xl border-2 border-cyan-500/40 overflow-hidden shadow-2xl flex flex-col justify-between touch-none">
+                <canvas id="game-canvas" class="w-full h-full block cursor-crosshair touch-none"></canvas>
+            </div>
+
+            <!-- Choice Text Legend Grid -->
+            <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs">
+                <div class="p-1.5 sm:p-2.5 bg-slate-900/90 border border-cyan-500/40 rounded-xl flex items-center space-x-1.5 sm:space-x-2">
+                    <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-cyan-500 text-slate-950 font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0 font-mono">A</span>
+                    <span id="text-choice-A" class="text-slate-200 text-[11px] sm:text-xs leading-tight line-clamp-2">Choice A</span>
+                </div>
+                <div class="p-1.5 sm:p-2.5 bg-slate-900/90 border border-rose-500/40 rounded-xl flex items-center space-x-1.5 sm:space-x-2">
+                    <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-rose-500 text-slate-950 font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0 font-mono">B</span>
+                    <span id="text-choice-B" class="text-slate-200 text-[11px] sm:text-xs leading-tight line-clamp-2">Choice B</span>
+                </div>
+                <div class="p-1.5 sm:p-2.5 bg-slate-900/90 border border-amber-500/40 rounded-xl flex items-center space-x-1.5 sm:space-x-2">
+                    <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0 font-mono">C</span>
+                    <span id="text-choice-C" class="text-slate-200 text-[11px] sm:text-xs leading-tight line-clamp-2">Choice C</span>
+                </div>
+                <div class="p-1.5 sm:p-2.5 bg-slate-900/90 border border-emerald-500/40 rounded-xl flex items-center space-x-1.5 sm:space-x-2">
+                    <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-emerald-500 text-slate-950 font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0 font-mono">D</span>
+                    <span id="text-choice-D" class="text-slate-200 text-[11px] sm:text-xs leading-tight line-clamp-2">Choice D</span>
+                </div>
+            </div>
+
+            <!-- Mobile Phone Touch Controls -->
+            <div class="grid grid-cols-3 gap-1.5 sm:gap-2 pt-0.5 touch-none">
+                <button id="btn-touch-left" class="py-2.5 sm:py-3 bg-slate-800 active:bg-cyan-600 rounded-xl font-bold text-xs sm:text-base select-none text-cyan-300 border border-slate-700 shadow flex items-center justify-center">◀ LEFT</button>
+                <button id="btn-touch-fire" class="py-2.5 sm:py-3 bg-rose-600 active:bg-rose-500 rounded-xl font-black text-xs sm:text-base select-none text-white shadow-lg shadow-rose-600/30 flex items-center justify-center">🔥 FIRE</button>
+                <button id="btn-touch-right" class="py-2.5 sm:py-3 bg-slate-800 active:bg-cyan-600 rounded-xl font-bold text-xs sm:text-base select-none text-cyan-300 border border-slate-700 shadow flex items-center justify-center">RIGHT ▶</button>
+            </div>
+            
+            <div class="flex justify-between items-center text-[10px] text-slate-400 px-1 font-mono pt-0.5">
+                <span>Drag canvas or tap buttons to move & shoot</span>
+                <button onclick="app.quitGame()" class="text-slate-400 hover:text-white underline">Quit Game</button>
+            </div>
+        </section>
+
+        <!-- ========================================================================================= -->
+        <!-- VIEW 3: RESULTS SCREEN -->
+        <!-- ========================================================================================= -->
+        <section id="view-results" class="hidden space-y-6 max-w-2xl mx-auto w-full my-auto">
+            <div class="bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-6">
+                <div class="inline-block p-4 rounded-full bg-cyan-500/10 text-4xl" id="results-icon">
+                    🎓
+                </div>
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white font-mono" id="results-title">EXAM COMPLETED!</h2>
+                    <p class="text-slate-400 text-xs mt-1">FM2 Summative 1 Reviewer Examination</p>
+                </div>
+
+                <!-- Score Display -->
+                <div class="max-w-xs mx-auto bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-1">
+                    <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider font-mono">Final Score Accuracy</div>
+                    <div class="text-4xl sm:text-5xl font-black text-cyan-400 font-mono" id="results-score-percent">0%</div>
+                    <div class="text-xs text-slate-300 font-semibold" id="results-score-count">0 / 30 Questions Cleared</div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-wrap justify-center gap-3 pt-2">
+                    <button onclick="app.startGame()" class="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg transition font-mono text-sm">
+                        🔄 Retake Exam (Shuffled)
+                    </button>
+                    <button onclick="app.navTo('home')" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition font-mono text-sm">
+                        🏠 Main Menu
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================================= -->
+        <!-- VIEW 4: FLASHCARDS STUDY MODE -->
+        <!-- ========================================================================================= -->
+        <section id="view-flashcards" class="hidden space-y-4 max-w-xl mx-auto w-full">
+            <div class="flex items-center justify-between">
+                <button onclick="app.navTo('home')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-semibold">
+                    ← Back to Menu
+                </button>
+                <div class="text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-3 py-1 rounded-full font-mono">
+                    🎴 Flashcard <span id="fc-index">1</span> of 30
+                </div>
+            </div>
+
+            <!-- Flashcard Container -->
+            <div class="perspective-1000 w-full h-80">
+                <div id="flashcard-inner" onclick="app.flipFlashcard()" class="relative w-full h-full transform-style-3d transition-transform duration-500 cursor-pointer rounded-3xl border border-slate-800 bg-slate-900 shadow-2xl p-6 flex flex-col justify-between">
+                    <!-- FRONT -->
+                    <div class="absolute inset-0 backface-hidden bg-slate-900 rounded-3xl p-6 flex flex-col justify-between border border-slate-800">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span id="fc-category">Counting Principles</span>
+                            <span>Tap to Flip 🔄</span>
+                        </div>
+                        <div id="fc-question" class="text-sm sm:text-base font-bold text-white text-center leading-relaxed my-auto">
+                            Question loading...
+                        </div>
+                        <div class="text-center text-xs text-cyan-400 font-semibold font-mono">
+                            Tap card to reveal answer & explanation
+                        </div>
+                    </div>
+
+                    <!-- BACK -->
+                    <div class="absolute inset-0 backface-hidden rotate-y-180 bg-slate-950 rounded-3xl p-6 flex flex-col justify-between border border-purple-500/50">
+                        <div class="text-xs text-purple-400 font-bold uppercase tracking-wider font-mono">
+                            Correct Answer & Competency
+                        </div>
+                        <div class="my-auto space-y-2 text-center">
+                            <div id="fc-answer" class="text-base sm:text-lg font-extrabold text-emerald-400 font-mono">
+                                Correct Answer
+                            </div>
+                            <p id="fc-explanation" class="text-xs text-slate-300 leading-relaxed max-h-32 overflow-y-auto px-1">
+                                Competency info...
+                            </p>
+                        </div>
+                        <div class="text-center text-xs text-slate-500">
+                            Tap card to flip back
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex justify-between items-center pt-1">
+                <button onclick="app.prevFlashcard()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-bold text-white transition font-mono">
+                    ← Previous
+                </button>
+                <button onclick="app.shuffleFlashcards()" class="px-3 py-2 bg-slate-800 hover:bg-purple-900/40 border border-purple-500/40 rounded-xl text-xs font-bold text-purple-300 transition font-mono">
+                    🔀 Shuffle
+                </button>
+                <button onclick="app.nextFlashcard()" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-xl text-xs font-bold text-white transition font-mono">
+                    Next Card →
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC & FM2 SUMMATIVE EXAM DATABASE -->
+    <script>
+        // Synthesized Audio Effects Engine
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playCorrect() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.08);
+                osc.frequency.setValueAtTime(783.99, now + 0.16);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+            playWrong() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(146.83, now + 0.15);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+            playLaser() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(850, now);
+                osc.frequency.exponentialRampToValueAtTime(120, now + 0.1);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            }
+            playPowerUp() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            }
+        }
+
+        const soundFX = new SoundFX();
+
+        // 30 QUESTIONS DATABASE FROM FM2 SUMMATIVE 1 EXAM
+        const QUESTION_DATABASE = [
+            {
+                question: "A school canteen offers a merienda set consisting of 1 snack choice and 1 beverage choice. The available snacks are Inipit, Minasa, and Pastillas, while the available beverages are Buko Juice and Softdrink. How many total merienda combinations can a student form?",
+                correct: "6",
+                distractors: ["5", "8", "9"],
+                difficulty: "Easy",
+                bloom: "Remembering",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "Multiplication Principle: 3 snacks × 2 beverages = 6 total combinations."
+            },
+            {
+                question: "Which counting principle is strictly applied when selecting a single item from separate, non-overlapping categories where choices are connected by the word OR?",
+                correct: "Addition Principle",
+                distractors: ["Multiplication Principle", "Factorial Principle", "Permutation Principle"],
+                difficulty: "Easy",
+                bloom: "Remembering",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "The Addition Principle is used for mutually exclusive choices connected by OR."
+            },
+            {
+                question: "A student ID code consists of 1 letter chosen from {A, B, C} followed by 2 digits. The first digit must be an odd number chosen from {1, 3, 5, 7, 9}, and the second digit must be an even number chosen from {0, 2, 4, 6, 8}. Assuming repetition of digits is allowed, how many distinct student ID codes can be generated?",
+                correct: "75",
+                distractors: ["25", "50", "100"],
+                difficulty: "Easy",
+                bloom: "Understanding",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "3 letters × 5 odd digits × 5 even digits = 3 × 5 × 5 = 75 codes."
+            },
+            {
+                question: "What is the fundamental distinction between a permutation and a combination of objects?",
+                correct: "Permutations depend on selection order; combinations ignore order.",
+                distractors: [
+                    "Permutations permit replacement; combinations do not.",
+                    "Permutations apply to numbers; combinations apply to categories.",
+                    "Permutations always produce smaller counts than combinations."
+                ],
+                difficulty: "Easy",
+                bloom: "Understanding",
+                competency: "Differentiate between a combination and a permutation of objects",
+                explanation: "Order matters in permutations (arrangements), whereas order does not matter in combinations (groups/sets)."
+            },
+            {
+                question: "Evaluate P(10, 3), which represents the number of permutations of 10 distinct objects taken 3 at a time.",
+                correct: "720",
+                distractors: ["120", "210", "504"],
+                difficulty: "Easy",
+                bloom: "Remembering",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "P(10, 3) = 10 × 9 × 8 = 720."
+            },
+            {
+                question: "A local footwear workshop in Pandi crafts custom shoes and has 8 distinct leather models available. In how many ways can an artisan select 4 models to feature as an unordered promotional product bundle in a catalog?",
+                correct: "70",
+                distractors: ["32", "1,680", "5,040"],
+                difficulty: "Easy",
+                bloom: "Understanding",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "C(8, 4) = 8! / (4! × 4!) = (8 × 7 × 6 × 5) / (4 × 3 × 2 × 1) = 70."
+            },
+            {
+                question: "What is the mathematical value of 0!, and what is its theoretical justification in combinatorics?",
+                correct: "1, because there is exactly one way to arrange an empty set.",
+                distractors: [
+                    "0, because multiplying by zero always yields zero.",
+                    "Undefined, because factorials require positive integers.",
+                    "1, because it is the identity element for matrix operations."
+                ],
+                difficulty: "Easy",
+                bloom: "Remembering",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "0! = 1 by definition, representing exactly 1 way to arrange 0 items (an empty set)."
+            },
+            {
+                question: "Which mathematical identity correctly expresses the Symmetry Property of combinations for any set of size n and subset of size k?",
+                correct: "C(n, k) = C(n, n - k)",
+                distractors: [
+                    "C(n, k) = C(n, k - 1)",
+                    "C(n, k) = C(n - 1, k)",
+                    "C(n, k) = P(n, k) × k!"
+                ],
+                difficulty: "Easy",
+                bloom: "Remembering",
+                competency: "Apply the properties of combinations to count the elements of a set",
+                explanation: "The symmetry property states that choosing k items is equivalent to choosing which n - k items to leave behind: C(n, k) = C(n, n - k)."
+            },
+            {
+                question: "A local business organization in Pandi has 10 active members. How many different 3-member delegation committees can be selected to meet the Municipal Mayor?",
+                correct: "120",
+                distractors: ["30", "240", "720"],
+                difficulty: "Easy",
+                bloom: "Understanding",
+                competency: "Solve problems involving combinations and permutations",
+                explanation: "C(10, 3) = (10 × 9 × 8) / (3 × 2 × 1) = 120."
+            },
+            {
+                question: "How many distinct 8-letter arrangements can be formed using all the letters in the word \"BARANGAY\"?",
+                correct: "6,720",
+                distractors: ["3,360", "20,160", "40,320"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Compute the number of ways of arranging a set with non-distinct elements",
+                explanation: "BARANGAY has 8 letters with 'A' repeating 3 times and 'R' repeating 2 times: 8! / (3! × 2!) = 40,320 / (6 × 2) = 6,720."
+            },
+            {
+                question: "A municipal council convenes a strategic planning session with 6 department heads. In how many distinct ways can these 6 delegates be seated around a circular conference table?",
+                correct: "120",
+                distractors: ["36", "720", "5,040"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Compute the number of ways of arranging a set of objects in a circle",
+                explanation: "Circular permutation formula: (n - 1)! = (6 - 1)! = 5! = 120."
+            },
+            {
+                question: "An inspector at a garment facility in Pandi audits a batch of 12 denim jackets, where 3 jackets have stitching defects and 9 are non-defective. In how many ways can the inspector draw a sample of 4 jackets such that it contains EXACTLY 1 defective jacket?",
+                correct: "252",
+                distractors: ["87", "105", "504"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Solve counting problems using combinatorial techniques",
+                explanation: "C(3, 1) × C(9, 3) = 3 × 84 = 252."
+            },
+            {
+                question: "A Pandi RTW boutique offers a promo where a customer selects 4 garment pieces from a curated collection of 10 unique styles. A customer claims that there are 5,040 possible wardrobe choices. Which statement accurately evaluates this claim?",
+                correct: "Incorrect; order does not matter in a bundle, so C(10, 4) = 210.",
+                distractors: [
+                    "Correct; items must be selected sequentially with order mattering.",
+                    "Incorrect; choices should be added together, giving 10 + 4 = 14.",
+                    "Correct; P(10, 4) accounts for all possible combinations in a set."
+                ],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Solve problems involving combinations and permutations",
+                explanation: "Bundles are unordered selections, so combinations C(10, 4) = 210 must be used instead of permutations P(10, 4) = 5,040."
+            },
+            {
+                question: "Consider a scenario where a student must commute from Manatal, Pandi to BSU Malolos. The journey requires three sequential stages: Stage 1 (Manatal to Pandi Crossing) has 3 tricycle routes; Stage 2 (Pandi Crossing to Tabang Exit) has 2 jeepney routes; Stage 3 (Tabang Exit to BSU Malolos) has 2 bus options. How many total unique travel routes exist?",
+                correct: "12",
+                distractors: ["7", "14", "24"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "Multiplication Principle: 3 × 2 × 2 = 12 total unique routes."
+            },
+            {
+                question: "A security system requires a 4-digit PIN using digits 0 through 9. If repetition of digits is allowed, how many different PINs can be formed?",
+                correct: "10,000",
+                distractors: ["40", "3,024", "5,040"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "10 × 10 × 10 × 10 = 10^4 = 10,000."
+            },
+            {
+                question: "A regional competition features 6 pyrotechnics manufacturers. In how many ways can the panel of judges award Gold, Silver, and Bronze trophies to the top 3 displays?",
+                correct: "120",
+                distractors: ["18", "20", "216"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "P(6, 3) = 6 × 5 × 4 = 120 because awards are distinct positions (order matters)."
+            },
+            {
+                question: "The Senior High School Teachers' Association of Pandi has 7 executive board members. In how many ways can they elect a President and a Vice-President from among themselves?",
+                correct: "42",
+                distractors: ["14", "21", "5,040"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "P(7, 2) = 7 × 6 = 42."
+            },
+            {
+                question: "A project manager forms a 4-person committee from 5 Software Engineers and 6 Data Scientists. The committee must include at least 2 Software Engineers. How many distinct committees can be formed?",
+                correct: "215",
+                distractors: ["115", "150", "330"],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Solve counting problems using combinatorial techniques",
+                explanation: "Cases: (2SE, 2DS) C(5,2)C(6,2) = 10×15=150; (3SE, 1DS) C(5,3)C(6,1) = 10×6=60; (4SE, 0DS) C(5,4)C(6,0) = 5×1=5. Total = 150 + 60 + 5 = 215."
+            },
+            {
+                question: "A school registrar needs to choose 13 student volunteers out of a class of 15 to assist in organizing the library. Using the Symmetry Property of combinations, which calculation yields the correct number of ways to select the volunteers?",
+                correct: "C(15, 13) = C(15, 2) = (15 × 14) / (2 × 1) = 105",
+                distractors: [
+                    "C(15, 13) = 15 × 13 = 195",
+                    "C(15, 13) = C(15, 1) = 15",
+                    "C(15, 13) = P(15, 2) = 210"
+                ],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Apply the properties of combinations to count the elements of a set",
+                explanation: "By symmetry, C(15, 13) = C(15, 2) = (15 × 14) / 2 = 105."
+            },
+            {
+                question: "A local jewelry workshop in Meycauayan designs custom brand tags using all letters in the word \"MEYCAUAYAN\". How many distinct 10-letter arrangements can be created?",
+                correct: "302,400",
+                distractors: ["30,240", "604,800", "3,628,800"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Compute the number of ways of arranging a set with non-distinct elements",
+                explanation: "MEYCAUAYAN has 10 letters where 'A' appears 3 times and 'Y' appears 2 times: 10! / (3! × 2!) = 3,628,800 / 12 = 302,400."
+            },
+            {
+                question: "A local municipal government is forming a 5-member security detail for the Town Fiesta from a pool of 6 Police Officers and 4 Barangay Tanods. The team must contain AT MOST 1 Barangay Tanod. How many valid security detail teams can be created?",
+                correct: "66",
+                distractors: ["120", "126", "252"],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Solve counting problems using combinatorial techniques",
+                explanation: "Cases: 0 Tanods → C(6,5)C(4,0) = 6×1 = 6; 1 Tanod → C(6,4)C(4,1) = 15×4 = 60. Total = 6 + 60 = 66."
+            },
+            {
+                question: "A footwear workshop inspector checks a box of 10 shoe pairs, of which 2 have minor flaws and 8 are flawless. The inspector draws a sample of 5 pairs. How many sample options contain AT LEAST 4 flawless pairs?",
+                correct: "196",
+                distractors: ["112", "140", "252"],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Solve counting problems using combinatorial techniques",
+                explanation: "Cases: 4 flawless (and 1 flawed) → C(8,4)C(2,1) = 70×2 = 140; 5 flawless (and 0 flawed) → C(8,5)C(2,0) = 56×1 = 56. Total = 140 + 56 = 196."
+            },
+            {
+                question: "An artisan crafts 5 distinct decorated beads to be arranged on a circular key ring that can be flipped over in 3D space. How many distinct key ring arrangements are possible?",
+                correct: "12",
+                distractors: ["24", "60", "120"],
+                difficulty: "Average",
+                bloom: "Applying",
+                competency: "Compute the number of ways of arranging a set of objects in a circle",
+                explanation: "For 3D bracelets/keyrings that can be flipped, arrangements have reflections counted as identical: (n - 1)! / 2 = 4! / 2 = 24 / 2 = 12."
+            },
+            {
+                question: "A student attempts to simplify the expression 10! / 7! and obtains an answer of 10 / 7. Which statement correctly identifies the student's mathematical error and provides the true value?",
+                correct: "Incorrect; factorials must be expanded: 10 × 9 × 8 = 720.",
+                distractors: [
+                    "Correct; terms cancel out directly, so the true value is 10 / 7.",
+                    "Incorrect; factorials should be subtracted to get 3! = 6.",
+                    "Incorrect; factorials should be added together to get 17!."
+                ],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Calculate the number of combinations and permutations of n objects taken k at a time",
+                explanation: "10! / 7! = (10 × 9 × 8 × 7!) / 7! = 10 × 9 × 8 = 720."
+            },
+            {
+                question: "A student council has 9 qualified candidates. The council must select 3 student delegates to attend a leadership summit. Option A calculates P(9, 3) = 504, while Option B calculates C(9, 3) = 84. Which option is correct and why?",
+                correct: "Option B; delegates have equal status, so order does not matter.",
+                distractors: [
+                    "Option A; delegates are chosen in a specific sequence.",
+                    "Option A; P(9, 3) accounts for all candidate possibilities.",
+                    "Option B; committee selections require adding total counts."
+                ],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Differentiate between a combination and a permutation of objects",
+                explanation: "Delegates form an unordered committee, making combinations the correct choice: C(9, 3) = 84."
+            },
+            {
+                question: "Analyze the following two task requirements for an RTW shop with 8 garment styles: Task A: Select and arrange 3 outfits on window mannequins (Left, Center, Right). Task B: Select 3 outfits to place into a sample bag for a buyer. Which mathematical evaluation correctly assesses the number of outcomes for both tasks?",
+                correct: "Task A has 336 (order matters); Task B has 56 (order does not matter).",
+                distractors: [
+                    "Task A has 56 (order does not matter); Task B has 336 (order matters).",
+                    "Both tasks have 336 outcomes because both pick 3 items from 8.",
+                    "Both tasks have 56 outcomes because both pick garment groups."
+                ],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Differentiate between a combination and a permutation of objects",
+                explanation: "Task A uses permutations P(8, 3) = 336. Task B uses combinations C(8, 3) = 56."
+            },
+            {
+                question: "A shop manager needs to choose 8 employees out of 10 applicants to hire for an RTW store. She considers two computation strategies: Strategy 1 computes C(10, 8) directly, while Strategy 2 computes C(10, 2) by selecting the 2 applicants to reject. Which statement rigorously evaluates these two strategies?",
+                correct: "Both yield 45 choices; Strategy 2 is simpler due to smaller factorials.",
+                distractors: [
+                    "Strategy 1 is valid; Strategy 2 is invalid because rejection is not allowed.",
+                    "Strategy 1 yields 45 choices, while Strategy 2 yields 90 choices.",
+                    "Strategy 2 is preferred because C(10, 2) represents a permutation."
+                ],
+                difficulty: "Average",
+                bloom: "Analyzing",
+                competency: "Apply the properties of combinations to count the elements of a set",
+                explanation: "By symmetry C(10, 8) = C(10, 2) = 45. Strategy 2 involves smaller numbers."
+            },
+            {
+                question: "A student is given the following problem: \"A canteen menu lists 3 fruit juices and 2 softdrinks. A customer wants to buy ONLY 1 single drink. How many choices are available?\" The student multiplies 3 × 2 = 6. Evaluate the student's solution.",
+                correct: "Incorrect; the Addition Principle applies (3 + 2 = 5).",
+                distractors: [
+                    "Correct; the problem involves two drink categories.",
+                    "Incorrect; permutations should be used to yield P(5, 1) = 6.",
+                    "Correct; choosing drinks always requires multiplication."
+                ],
+                difficulty: "Difficult",
+                bloom: "Evaluating",
+                competency: "Use the addition and multiplication principles to count elements of a set",
+                explanation: "Since the customer chooses only 1 single drink (mutually exclusive options connected by OR), the Addition Principle applies: 3 + 2 = 5."
+            },
+            {
+                question: "A boutique owner has 5 distinct garment accessories available for promotional bundles. She claims that she can form exactly 32 different bundle combinations (including the option of offering an empty bundle or all accessories). Is her claim mathematically correct?",
+                correct: "Yes, because sum from k=0 to 5 of C(5, k) = 2^5 = 32.",
+                distractors: [
+                    "No, because the total number of combinations is 5! = 120.",
+                    "No, because she must multiply 5 × 2 = 10.",
+                    "Yes, because P(5, 2) = 32."
+                ],
+                difficulty: "Difficult",
+                bloom: "Creating",
+                competency: "Apply the properties of combinations to count the elements of a set",
+                explanation: "The total number of subsets (combinations of any size including empty and full sets) is 2^n = 2^5 = 32."
+            },
+            {
+                question: "A school needs to select a committee of 3 people from a group of 6 men and 7 women such that the committee contains AT MOST 1 man. A student proposes the following plan: Case 1: Select 0 men and 3 women → C(6, 0) × C(7, 3) = 1 × 35 = 35. Case 2: Select 1 man and 2 women → C(6, 1) × C(7, 2) = 6 × 21 = 126. Total committees = 35 + 126 = 161. Is the student's proposal complete and correct?",
+                correct: "Yes; it correctly uses addition between independent cases.",
+                distractors: [
+                    "No; the student forgot to include a case for 2 men.",
+                    "No; the student should have multiplied 35 × 126.",
+                    "Yes; but permutations should be used instead of combinations."
+                ],
+                difficulty: "Difficult",
+                bloom: "Evaluating",
+                competency: "Solve counting problems using combinatorial techniques",
+                explanation: "The student correctly covered 'at most 1 man' (0 men or 1 man) and added the independent cases correctly to get 161."
+            }
+        ];
+
+        class SpaceShooterGame {
+            constructor(app) {
+                this.app = app;
+                this.canvas = null;
+                this.ctx = null;
+                this.animFrame = null;
+                this.running = false;
+                
+                this.player = { x: 180, y: 240, w: 36, h: 28, speed: 7 };
+                
+                this.bullets = [];
+                this.aliens = [];
+                this.powerUps = [];
+                this.particles = [];
+                this.statusBanner = null;
+
+                this.freezeTimer = 0;
+                this.triShotTimer = 0;
+                this.hasShield = false;
+                this.powerUpSpawnTimeout = null;
+                
+                this.keys = { left: false, right: false };
+                this.lastShot = 0;
+            }
+
+            init() {
+                this.canvas = document.getElementById('game-canvas');
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.canvas.width = 400;
+                this.canvas.height = 300;
+
+                this.bindControls();
+            }
+
+            bindControls() {
+                window.addEventListener('keydown', (e) => {
+                    if (!this.running) return;
+                    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.keys.left = true;
+                    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.keys.right = true;
+                    if (e.key === ' ' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        this.fire();
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.keys.left = false;
+                    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.keys.right = false;
+                });
+
+                if (this.canvas) {
+                    const handleTouchMove = (e) => {
+                        if (!this.running || !e.touches || !e.touches[0]) return;
+                        const rect = this.canvas.getBoundingClientRect();
+                        const touchX = e.touches[0].clientX - rect.left;
+                        const scale = this.canvas.width / rect.width;
+                        this.player.x = (touchX * scale) - (this.player.w / 2);
+                        this.player.x = Math.max(5, Math.min(this.canvas.width - 40, this.player.x));
+                    };
+
+                    this.canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleTouchMove(e); }, { passive: false });
+                    this.canvas.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        handleTouchMove(e);
+                        this.fire();
+                    }, { passive: false });
+                }
+
+                const btnLeft = document.getElementById('btn-touch-left');
+                const btnRight = document.getElementById('btn-touch-right');
+                const btnFire = document.getElementById('btn-touch-fire');
+
+                if (btnLeft && btnRight && btnFire) {
+                    const bindTouch = (btn, keyProp) => {
+                        btn.addEventListener('touchstart', (e) => { e.preventDefault(); this.keys[keyProp] = true; }, { passive: false });
+                        btn.addEventListener('touchend', (e) => { e.preventDefault(); this.keys[keyProp] = false; }, { passive: false });
+                        btn.addEventListener('mousedown', () => { this.keys[keyProp] = true; });
+                        btn.addEventListener('mouseup', () => { this.keys[keyProp] = false; });
+                    };
+                    bindTouch(btnLeft, 'left');
+                    bindTouch(btnRight, 'right');
+
+                    btnFire.addEventListener('click', () => { this.fire(); });
+                    btnFire.addEventListener('touchstart', (e) => { e.preventDefault(); this.fire(); }, { passive: false });
+                }
+            }
+
+            setupTargetAliens(choicesMap) {
+                const letters = ['A', 'B', 'C', 'D'];
+                const colors = ['#06b6d4', '#f43f5e', '#f59e0b', '#10b981'];
+
+                this.aliens = letters.map((letter, idx) => {
+                    const baseSpeed = 1.8 + Math.random() * 1.5;
+                    return {
+                        letter: letter,
+                        text: choicesMap[letter],
+                        x: 20 + idx * 90,
+                        y: 35 + (idx % 2 === 0 ? 0 : 30),
+                        w: 46,
+                        h: 32,
+                        dx: (idx % 2 === 0 ? 1 : -1) * baseSpeed,
+                        dy: 0.5,
+                        baseY: 35 + (idx % 2 === 0 ? 0 : 30),
+                        color: colors[idx],
+                        alive: true
+                    };
+                });
+            }
+
+            startRound(choicesMap) {
+                this.init();
+                this.bullets = [];
+                this.powerUps = [];
+                this.particles = [];
+                this.statusBanner = null;
+                this.running = true;
+                this.player.x = 180;
+
+                this.freezeTimer = 0;
+                this.triShotTimer = 0;
+                this.updateHUDPowerUpBadge(null);
+
+                if (this.powerUpSpawnTimeout) clearTimeout(this.powerUpSpawnTimeout);
+
+                this.setupTargetAliens(choicesMap);
+
+                if (Math.random() < 0.65) {
+                    const spawnDelay = 1200 + Math.random() * 2500;
+                    this.powerUpSpawnTimeout = setTimeout(() => {
+                        if (this.running) this.spawnPowerUp();
+                    }, spawnDelay);
+                }
+
+                if (this.animFrame) cancelAnimationFrame(this.animFrame);
+                this.loop();
+            }
+
+            spawnPowerUp() {
+                const types = [
+                    { type: 'FREEZE', icon: '❄️', color: '#38bdf8', label: 'FREEZE' },
+                    { type: 'EXTRA_LIFE', icon: '❤️', color: '#f43f5e', label: '+1 HEART' },
+                    { type: 'SKIP', icon: '🚀', color: '#a855f7', label: 'WARP SKIP' },
+                    { type: 'TRI_SHOT', icon: '⚡', color: '#f59e0b', label: 'TRI-BEAM' },
+                    { type: 'SHIELD', icon: '🛡️', color: '#10b981', label: 'SHIELD' }
+                ];
+                
+                const selected = types[Math.floor(Math.random() * types.length)];
+                this.powerUps.push({
+                    ...selected,
+                    x: 30 + Math.random() * (this.canvas.width - 70),
+                    y: -25,
+                    w: 26,
+                    h: 26,
+                    vy: 2.8,
+                    alive: true
+                });
+            }
+
+            fire() {
+                if (!this.running) return;
+                const now = Date.now();
+                if (now - this.lastShot > 160) {
+                    if (this.triShotTimer > 0) {
+                        this.bullets.push(
+                            { x: this.player.x + 16, y: this.player.y, w: 4, h: 12, speed: 9, vx: 0 },
+                            { x: this.player.x + 6, y: this.player.y + 4, w: 4, h: 10, speed: 8.5, vx: -1.8 },
+                            { x: this.player.x + 26, y: this.player.y + 4, w: 4, h: 10, speed: 8.5, vx: 1.8 }
+                        );
+                    } else {
+                        this.bullets.push({
+                            x: this.player.x + 16,
+                            y: this.player.y,
+                            w: 4,
+                            h: 12,
+                            speed: 9,
+                            vx: 0
+                        });
+                    }
+                    soundFX.playLaser();
+                    this.lastShot = now;
+                }
+            }
+
+            loop() {
+                if (!this.running) return;
+
+                this.update();
+                this.render();
+
+                this.animFrame = requestAnimationFrame(() => this.loop());
+            }
+
+            update() {
+                if (this.freezeTimer > 0) {
+                    this.freezeTimer--;
+                    if (this.freezeTimer === 0 && this.triShotTimer === 0) {
+                        this.updateHUDPowerUpBadge(null);
+                    }
+                }
+                if (this.triShotTimer > 0) {
+                    this.triShotTimer--;
+                    if (this.triShotTimer === 0 && this.freezeTimer === 0) {
+                        this.updateHUDPowerUpBadge(null);
+                    }
+                }
+
+                if (this.keys.left && this.player.x > 5) this.player.x -= this.player.speed;
+                if (this.keys.right && this.player.x < this.canvas.width - 40) this.player.x += this.player.speed;
+
+                this.bullets.forEach((b, index) => {
+                    b.y -= b.speed;
+                    b.x += (b.vx || 0);
+                    if (b.y < -10 || b.x < -10 || b.x > this.canvas.width + 10) {
+                        this.bullets.splice(index, 1);
+                    }
+                });
+
+                this.powerUps.forEach((p, pIdx) => {
+                    p.y += p.vy;
+
+                    const shipOverlap = (
+                        p.x + p.w > this.player.x &&
+                        p.x < this.player.x + this.player.w &&
+                        p.y + p.h > this.player.y &&
+                        p.y < this.player.y + this.player.h
+                    );
+
+                    let bulletShot = false;
+                    this.bullets.forEach((b, bIdx) => {
+                        if (b.x > p.x && b.x < p.x + p.w && b.y > p.y && b.y < p.y + p.h) {
+                            bulletShot = true;
+                            this.bullets.splice(bIdx, 1);
+                        }
+                    });
+
+                    if ((shipOverlap || bulletShot) && p.alive) {
+                        p.alive = false;
+                        this.activatePowerUp(p);
+                        this.powerUps.splice(pIdx, 1);
+                    } else if (p.y > this.canvas.height + 30) {
+                        this.powerUps.splice(pIdx, 1);
+                    }
+                });
+
+                const isFrozen = (this.freezeTimer > 0);
+                const time = Date.now() * 0.005;
+
+                this.aliens.forEach(a => {
+                    if (!a.alive) return;
+                    
+                    if (!isFrozen) {
+                        a.x += a.dx;
+                        a.y = a.baseY + Math.sin(time + a.x * 0.05) * 12;
+
+                        if (a.x <= 5 || a.x >= this.canvas.width - 50) {
+                            a.dx *= -1;
+                        }
+                    }
+                });
+
+                this.bullets.forEach((b, bIdx) => {
+                    this.aliens.forEach(a => {
+                        if (a.alive && b.x > a.x && b.x < a.x + a.w && b.y > a.y && b.y < a.y + a.h) {
+                            a.alive = false;
+                            this.bullets.splice(bIdx, 1);
+                            
+                            for (let p = 0; p < 16; p++) {
+                                this.particles.push({
+                                    x: a.x + 23,
+                                    y: a.y + 16,
+                                    vx: (Math.random() - 0.5) * 10,
+                                    vy: (Math.random() - 0.5) * 10,
+                                    life: 20,
+                                    color: a.color
+                                });
+                            }
+
+                            this.running = false;
+                            this.app.handleShotResult(a.letter);
+                        }
+                    });
+                });
+
+                this.particles.forEach((p, idx) => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life--;
+                    if (p.life <= 0) this.particles.splice(idx, 1);
+                });
+            }
+
+            activatePowerUp(powerUp) {
+                soundFX.playPowerUp();
+
+                for (let i = 0; i < 12; i++) {
+                    this.particles.push({
+                        x: powerUp.x + 13,
+                        y: powerUp.y + 13,
+                        vx: (Math.random() - 0.5) * 8,
+                        vy: (Math.random() - 0.5) * 8,
+                        life: 25,
+                        color: powerUp.color
+                    });
+                }
+
+                switch (powerUp.type) {
+                    case 'FREEZE':
+                        this.freezeTimer = 300;
+                        this.updateHUDPowerUpBadge({ icon: '❄️', label: 'ALIENS FROZEN (5s)' });
+                        this.statusBanner = { text: "❄️ FREEZE POWER-UP ACTIVATED!", color: "#38bdf8" };
+                        break;
+
+                    case 'EXTRA_LIFE':
+                        if (this.app.playerLives < 5) {
+                            this.app.playerLives++;
+                            this.app.updateLivesDisplay();
+                            this.statusBanner = { text: "❤️ EXTRA HEART OBTAINED!", color: "#f43f5e" };
+                        } else {
+                            this.statusBanner = { text: "❤️ MAX HEALTH ALREADY!", color: "#f43f5e" };
+                        }
+                        break;
+
+                    case 'SKIP':
+                        this.statusBanner = { text: "🚀 WARP SKIP! QUESTION AUTO-CLEARED", color: "#a855f7" };
+                        this.running = false;
+                        setTimeout(() => {
+                            const correctLetter = this.app.getCorrectLetterForCurrentRound();
+                            this.app.handleShotResult(correctLetter);
+                        }, 500);
+                        break;
+
+                    case 'TRI_SHOT':
+                        this.triShotTimer = 360;
+                        this.updateHUDPowerUpBadge({ icon: '⚡', label: 'TRI-BEAM LASER (6s)' });
+                        this.statusBanner = { text: "⚡ TRI-BEAM CANNON ONLINE!", color: "#f59e0b" };
+                        break;
+
+                    case 'SHIELD':
+                        this.hasShield = true;
+                        this.updateHUDPowerUpBadge({ icon: '🛡️', label: 'FORCE FIELD ACTIVE' });
+                        this.statusBanner = { text: "🛡️ SHIELD GENERATED!", color: "#10b981" };
+                        break;
+                }
+            }
+
+            updateHUDPowerUpBadge(info) {
+                const badge = document.getElementById('active-powerup-badge');
+                const iconSpan = document.getElementById('powerup-icon');
+                const textSpan = document.getElementById('powerup-text');
+
+                if (!badge || !iconSpan || !textSpan) return;
+
+                if (info) {
+                    iconSpan.textContent = info.icon;
+                    textSpan.textContent = info.label;
+                    badge.classList.remove('hidden');
+                } else if (!this.hasShield && this.freezeTimer <= 0 && this.triShotTimer <= 0) {
+                    badge.classList.add('hidden');
+                }
+            }
+
+            render() {
+                this.ctx.fillStyle = '#020617';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.ctx.fillStyle = '#ffffff';
+                for (let i = 0; i < 20; i++) {
+                    const sx = (i * 43) % this.canvas.width;
+                    const sy = (i * 61 + Date.now() * 0.05) % this.canvas.height;
+                    this.ctx.fillRect(sx, sy, 1.5, 1.5);
+                }
+
+                if (this.freezeTimer > 0) {
+                    this.ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+                    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+
+                if (this.hasShield) {
+                    this.ctx.strokeStyle = '#10b981';
+                    this.ctx.lineWidth = 2.5;
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.player.x + 18, this.player.y + 12, 26, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                    this.ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                    this.ctx.fill();
+                }
+
+                this.ctx.fillStyle = '#38bdf8';
+                this.ctx.beginPath();
+                this.ctx.moveTo(this.player.x + 18, this.player.y);
+                this.ctx.lineTo(this.player.x + 36, this.player.y + 24);
+                this.ctx.lineTo(this.player.x, this.player.y + 24);
+                this.ctx.closePath();
+                this.ctx.fill();
+
+                this.ctx.fillStyle = '#f43f5e';
+                this.ctx.fillRect(this.player.x + 16, this.player.y - 4, 4, 6);
+                this.ctx.fillStyle = '#f59e0b';
+                this.ctx.fillRect(this.player.x + 13, this.player.y + 24, 10, 4 + Math.random() * 4);
+
+                this.ctx.fillStyle = (this.triShotTimer > 0) ? '#f59e0b' : '#38bdf8';
+                this.bullets.forEach(b => {
+                    this.ctx.fillRect(b.x, b.y, b.w, b.h);
+                });
+
+                this.powerUps.forEach(p => {
+                    if (!p.alive) return;
+
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x + 13, p.y + 13, 14, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    this.ctx.fillStyle = '#0f172a';
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x + 13, p.y + 13, 10, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    this.ctx.font = '12px sans-serif';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(p.icon, p.x + 13, p.y + 13);
+                });
+
+                this.aliens.forEach(a => {
+                    if (!a.alive) return;
+
+                    this.ctx.fillStyle = a.color;
+                    this.ctx.beginPath();
+                    this.ctx.roundRect(a.x, a.y, a.w, a.h, 6);
+                    this.ctx.fill();
+
+                    if (this.freezeTimer > 0) {
+                        this.ctx.strokeStyle = '#38bdf8';
+                        this.ctx.lineWidth = 3;
+                    } else {
+                        this.ctx.strokeStyle = '#ffffff';
+                        this.ctx.lineWidth = 1.5;
+                    }
+                    this.ctx.stroke();
+
+                    this.ctx.fillStyle = '#0f172a';
+                    this.ctx.font = 'black 16px Courier New, monospace';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.textBaseline = 'middle';
+                    this.ctx.fillText(a.letter, a.x + a.w / 2, a.y + a.h / 2 + 1);
+                });
+
+                this.particles.forEach(p => {
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fillRect(p.x, p.y, 3, 3);
+                });
+
+                if (this.statusBanner) {
+                    this.ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                    this.ctx.fillRect(15, 120, 370, 60);
+                    this.ctx.strokeStyle = this.statusBanner.color;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeRect(15, 120, 370, 60);
+
+                    this.ctx.fillStyle = this.statusBanner.color;
+                    this.ctx.font = 'bold 14px Courier New, monospace';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(this.statusBanner.text, 200, 155);
+                }
+            }
+        }
+
+        class LitQuestApp {
+            constructor() {
+                this.currentView = 'home';
+                this.activeQuestions = [];
+                this.flashcardQuestions = [];
+                this.currentIndex = 0;
+                this.score = 0;
+                this.playerLives = 3;
+                this.highScore = localStorage.getItem('fm2_hs') || 0;
+
+                this.currentChoicesMap = {};
+
+                this.fcIndex = 0;
+                this.fcFlipped = false;
+
+                this.shooter = new SpaceShooterGame(this);
+
+                this.init();
+            }
+
+            init() {
+                document.getElementById('high-score').textContent = this.highScore;
+            }
+
+            shuffle(array) {
+                let m = array.length, t, i;
+                while (m) {
+                    i = Math.floor(Math.random() * m--);
+                    t = array[m];
+                    array[m] = array[i];
+                    array[i] = t;
+                }
+                return array;
+            }
+
+            navTo(viewId) {
+                soundFX.playLaser();
+                document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+                const target = document.getElementById(`view-${viewId}`);
+                if (target) {
+                    target.classList.remove('hidden');
+                    this.currentView = viewId;
+                }
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            toggleSound() {
+                soundFX.enabled = !soundFX.enabled;
+                document.getElementById('icon-sound-on').classList.toggle('hidden', !soundFX.enabled);
+                document.getElementById('icon-sound-off').classList.toggle('hidden', soundFX.enabled);
+            }
+
+            startGame() {
+                let rawList = JSON.parse(JSON.stringify(QUESTION_DATABASE));
+                this.shuffle(rawList);
+
+                this.activeQuestions = rawList;
+                this.currentIndex = 0;
+                this.score = 0;
+                this.playerLives = 3;
+                this.updateLivesDisplay();
+
+                this.navTo('game');
+                this.loadLevelTarget();
+            }
+
+            updateLivesDisplay() {
+                const display = document.getElementById('player-lives-display');
+                display.textContent = '❤️'.repeat(Math.max(0, this.playerLives)) || '💥 DEAD';
+            }
+
+            getCorrectLetterForCurrentRound() {
+                const q = this.activeQuestions[this.currentIndex];
+                for (let letter in this.currentChoicesMap) {
+                    if (this.currentChoicesMap[letter] === q.correct) {
+                        return letter;
+                    }
+                }
+                return 'A';
+            }
+
+            loadLevelTarget() {
+                const q = this.activeQuestions[this.currentIndex];
+                const total = this.activeQuestions.length;
+
+                document.getElementById('game-level-text').textContent = `QUESTION ${this.currentIndex + 1} / ${total}`;
+
+                document.getElementById('q-category-badge').textContent = q.topic || 'Combinatorics';
+                document.getElementById('q-difficulty-badge').textContent = `Difficulty: ${q.difficulty} | Bloom: ${q.bloom}`;
+                document.getElementById('question-text').textContent = q.question;
+
+                const choicesList = [q.correct, ...q.distractors];
+                this.shuffle(choicesList);
+
+                this.currentChoicesMap = {
+                    'A': choicesList[0],
+                    'B': choicesList[1],
+                    'C': choicesList[2],
+                    'D': choicesList[3]
+                };
+
+                document.getElementById('text-choice-A').textContent = choicesList[0];
+                document.getElementById('text-choice-B').textContent = choicesList[1];
+                document.getElementById('text-choice-C').textContent = choicesList[2];
+                document.getElementById('text-choice-D').textContent = choicesList[3];
+
+                this.shooter.startRound(this.currentChoicesMap);
+            }
+
+            handleShotResult(shotLetter) {
+                const q = this.activeQuestions[this.currentIndex];
+                const chosenText = this.currentChoicesMap[shotLetter];
+                const isCorrect = (chosenText === q.correct);
+
+                if (isCorrect) {
+                    soundFX.playCorrect();
+                    this.score++;
+                    this.shooter.statusBanner = { text: "🎯 CORRECT! TARGET DESTROYED", color: "#10b981" };
+                } else {
+                    soundFX.playWrong();
+
+                    if (this.shooter.hasShield) {
+                        this.shooter.hasShield = false;
+                        this.shooter.updateHUDPowerUpBadge(null);
+                        this.shooter.statusBanner = { text: "🛡️ SHIELD ABSORBED THE HIT!", color: "#10b981" };
+                    } else {
+                        this.playerLives--;
+                        this.updateLivesDisplay();
+                        this.shooter.statusBanner = { text: "⚠️ INCORRECT ALIEN! -1 LIFE", color: "#f43f5e" };
+                    }
+                }
+
+                this.shooter.render();
+
+                setTimeout(() => {
+                    if (this.playerLives <= 0) {
+                        this.finishGame();
+                    } else {
+                        this.nextLevel();
+                    }
+                }, 900);
+            }
+
+            nextLevel() {
+                this.currentIndex++;
+
+                if (this.currentIndex < this.activeQuestions.length) {
+                    this.loadLevelTarget();
+                } else {
+                    this.finishGame();
+                }
+            }
+
+            finishGame() {
+                if (this.shooter) this.shooter.running = false;
+
+                const total = this.activeQuestions.length || 30;
+                const percent = Math.round((this.score / total) * 100);
+
+                if (percent > this.highScore) {
+                    this.highScore = percent;
+                    localStorage.setItem('fm2_hs', this.highScore);
+                    document.getElementById('high-score').textContent = this.highScore;
+                }
+
+                document.getElementById('results-score-percent').textContent = `${percent}%`;
+                document.getElementById('results-score-count').textContent = `${this.score} of ${total} Questions Cleared`;
+
+                const icon = document.getElementById('results-icon');
+                const title = document.getElementById('results-title');
+
+                if (percent >= 85) {
+                    icon.textContent = '🏆';
+                    title.textContent = 'MATH SCHOLAR EXCELLENT!';
+                } else if (percent >= 60) {
+                    icon.textContent = '🌟';
+                    title.textContent = 'EXAM PASSED!';
+                } else {
+                    icon.textContent = '💡';
+                    title.textContent = 'RETRY RECOMMENDED!';
+                }
+
+                this.navTo('results');
+            }
+
+            quitGame() {
+                if (this.shooter) this.shooter.running = false;
+                this.navTo('home');
+            }
+
+            openFlashcards() {
+                this.flashcardQuestions = JSON.parse(JSON.stringify(QUESTION_DATABASE));
+                this.fcIndex = 0;
+                this.fcFlipped = false;
+                this.renderFlashcard();
+                this.navTo('flashcards');
+            }
+
+            shuffleFlashcards() {
+                soundFX.playLaser();
+                this.shuffle(this.flashcardQuestions);
+                this.fcIndex = 0;
+                this.renderFlashcard();
+            }
+
+            renderFlashcard() {
+                const q = this.flashcardQuestions[this.fcIndex];
+                document.getElementById('fc-index').textContent = this.fcIndex + 1;
+                document.getElementById('fc-category').textContent = q.competency;
+                document.getElementById('fc-question').textContent = q.question;
+                document.getElementById('fc-answer').textContent = `Correct Answer: ${q.correct}`;
+                document.getElementById('fc-explanation').textContent = `Explanation: ${q.explanation}`;
+
+                const inner = document.getElementById('flashcard-inner');
+                inner.classList.remove('rotate-y-180');
+                this.fcFlipped = false;
+            }
+
+            flipFlashcard() {
+                soundFX.playLaser();
+                const inner = document.getElementById('flashcard-inner');
+                this.fcFlipped = !this.fcFlipped;
+                inner.classList.toggle('rotate-y-180', this.fcFlipped);
+            }
+
+            nextFlashcard() {
+                soundFX.playLaser();
+                this.fcIndex = (this.fcIndex + 1) % this.flashcardQuestions.length;
+                this.renderFlashcard();
+            }
+
+            prevFlashcard() {
+                soundFX.playLaser();
+                this.fcIndex = (this.fcIndex - 1 + this.flashcardQuestions.length) % this.flashcardQuestions.length;
+                this.renderFlashcard();
+            }
+        }
+
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new LitQuestApp();
+        });
+    </script>
+</body>
+</html>
