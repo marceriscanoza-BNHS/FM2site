@@ -3,75 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finite Mathematics 2 Hub</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Google Font for sleek typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Subject Dashboard - Academic Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#4338ca',
+                            600: '#3730a3',
+                            700: '#312e81',
+                            900: '#1e1b4b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
-    <div class="container">
-        <!-- Header -->
-        <header class="hero">
-            <span class="badge">Academic Portfolio</span>
-            <h1>Finite Mathematics 2 Dashboard</h1>
-            <p>Access test archives, study guides, and subject resources in one place.</p>
-        </header>
-
-        <!-- Main Content Sections -->
-        <main>
-            <!-- Section 1: Exams & Tests -->
-            <section class="section">
-                <h2>Long Tests</h2>
-                <div class="grid">
-                    <a href="long-test-1/" class="card">
-                        <div class="card-tag">Exam 01</div>
-                        <h3>Long Test 1</h3>
-                        <span class="arrow">View Page &rarr;</span>
-                    </a>
-
-                    <a href="long-test-2/" class="card">
-                        <div class="card-tag">Exam 02</div>
-                        <h3>Long Test 2</h3>
-                        <span class="arrow">View Page &rarr;</span>
-                    </a>
+    <!-- TOP HEADER -->
+    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-30 shadow-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
+                    FM
                 </div>
-            </section>
+                <div>
+                    <h1 class="text-base font-bold leading-tight">Bunsuran National High School</h1>
+                    <p class="text-xs text-slate-400">Finite Mathematics 2 • Subject Hub</p>
+                </div>
+            </div>
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <i class="fa-solid fa-circle-dot text-[8px]"></i> Active Portfolio
+                </span>
+            </div>
+        </div>
+    </header>
 
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow w-full space-y-12">
 
-            <!-- Section: Reviewers & Study Guides -->
-<section class="section">
-    <h2>Reviewers & Study Guides</h2>
-    <div class="grid">
-        <a href="reviewers/summative-1.html" class="card">
-            <div class="card-tag tag-purple">Reviewer</div>
-            <h3>Summative 1 Reviewer</h3>
-            <p>Key terms, core concepts, and practice notes.</p>
-            <span class="arrow">Open Reviewer &rarr;</span>
-        </a>
+        <!-- HERO SECTION -->
+        <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-8 sm:p-12 shadow-2xl">
+            <div class="absolute right-0 top-0 opacity-10 p-12 pointer-events-none hidden sm:block">
+                <i class="fa-solid fa-graduation-cap text-9xl"></i>
+            </div>
+            <div class="relative z-10 max-w-2xl space-y-4">
+                <span class="inline-block bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    Academic Hub
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Finite Mathematics 2 Dashboard</h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Access your archived long tests, study reviewers, and shared Google Drive repository all in one place.
+                </p>
+            </div>
+        </section>
 
-        <a href="reviewers/summative-2.html" class="card">
-            <div class="card-tag tag-purple">Reviewer</div>
-            <h3>Summative 2 Reviewer</h3>
-            <p>Key terms, core concepts, and practice notes.</p>
-            <span class="arrow">Open Reviewer &rarr;</span>
-        </a>
+        <!-- SECTION 1: LONG TESTS (1 TO 5) -->
+        <section class="space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Long Tests & Assessments (1 to 5)</h3>
+            </div>
 
-        <a href="reviewers/term-exam.html" class="card">
-            <div class="card-tag tag-purple">Comprehensive</div>
-            <h3>Term Exam Reviewer</h3>
-            <p>Full subject summary, formulas, and final review guide.</p>
-            <span class="arrow">Open Reviewer &rarr;</span>
-        </a>
-    </div>
-</section>
-        </main>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Long Test 1 -->
+                <a href="long-test-1/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg border border-indigo-500/20">Assessment 01</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">Long Test #1</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Combinatorics foundations and counting principles.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Archived</span>
+                        <span class="font-bold text-indigo-400 group-hover:underline">Open Page &rarr;</span>
+                    </div>
+                </a>
 
-        <!-- Footer -->
-        <footer>
-            <p>© Built with GitHub Pages</p>
-        </footer>
-    </div>
+                <!-- Long Test 2 -->
+                <a href="long-test-2/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">Assessment 02</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">Long Test #2</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Symmetry Properties, Pascal's Identity, & Probability.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Interactive Quiz</span>
+                        <span class="font-bold text-emerald-400 group-hover:underline">Open Page &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Long Test 3 -->
+                <a href="long-test-3/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">Assessment 03</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">Long Test #3</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Advanced topics and problem sets.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Module Page</span>
+                        <span class="font-bold text-indigo-400 group-hover:underline">Open Page &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Long Test 4 -->
+                <a href="long-test-4/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">Assessment 04</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">Long Test #4</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Advanced topics and problem sets.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Module Page</span>
+                        <span class="font-bold text-indigo-400 group-hover:underline">Open Page &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Long Test 5 -->
+                <a href="long-test-5/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between md:col-span-2 lg:col-span-1">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">Assessment 05</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">Long Test #5</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Final module assessments and evaluations.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Module Page</span>
+                        <span class="font-bold text-indigo-400 group-hover:underline">Open Page &rarr;</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECTION 2: REVIEWERS -->
+        <section class="space-y-6">
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <div class="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Reviewers & Study Guides</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Reviewer 1 -->
+                <a href="summative-1-reviewer/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-purple-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">Reviewer 01</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">Summative 1 Reviewer</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Core concept summaries and practice walkthroughs.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Study Guide</span>
+                        <span class="font-bold text-purple-400 group-hover:underline">Open Guide &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Reviewer 2 -->
+                <a href="summative-2-reviewer/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-purple-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-lg border border-purple-500/20">Reviewer 02</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-purple-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">Summative 2 Reviewer</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Key notes, rules of combinations, and constraints handling.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Study Guide</span>
+                        <span class="font-bold text-purple-400 group-hover:underline">Open Guide &rarr;</span>
+                    </div>
+                </a>
+
+                <!-- Term Exam Reviewer -->
+                <a href="term-exam-reviewer/" class="group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-purple-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">Comprehensive</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-amber-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-amber-300 transition-colors">Term Exam Reviewer</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">Comprehensive summary covering all topics and formula sheets.</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>Final Exam Guide</span>
+                        <span class="font-bold text-amber-400 group-hover:underline">Open Guide &rarr;</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- SECTION 3: EMBEDDED GOOGLE DRIVE REPOSITORY -->
+        <section class="space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-brands fa-google-drive"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Shared Google Drive Repository</h3>
+                </div>
+                <a href="https://drive.google.com/drive/u/0/folders/1TwuLtwR3JZiOmhIokKSm7YMpcZQK-klW" target="_blank" class="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1.5">
+                    <span>Open in New Tab</span>
+                    <i class="fa-solid fa-external-link-alt text-[10px]"></i>
+                </a>
+            </div>
+
+            <!-- Embedded Drive Folder Container -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-3 bg-slate-900/90 border-b border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-amber-400"></i> Subject Documents & Assets Directory
+                    </span>
+                    <span class="text-[11px] text-slate-500">Embedded Live View</span>
+                </div>
+                <div class="w-full h-[500px] bg-slate-950">
+                    <iframe src="https://drive.google.com/embeddedfolderview?id=1TwuLtwR3JZiOmhIokKSm7YMpcZQK-klW#list" 
+                            class="w-full h-full border-0 filter invert hue-rotate-180 opacity-90"
+                            title="Google Drive Repository"></iframe>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+        <p>Bunsuran National High School • Senior High School Department</p>
+        <p class="mt-1">Finite Mathematics 2 Portal © 2026 • Powered by GitHub Pages</p>
+    </footer>
 
 </body>
 </html>
