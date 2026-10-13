@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 5 Module 1: Sample Spaces & Random Experiments</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-dark: #0f172a;
+      --secondary: #2563eb;
+      --accent: #eab308;
+      --accent-hover: #ca8a04;
+      --bg-slate: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --box-bg: #f1f5f9;
+      --table-th-bg: #f1f5f9;
+      --calc-bg: #e0f2fe;
+      --calc-border: #93c5fd;
+      --calc-title: #0369a1;
+      --option-hover: #f8fafc;
+      --simple-card-bg: #eff6ff;
+      --simple-card-border: #3b82f6;
+      --compound-card-bg: #fefce8;
+      --compound-card-border: #eab308;
+      --header-bg: linear-gradient(135deg, #0f172a, #1e3a8a);
+    }
+
+    [data-theme="dark"] {
+      --primary: #3b82f6;
+      --primary-dark: #f8fafc;
+      --secondary: #60a5fa;
+      --accent: #facc15;
+      --accent-hover: #eab308;
+      --bg-slate: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --border: #334155;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --box-bg: #0f172a;
+      --table-th-bg: #334155;
+      --calc-bg: #1e3a8a44;
+      --calc-border: #3b82f6;
+      --calc-title: #93c5fd;
+      --option-hover: #334155;
+      --simple-card-bg: #1e3a8a33;
+      --simple-card-border: #3b82f6;
+      --compound-card-bg: #854d0e33;
+      --compound-card-border: #eab308;
+      --header-bg: linear-gradient(135deg, #020617, #0f172a);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    body {
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--header-bg);
+      color: #ffffff;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      font-size: 0.85rem;
+      color: #93c5fd;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .status-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Form & Input Controls */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background-color: var(--card-bg);
+      color: var(--text-main);
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: var(--secondary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--secondary);
+      color: #ffffff;
+    }
+
+    .btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--secondary);
+      color: var(--secondary);
+    }
+
+    .btn-outline:hover {
+      background: var(--box-bg);
+    }
+
+    /* Screen Management */
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Module Content Styling */
+    .module-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      background: var(--box-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      font-size: 0.875rem;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .interactive-box {
+      background: var(--box-bg);
+      border-left: 4px solid var(--secondary);
+      padding: 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.25rem 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-primary { background: #dbeafe; color: #1e40af; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-success { background: #dcfce7; color: #166534; }
+
+    [data-theme="dark"] .badge-primary { background: #1e3a8a; color: #93c5fd; }
+    [data-theme="dark"] .badge-warning { background: #78350f; color: #fde047; }
+    [data-theme="dark"] .badge-success { background: #14532d; color: #86efac; }
+
+    /* Assessment Questions */
+    .question-card {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question-card:last-child {
+      border-bottom: none;
+    }
+
+    .question-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+      color: var(--text-main);
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-color: var(--card-bg);
+    }
+
+    .option-label:hover {
+      background: var(--option-hover);
+      border-color: var(--secondary);
+    }
+
+    .option-label input {
+      margin-right: 0.75rem;
+      accent-color: var(--secondary);
+    }
+
+    /* Results Dashboard */
+    .results-header {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--box-bg);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .score-big {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .review-item {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .review-item.correct {
+      background: rgba(22, 163, 74, 0.1);
+      border-color: var(--success);
+    }
+
+    .review-item.incorrect {
+      background: rgba(220, 38, 38, 0.1);
+      border-color: var(--danger);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: var(--table-th-bg);
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <h1>Week 5 - Module 1</h1>
+      <p>Finite Mathematics 2: Sample Spaces & Random Experiments</p>
+    </div>
+    <div class="header-actions">
+      <div class="status-bar" id="status-bar" style="display: none;">
+        <div class="status-item">Auditor: <strong id="user-display-name">---</strong></div>
+        <div class="status-item">Time Elapsed: <strong id="timer-display">00:00</strong></div>
+      </div>
+      <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+        <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- SCREEN 1: LOGIN -->
+    <div id="screen-login" class="screen active">
+      <div class="card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
+        <h2 style="color: var(--text-main); margin-bottom: 0.5rem;">Auditor Portal Log-In</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Welcome to the Pandi Ready-to-Wear (RTW) Garment Quality Assurance Training System. Please enter your name to start your inspection session.
+        </p>
+        <form id="login-form" onsubmit="handleLogin(event)">
+          <div class="form-group" style="text-align: left;">
+            <label for="student-name">Full Name of Auditor</label>
+            <input type="text" id="student-name" placeholder="e.g., Maria Santos" required />
+          </div>
+          <button type="submit" class="btn btn-accent" style="width: 100%;">Initialize Inspection Shift</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: LEARNING MODULES -->
+    <div id="screen-module" class="screen">
+      <div class="module-nav">
+        <button class="tab-btn active" onclick="switchTab(0)">1. Context & Pillars</button>
+        <button class="tab-btn" onclick="switchTab(1)">2. Sample Space & Cardinality</button>
+        <button class="tab-btn" onclick="switchTab(2)">3. Tree Diagrams & Listing</button>
+        <button class="tab-btn" onclick="switchTab(3)">4. Simple vs. Compound Events</button>
+        <button class="tab-btn" onclick="switchTab(4)">5. QA Misconceptions</button>
+        <button class="tab-btn" onclick="switchTab(5)">6. Textile Verification Case</button>
+      </div>
+
+      <!-- Tab 1 -->
+      <div id="tab-0" class="tab-content card">
+        <span class="badge badge-primary">Context & Foundations</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">Quality Assurance in Pandi, Bulacan</h2>
+        <p>You are a <strong>Quality Assurance (QA) Auditor</strong> at an RTW Embroidery Workshop in Barangay Bunsuran I, Pandi. Your role is to track production lines, verify garment parameters, and ensure precise defect inventories.</p>
+        
+        <div class="interactive-box">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Concept 1: Random Experiment</h4>
+          <p>A repeatable process where you know <strong>all possible results in advance</strong>, but cannot predict the exact outcome of any single trial with certainty.</p>
+        </div>
+
+        <h3>The 3 Pillars of a Random Experiment</h3>
+        <ol style="margin-left: 1.25rem; margin-top: 0.5rem;">
+          <li><strong>Repeatable</strong> under identical conditions on the workshop floor.</li>
+          <li><strong>All possible outcomes</strong> are known in advance.</li>
+          <li>The specific result depends entirely on <strong>chance</strong>.</li>
+        </ol>
+
+        <h3 style="margin-top: 1.5rem;">Boundary Check: Random vs. Deterministic</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Random Experiment (Unpredictable Single Outcome)</th>
+              <th>Deterministic Process (Guaranteed Single Outcome)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inspecting a batch of garments for defects (Pass/Fail)</td>
+              <td>Calculating 5 + 8 = 13 on an audit log sheet</td>
+            </tr>
+            <tr>
+              <td>Drawing a random fabric swatch from a shipment</td>
+              <td>Checking the capital city of the Philippines</td>
+            </tr>
+            <tr>
+              <td>Testing tensile strength of synthetic thread swatches</td>
+              <td>Measuring the length of a fixed 30cm steel ruler</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button class="btn" onclick="switchTab(1)">Next Section: Sample Space &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tab 2 -->
+      <div id="tab-1" class="tab-content card" style="display: none;">
+        <span class="badge badge-primary">Master Inventory</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">Concept 2: Sample Space (S) & Cardinality</h2>
+        <p>The <strong>Sample Space (S)</strong> is the universal container representing the master inventory of every single possible outcome. Nothing can be left out.</p>
+
+        <div class="interactive-box">
+          <p><strong>Set Notation:</strong> S = {ω₁, ω₂, ω₃, ...}</p>
+          <p><strong>Sample Point (ω):</strong> An individual outcome in the sample space.</p>
+          <p><strong>Cardinality (n(S)):</strong> The total count of all possible unique outcomes in S.</p>
+        </div>
+
+        <h3>The Cardinality Shortcut Rules</h3>
+        <p><strong>1. Identical Binary/Multi-Option Stages (n(S) = kⁿ):</strong></p>
+        <p>Where <em>k</em> = options available per stage (e.g., 2 for Pass/Fail) and <em>n</em> = number of stages (e.g., 3 inspected garments).</p>
+        <p><em>Example:</em> n(S) = 2³ = 8 outcomes.</p>
+
+        <p style="margin-top: 1rem;"><strong>2. Multi-Variable Independent Choices:</strong></p>
+        <p>Multiply choices across stages: n(S) = n₁ × n₂ × n₃ ...</p>
+        <p><em>Example:</em> 3 Fabric Choices × 2 Sleeve Designs × 4 Embroidery Patterns = <strong>24 total unique dress configurations</strong>.</p>
+
+        <!-- Interactive Widget -->
+        <div style="background: var(--calc-bg); border: 1px solid var(--calc-border); border-radius: 8px; padding: 1rem; margin-top: 1.5rem;">
+          <h4 style="color: var(--calc-title);">Interactive Cardinality Calculator</h4>
+          <div class="grid-2" style="margin-top: 0.5rem;">
+            <div>
+              <label style="font-size: 0.85rem;">Options per stage (k):</label>
+              <input type="number" id="calc-k" value="2" min="1" onchange="calculateCardinality()" />
+            </div>
+            <div>
+              <label style="font-size: 0.85rem;">Number of stages (n):</label>
+              <input type="number" id="calc-n" value="3" min="1" onchange="calculateCardinality()" />
+            </div>
+          </div>
+          <p style="margin-top: 0.75rem; font-weight: 700; color: var(--text-main);" id="calc-result">Calculated n(S) = 2³ = 8 total outcomes.</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+          <button class="btn btn-outline" onclick="switchTab(0)">&larr; Previous</button>
+          <button class="btn" onclick="switchTab(2)">Next Section: Mapping Tools &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tab 3 -->
+      <div id="tab-2" class="tab-content card" style="display: none;">
+        <span class="badge badge-primary">Mapping Methods</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">Method A: Set Listing & Method B: Tree Diagrams</h2>
+        
+        <h3>Method A: Systematic Set Listing</h3>
+        <p>Best for 1 or 2-stage audits. Writing outcomes in a rigid sequence prevents missing vital audit data.</p>
+        <p><strong>2-Garment Audit (P = Pass, F = Fail):</strong></p>
+        <div style="background: var(--box-bg); border: 1px solid var(--border); padding: 0.75rem; border-radius: 6px; margin: 0.5rem 0 1rem; font-family: monospace;">
+          S = {(P, P), (P, F), (F, P), (F, F)} &nbsp;|&nbsp; n(S) = 4
+        </div>
+
+        <h3>Method B: Tree Diagrams</h3>
+        <p>Essential for multi-stage audits. Visualizes chronological choices to guarantee zero missing branches.</p>
+        
+        <div style="background: var(--box-bg); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+          <h4>3-Garment Inspection Tree Diagram Simulation</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Chronological tree mapping for 3 inspected items:</p>
+          <div style="font-family: monospace; line-height: 1.8; font-size: 0.9rem;">
+            ├── Item 1 (P) ──┬── Item 2 (P) ──┬── Item 3 (P) &rarr; <strong>(P, P, P)</strong><br>
+            │                │                └── Item 3 (F) &rarr; <strong>(P, P, F)</strong><br>
+            │                └── Item 2 (F) ──┬── Item 3 (P) &rarr; <strong>(P, F, P)</strong><br>
+            │                                 └── Item 3 (F) &rarr; <strong>(P, F, F)</strong><br>
+            └── Item 1 (F) ──┬── Item 2 (P) ──┬── Item 3 (P) &rarr; <strong>(F, P, P)</strong><br>
+                             │                └── Item 3 (F) &rarr; <strong>(F, P, F)</strong><br>
+                             └── Item 2 (F) ──┬── Item 3 (P) &rarr; <strong>(F, F, P)</strong><br>
+                                              └── Item 3 (F) &rarr; <strong>(F, F, F)</strong>
+          </div>
+          <p style="margin-top: 0.75rem; font-weight: 700; color: var(--primary);">Complete S = {(P,P,P),(P,P,F),(P,F,P),(P,F,F),(F,P,P),(F,P,F),(F,F,P),(F,F,F)}, n(S) = 8</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+          <button class="btn btn-outline" onclick="switchTab(1)">&larr; Previous</button>
+          <button class="btn" onclick="switchTab(3)">Next Section: Events &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tab 4 -->
+      <div id="tab-3" class="tab-content card" style="display: none;">
+        <span class="badge badge-primary">Event Classification</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">Concept 3: Events (E) – Simple vs. Compound</h2>
+        <p>An <strong>Event (E)</strong> is a specific collection of outcomes that satisfy a particular quality condition. Mathematically, an event is a subset of the master sample space: E ⊆ S.</p>
+
+        <div class="grid-2" style="margin-top: 1rem;">
+          <div style="border: 2px solid var(--simple-card-border); border-radius: 8px; padding: 1rem; background: var(--simple-card-bg);">
+            <span class="badge badge-primary">Simple Event</span>
+            <h4 style="margin-top: 0.5rem; color: var(--primary);">Cardinality n(E) = 1</h4>
+            <p style="font-size: 0.9rem;">Contains <strong>exactly ONE</strong> specific element from S.</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-muted);"><em>Example:</em> Target E₁: "All three garments pass inspection."<br>E₁ = {(P, P, P)}, n(E₁) = 1.</p>
+          </div>
+          <div style="border: 2px solid var(--compound-card-border); border-radius: 8px; padding: 1rem; background: var(--compound-card-bg);">
+            <span class="badge badge-warning">Compound Event</span>
+            <h4 style="margin-top: 0.5rem; color: var(--accent-hover);">Cardinality n(E) &gt; 1</h4>
+            <p style="font-size: 0.9rem;">Contains <strong>TWO OR MORE</strong> elements from S.</p>
+            <p style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--text-muted);"><em>Example:</em> Target E₂: "At least two garments fail inspection."<br>E₂ = {(P,F,F), (F,P,F), (F,F,P), (F,F,F)}, n(E₂) = 4.</p>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">Case Study: Pandi Custom Dress Configuration</h3>
+        <p>Stages: Color [Yellow (Y), Blue (B)], Sleeves [Short (S), Long (L)], Embroidery [Floral (F), Plain (P)]. Total n(S) = 8.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Event Target Condition</th>
+              <th>Subset Elements</th>
+              <th>n(E)</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>E₁: Dress with Blue fabric & Long sleeves</td>
+              <td>{(B, L, F), (B, L, P)}</td>
+              <td>2</td>
+              <td><span class="badge badge-warning">Compound</span></td>
+            </tr>
+            <tr>
+              <td>E₂: Dress with Yellow fabric, Short sleeves, & Floral embroidery</td>
+              <td>{(Y, S, F)}</td>
+              <td>1</td>
+              <td><span class="badge badge-primary">Simple</span></td>
+            </tr>
+            <tr>
+              <td>E₃: Dress with Plain embroidery (any color/sleeve)</td>
+              <td>{(Y,S,P), (Y,L,P), (B,S,P), (B,L,P)}</td>
+              <td>4</td>
+              <td><span class="badge badge-warning">Compound</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+          <button class="btn btn-outline" onclick="switchTab(2)">&larr; Previous</button>
+          <button class="btn" onclick="switchTab(4)">Next Section: Misconceptions &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tab 5 -->
+      <div id="tab-4" class="tab-content card" style="display: none;">
+        <span class="badge badge-warning">Troubleshooting</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">3 Critical Quality Control Misconceptions</h2>
+
+        <div style="margin-bottom: 1.25rem;">
+          <h3 style="color: var(--danger);">1. The Sequential Trap: (P, F) ≠ (F, P)</h3>
+          <p><strong>The Error:</strong> Assuming "1 Pass and 1 Fail" is a single combined outcome, leading to S = {2 Pass, 1 Pass 1 Fail, 2 Fail} with incorrect n(S) = 3.</p>
+          <p><strong>The Correction:</strong> Chronological order dictates physical identity on the factory floor. Shirt A Passing then Shirt B Failing is a completely different physical event than Shirt A Failing then Shirt B Passing.</p>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <h3 style="color: var(--danger);">2. Subjective Filtering of Outcomes</h3>
+          <p><strong>The Error:</strong> Deleting flawless outcomes like (P, P, P) from the sample space because the QA audit team is only searching for defects.</p>
+          <p><strong>The Correction:</strong> Sample Space S represents objective physical reality and remains FIXED. Target events (E) shift depending on what question you ask, but pristine runs must stay in S.</p>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <h3 style="color: var(--danger);">3. Omitting the Baseline (Denominator Distortion)</h3>
+          <p><strong>The Impact on Classical Probability:</strong> P(E) = n(E) / n(S)</p>
+          <p>If n(S) is supposed to be 8, but you only listed 6 outcomes because you ignored flawless runs, your risk equations will report artificially inflated failure rates!</p>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
+          <button class="btn btn-outline" onclick="switchTab(3)">&larr; Previous</button>
+          <button class="btn" onclick="switchTab(5)">Next Section: Case Study &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Tab 6 -->
+      <div id="tab-5" class="tab-content card" style="display: none;">
+        <span class="badge badge-success">Industrial Application</span>
+        <h2 style="margin: 0.5rem 0 1rem; color: var(--text-main);">3-Roll Textile Verification Scenario</h2>
+        <p>You must inspect three consecutive rolls of fabric for weave defects. Each roll is categorized as either <strong>Flawless (F)</strong> or <strong>Defective (D)</strong>.</p>
+
+        <div class="interactive-box">
+          <h4>Official Audit Verification Roadmap:</h4>
+          <p><strong>Master Sample Space:</strong><br>S = {(F,F,F), (F,F,D), (F,D,F), (F,D,D), (D,F,F), (D,F,D), (D,D,F), (D,D,D)}<br><strong>Cardinality:</strong> n(S) = 8</p>
+          <hr style="margin: 0.75rem 0; border: none; border-top: 1px solid var(--border);">
+          <p><strong>Event A ("At least 2 defective rolls"):</strong><br>A = {(F,D,D), (D,F,D), (D,D,F), (D,D,D)}, n(A) = 4 &rarr; Compound Event</p>
+          <p style="margin-top: 0.5rem;"><strong>Event B ("All flawless rolls"):</strong><br>B = {(F,F,F)}, n(B) = 1 &rarr; Simple Event</p>
+          <hr style="margin: 0.75rem 0; border: none; border-top: 1px solid var(--border);">
+          <p><strong>Classical Defect Probability:</strong> P(A) = n(A) / n(S) = 4 / 8 = 0.50 (50%)</p>
+        </div>
+
+        <div style="background: var(--compound-card-bg); border: 1px solid var(--compound-card-border); padding: 1rem; border-radius: 8px; margin-top: 1.5rem; text-align: center;">
+          <h3>Module Complete!</h3>
+          <p style="font-size: 0.9rem; margin: 0.5rem 0 1rem;">You have reviewed all 6 sections. You are now ready to take the 15-item Exit Assessment.</p>
+          <button class="btn btn-accent" onclick="startAssessment()">Proceed to Exit Assessment (15 Items) &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: EXIT ASSESSMENT -->
+    <div id="screen-assessment" class="screen">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border);">
+          <div>
+            <h2 style="color: var(--text-main);">Exit Assessment: QA Mastery Check</h2>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Answer all 15 items below based on the module concepts.</p>
+          </div>
+          <span class="badge badge-warning" style="font-size: 0.9rem; padding: 0.5rem 0.8rem;">15 Questions</span>
+        </div>
+
+        <form id="quiz-form" onsubmit="submitAssessment(event)">
+          <div id="questions-container"></div>
+          <div style="text-align: center; margin-top: 2rem;">
+            <button type="submit" class="btn btn-accent" style="padding: 1rem 2.5rem; font-size: 1.1rem;">Submit Completed Assessment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: RESULTS -->
+    <div id="screen-results" class="screen">
+      <div class="card">
+        <div class="results-header">
+          <span class="badge badge-success" style="margin-bottom: 0.5rem;">Official Audit Report</span>
+          <h2>Shift Diagnostic Results</h2>
+          <p style="margin-top: 0.25rem;">Auditor: <strong id="res-student-name">---</strong></p>
+          <div class="score-big" id="res-score-display">0 / 15</div>
+          <p id="res-percentage" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);"></p>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;">
+            Total Session Time Taken: <strong id="res-time-taken">--:--</strong>
+          </p>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; color: var(--text-main);">Detailed Item Response Review</h3>
+        <div id="review-container"></div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+          <button class="btn" onclick="resetModule()">Retake Module & Assessment</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // State Management
+    let auditorName = "";
+    let startTime = null;
+    let timerInterval = null;
+    let elapsedTimeSeconds = 0;
+
+    // Dark Mode Toggle Logic
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', targetTheme);
+      localStorage.setItem('theme', targetTheme);
+      updateThemeUI(targetTheme);
+    }
+
+    function updateThemeUI(theme) {
+      const icon = document.getElementById('theme-icon');
+      const text = document.getElementById('theme-text');
+      if (theme === 'dark') {
+        if (icon) icon.textContent = '☀️';
+        if (text) text.textContent = 'Light Mode';
+      } else {
+        if (icon) icon.textContent = '🌙';
+        if (text) text.textContent = 'Dark Mode';
+      }
+    }
+
+    // Initialize Theme preference
+    (function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeUI(savedTheme);
+    })();
+
+    // 15 Assessment Questions directly based on PPT content (Standard text formatting)
+    const quizQuestions = [
+      {
+        id: 1,
+        question: "1. Which of the following best defines a 'Random Experiment' in Quality Assurance auditing?",
+        options: [
+          "A process with an unpredictable number of stages where outcomes are completely unknown in advance.",
+          "A repeatable process where all possible results are known in advance, but the exact outcome of a single trial cannot be predicted with certainty.",
+          "A calculation or test that guarantees a single fixed result every time under all conditions.",
+          "An audit method that excludes pristine products from the final count."
+        ],
+        answer: 1,
+        explanation: "A random experiment is repeatable, all possible outcomes are known in advance, and individual trial results depend entirely on chance."
+      },
+      {
+        id: 2,
+        question: "2. Which of the following scenarios is considered a DETERMINISTIC process rather than a random experiment?",
+        options: [
+          "Inspecting a batch of 3 embroidery pieces coming off the Pandi assembly line for defects.",
+          "Testing the tensile strength of a new batch of synthetic fabric swatches.",
+          "Calculating 5 + 8 = 13 on a QA inventory report.",
+          "Drawing a random fabric swatch from a warehouse pallet."
+        ],
+        answer: 2,
+        explanation: "Calculating 5 + 8 = 13 is deterministic because it yields a single guaranteed result every time, unlike physical inspection trials."
+      },
+      {
+        id: 3,
+        question: "3. In probability theory, what does the Sample Space (S) represent?",
+        options: [
+          "A set containing only defective or failed items from an audit.",
+          "The master inventory / universal set of every single possible outcome of a random experiment.",
+          "The subset of items that satisfy a specific quality benchmark.",
+          "A single specific outcome of an inspection trial."
+        ],
+        answer: 1,
+        explanation: "The Sample Space (S) is the complete master list enclosing ALL operational possibilities."
+      },
+      {
+        id: 4,
+        question: "4. An auditor inspects 2 consecutive embroidery pieces, where each piece can either Pass (P) or Fail (F). What is the complete Sample Space S?",
+        options: [
+          "S = {(P, P), (F, F)}",
+          "S = {(P, F), (F, P)}",
+          "S = {(P, P), (P, F), (F, P), (F, F)}",
+          "S = {2 Pass, 1 Pass 1 Fail, 2 Fail}"
+        ],
+        answer: 2,
+        explanation: "For 2 sequential binary stages, n(S) = 2² = 4 outcomes: {(P, P), (P, F), (F, P), (F, F)}."
+      },
+      {
+        id: 5,
+        question: "5. Using the Cardinality Shortcut Rule n(S) = kⁿ, what is the cardinality n(S) for inspecting 3 consecutive garments where each can Pass (P) or Fail (F)?",
+        options: [
+          "n(S) = 6",
+          "n(S) = 8",
+          "n(S) = 9",
+          "n(S) = 16"
+        ],
+        answer: 1,
+        explanation: "With k = 2 options (P/F) across n = 3 stages, n(S) = 2³ = 8."
+      },
+      {
+        id: 6,
+        question: "6. A Pandi RTW manufacturer offers custom dresses with 3 fabric choices, 2 sleeve designs, and 4 embroidery patterns. How many total unique dress configurations exist?",
+        options: [
+          "9 total configurations",
+          "14 total configurations",
+          "24 total configurations",
+          "48 total configurations"
+        ],
+        answer: 2,
+        explanation: "By the Fundamental Counting Principle: n(S) = 3 × 2 × 4 = 24 total unique configurations."
+      },
+      {
+        id: 7,
+        question: "7. Why are (P, F) and (F, P) treated as two distinct physical outcomes in a sequential 2-garment audit?",
+        options: [
+          "They are actually identical and should be combined into one outcome to save paper.",
+          "Sequential timeline matters because the chronological record represents two entirely different physical realities on the factory line.",
+          "(P, F) is a simple event, whereas (F, P) is a compound event.",
+          "One outcome represents flawless production while the other represents total factory failure."
+        ],
+        answer: 1,
+        explanation: "Order matters! Item 1 Passing and Item 2 Failing is a separate chronological occurrence from Item 1 Failing and Item 2 Passing."
+      },
+      {
+        id: 8,
+        question: "8. A QA auditor tracking defects is tempted to delete the flawless outcome (P, P, P) from the sample space. Why is this a misconception?",
+        options: [
+          "Because QA only focuses on defective items.",
+          "Because (P, P, P) is not an outcome.",
+          "Because the Sample Space represents objective physical reality and must remain fixed; events shift based on target questions.",
+          "Because (P, P, P) has a cardinality of zero."
+        ],
+        answer: 2,
+        explanation: "Deleting pristine runs distorts objective reality and permanently compromises the universal sample space."
+      },
+      {
+        id: 9,
+        question: "9. What mathematically happens to risk equations if an auditor omits outcomes from the sample space (e.g., listing only 6 outcomes instead of 8)?",
+        options: [
+          "Calculated failure rates become artificially inflated because the mathematical denominator n(S) is compromised.",
+          "The probability calculation automatically corrects itself.",
+          "The numerator n(E) becomes negative.",
+          "The event changes from compound to simple."
+        ],
+        answer: 0,
+        explanation: "In P(E) = n(E) / n(S), reducing the denominator n(S) artificially inflates calculated probability rates."
+      },
+      {
+        id: 10,
+        question: "10. How is an Event (E) mathematically defined in relation to the Sample Space (S)?",
+        options: [
+          "An Event is always equal to n(S).",
+          "An Event is a specific subset of the master sample space (E ⊆ S).",
+          "An Event is the set of all outcomes completely outside of S.",
+          "An Event is a deterministic formula."
+        ],
+        answer: 1,
+        explanation: "An Event (E) is a subset of outcomes from the master Sample Space (S) that satisfy a chosen rule or criterion."
+      },
+      {
+        id: 11,
+        question: "11. What key metric distinguishes a Simple Event from a Compound Event?",
+        options: [
+          "Simple Events have n(E) = 0, while Compound Events have n(E) = 1.",
+          "Simple Events contain exactly 1 outcome (n(E) = 1), while Compound Events contain 2 or more outcomes (n(E) > 1).",
+          "Simple Events apply to 2-stage audits, while Compound Events apply to 3-stage audits.",
+          "Simple Events track defects, while Compound Events track flawless items."
+        ],
+        answer: 1,
+        explanation: "By definition, a Simple Event has cardinality n(E) = 1 (singleton subset), whereas a Compound Event has n(E) > 1."
+      },
+      {
+        id: 12,
+        question: "12. In the Pandi Dress Catalog [Color: Yellow(Y)/Blue(B), Sleeves: Short(S)/Long(L), Embroidery: Floral(F)/Plain(P)], define Event E1: 'Choosing a dress with Blue fabric and Long sleeves'.",
+        options: [
+          "E1 = {(B, L, F)}, n(E1) = 1",
+          "E1 = {(B, L, F), (B, L, P)}, n(E1) = 2",
+          "E1 = {(B, S, F), (B, S, P), (B, L, F), (B, L, P)}, n(E1) = 4",
+          "E1 = {(Y, L, F), (B, L, F)}, n(E1) = 2"
+        ],
+        answer: 1,
+        explanation: "Fixing Blue fabric (B) and Long sleeves (L) leaves 2 embroidery options (F and P), so E1 = {(B, L, F), (B, L, P)}, n(E1) = 2."
+      },
+      {
+        id: 13,
+        question: "13. In the same Pandi Dress Catalog, how is Event E2: 'Choosing a dress with Yellow fabric, Short sleeves, and Floral embroidery' classified?",
+        options: [
+          "Compound Event because it involves 3 design stages.",
+          "Simple Event because E2 = {(Y, S, F)} contains exactly 1 outcome (n(E2) = 1).",
+          "Universal Sample Space because it encompasses all attributes.",
+          "Deterministic Process."
+        ],
+        answer: 1,
+        explanation: "E2 specifies a single outcome {(Y, S, F)}, making its cardinality n(E2) = 1, which classifies it as a Simple Event."
+      },
+      {
+        id: 14,
+        question: "14. For a 3-Roll Textile inspection (Flawless = F, Defective = D), what elements form Event A: 'At least two defective fabric rolls'?",
+        options: [
+          "A = {(F, D, D), (D, F, D), (D, D, F)}",
+          "A = {(F, D, D), (D, F, D), (D, D, F), (D, D, D)}",
+          "A = {(D, D, D)}",
+          "A = {(F, F, D), (F, D, F), (D, F, F)}"
+        ],
+        answer: 1,
+        explanation: "'At least two defective' includes all outcomes with 2 defects AND the outcome with 3 defects: {(F, D, D), (D, F, D), (D, D, F), (D, D, D)}."
+      },
+      {
+        id: 15,
+        question: "15. In the 3-Roll Textile inspection where n(S) = 8, what is the classical probability of Event A ('At least two defective fabric rolls', where n(A) = 4)?",
+        options: [
+          "P(A) = 1 / 8 = 12.5%",
+          "P(A) = 3 / 8 = 37.5%",
+          "P(A) = 4 / 8 = 1/2 = 50%",
+          "P(A) = 8 / 4 = 200%"
+        ],
+        answer: 2,
+        explanation: "Classical probability is P(A) = n(A) / n(S) = 4 / 8 = 0.50 or 50%."
+      }
+    ];
+
+    // Functions
+    function handleLogin(e) {
+      e.preventDefault();
+      const input = document.getElementById('student-name');
+      auditorName = input.value.trim();
+      
+      if (!auditorName) return;
+
+      document.getElementById('user-display-name').textContent = auditorName;
+      document.getElementById('status-bar').style.display = 'flex';
+      
+      // Start Timer
+      startTime = new Date();
+      timerInterval = setInterval(updateTimer, 1000);
+
+      // Navigate to Module
+      showScreen('screen-module');
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      elapsedTimeSeconds = Math.floor((now - startTime) / 1000);
+      const mins = String(Math.floor(elapsedTimeSeconds / 60)).padStart(2, '0');
+      const secs = String(elapsedTimeSeconds % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function switchTab(index) {
+      const tabs = document.querySelectorAll('.tab-content');
+      const btns = document.querySelectorAll('.tab-btn');
+
+      tabs.forEach((tab, idx) => {
+        tab.style.display = idx === index ? 'block' : 'none';
+      });
+
+      btns.forEach((btn, idx) => {
+        if (idx === index) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+
+      window.scrollTo(0, 0);
+    }
+
+    function calculateCardinality() {
+      const k = parseInt(document.getElementById('calc-k').value) || 1;
+      const n = parseInt(document.getElementById('calc-n').value) || 1;
+      const result = Math.pow(k, n);
+      document.getElementById('calc-result').innerHTML = `Calculated n(S) = ${k}<sup>${n}</sup> = ${result} total outcomes.`;
+    }
+
+    function startAssessment() {
+      renderAssessmentQuestions();
+      showScreen('screen-assessment');
+    }
+
+    function renderAssessmentQuestions() {
+      const container = document.getElementById('questions-container');
+      container.innerHTML = '';
+
+      quizQuestions.forEach((q) => {
+        const qEl = document.createElement('div');
+        qEl.className = 'question-card';
+        
+        let optionsHtml = '';
+        q.options.forEach((opt, optIdx) => {
+          optionsHtml += `
+            <label class="option-label">
+              <input type="radio" name="q_${q.id}" value="${optIdx}" required />
+              <span>${opt}</span>
+            </label>
+          `;
+        });
+
+        qEl.innerHTML = `
+          <div class="question-title">${q.question}</div>
+          <div class="option-group">${optionsHtml}</div>
+        `;
+        container.appendChild(qEl);
+      });
+    }
+
+    function submitAssessment(e) {
+      e.preventDefault();
+      clearInterval(timerInterval);
+
+      let score = 0;
+      const reviewContainer = document.getElementById('review-container');
+      reviewContainer.innerHTML = '';
+
+      quizQuestions.forEach((q) => {
+        const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+        const userAns = selected ? parseInt(selected.value) : -1;
+        const isCorrect = userAns === q.answer;
+
+        if (isCorrect) score++;
+
+        const reviewItem = document.createElement('div');
+        reviewItem.className = `review-item ${isCorrect ? 'correct' : 'incorrect'}`;
+        reviewItem.innerHTML = `
+          <p style="font-weight: 700; margin-bottom: 0.25rem; color: var(--text-main);">
+            ${q.question} ${isCorrect ? '✅' : '❌'}
+          </p>
+          <p style="font-size: 0.9rem;">
+            <strong>Your Answer:</strong> ${userAns >= 0 ? q.options[userAns] : 'None'}<br>
+            <strong>Correct Answer:</strong> ${q.options[q.answer]}
+          </p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; background: var(--box-bg); padding: 0.5rem; border-radius: 4px;">
+            💡 <em>Explanation:</em> ${q.explanation}
+          </p>
+        `;
+        reviewContainer.appendChild(reviewItem);
+      });
+
+      // Populate Summary Header
+      document.getElementById('res-student-name').textContent = auditorName;
+      document.getElementById('res-score-display').textContent = `${score} / ${quizQuestions.length}`;
+      
+      const pct = Math.round((score / quizQuestions.length) * 100);
+      document.getElementById('res-percentage').textContent = `Score Percentage: ${pct}% (${pct >= 75 ? 'PASSED - Certified QA Auditor' : 'NEEDS REVIEW'})`;
+
+      const mins = String(Math.floor(elapsedTimeSeconds / 60)).padStart(2, '0');
+      const secs = String(elapsedTimeSeconds % 60).padStart(2, '0');
+      document.getElementById('res-time-taken').textContent = `${mins} min ${secs} sec`;
+
+      showScreen('screen-results');
+    }
+
+    function resetModule() {
+      document.getElementById('login-form').reset();
+      auditorName = "";
+      elapsedTimeSeconds = 0;
+      document.getElementById('status-bar').style.display = 'none';
+      switchTab(0);
+      showScreen('screen-login');
+    }
+  </script>
+</body>
+</html>
