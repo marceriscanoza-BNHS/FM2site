@@ -68,8 +68,26 @@
                 </span>
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Finite Mathematics 2 Dashboard</h2>
                 <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-                    Access your archived long tests, study reviewers, and shared Google Drive repository all in one place.
+                    Access your archived modules, long tests, study reviewers, and shared Google Drive repository all in one place.
                 </p>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: LEARNING MODULES -->
+        <section class="space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Learning Modules</h3>
+                </div>
+                <span class="text-xs text-slate-400 font-medium" id="module-count-badge">Available Modules</span>
+            </div>
+
+            <!-- Dynamic Modules Grid -->
+            <div id="modules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be auto-generated here by JavaScript -->
             </div>
         </section>
 
@@ -263,6 +281,76 @@
         <p>Bunsuran National High School • Senior High School Department</p>
         <p class="mt-1">Finite Mathematics 2 Portal © 2026 • Powered by GitHub Pages</p>
     </footer>
+
+    <!-- SCRIPT FOR MODULE MANIFEST -->
+    <script>
+        // =========================================================================
+        // ADD NEW MODULES HERE!
+        // Just upload your .html files to a folder (e.g. modules/) and add a new entry below.
+        // =========================================================================
+        const MODULES_LIST = [
+            {
+                tag: "Module 01",
+                title: "Introduction to Finite Mathematics",
+                desc: "Basic concepts, logic systems, sets, and fundamental counting principles.",
+                url: "modules/module-1.html",
+                status: "HTML Document"
+            },
+            {
+                tag: "Module 02",
+                title: "Permutations & Combinations",
+                desc: "Detailed breakdown of arrangements, selections, and constraint handling.",
+                url: "modules/module-2.html",
+                status: "HTML Document"
+            }
+            /* 
+            TO ADD MODULE 3 LATER, UNCOMMENT & EDIT THIS:
+            ,{
+                tag: "Module 03",
+                title: "Probability & Expected Value",
+                desc: "Sample spaces, conditional probability, and random variables.",
+                url: "modules/module-3.html",
+                status: "HTML Document"
+            }
+            */
+        ];
+
+        // RENDER FUNCTION
+        function renderModules() {
+            const grid = document.getElementById('modules-grid');
+            const badge = document.getElementById('module-count-badge');
+            
+            if (!grid) return;
+
+            badge.textContent = `${MODULES_LIST.length} Module${MODULES_LIST.length > 1 ? 's' : ''} Available`;
+            grid.innerHTML = '';
+
+            MODULES_LIST.forEach(item => {
+                const card = document.createElement('a');
+                card.href = item.url;
+                card.className = 'group bg-slate-900/70 hover:bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-2xl p-6 transition-all duration-200 shadow-xl flex flex-col justify-between';
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-lg border border-cyan-500/20">${item.tag}</span>
+                            <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">${item.title}</h4>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">${item.desc}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span>${item.status}</span>
+                        <span class="font-bold text-cyan-400 group-hover:underline">Read Module &rarr;</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', renderModules);
+    </script>
 
 </body>
 </html>
