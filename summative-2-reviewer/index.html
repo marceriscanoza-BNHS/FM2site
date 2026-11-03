@@ -2,77 +2,1390 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Not Available</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Quiz World - 16-Bit Mobile Edition</title>
+    <!-- Pixelated Google Fonts: VT323 for high legibility text, Press Start 2P for retro headers -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS for Responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * {
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 40px 30px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        .icon-container {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1a1a1a;
-        }
-        p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #666666;
-            margin-bottom: 24px;
-        }
-        .btn {
-            display: inline-block;
-            background-color: #0066cc;
+            font-family: 'Press Start 2P', cursive;
+            background-color: #030712;
             color: #ffffff;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            border: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        .btn:hover {
-            background-color: #0052a3;
+        /* Readable Font Class for Questions & Choices */
+        .hud-text-font {
+            font-family: 'VT323', monospace;
+            letter-spacing: 0.5px;
+        }
+        /* Mobile Portrait Frame */
+        .mobile-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 440px;
+            max-height: 860px;
+            background-color: #3b82f6; /* SNES Bright Sky Blue */
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 35px rgba(0,0,0,0.9);
+            overflow: hidden;
+            border-radius: 12px;
+            border: 4px solid #1e293b;
+        }
+        /* Crisp Pixel Art Rendering */
+        canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* CRT Scanline Overlay */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.12) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 25;
+        }
+        /* 16-Bit Retro SNES Buttons */
+        .retro-btn {
+            background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+            border: 3px solid #ffffff;
+            box-shadow: inset -3px -3px 0px #9a3412, inset 3px 3px 0px #ffedd5, 3px 3px 0px #000000;
+            color: #ffffff;
+            text-shadow: 2px 2px #000000;
+            transition: all 0.08s ease;
+        }
+        .retro-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: inset -1px -1px 0px #9a3412, inset 1px 1px 0px #ffedd5, 1px 1px 0px #000000;
+        }
+        .dpad-btn {
+            background: linear-gradient(180deg, #475569 0%, #334155 100%);
+            border: 3px solid #94a3b8;
+            box-shadow: inset -3px -3px 0px #0f172a, inset 3px 3px 0px #cbd5e1, 2px 2px 0px #000000;
+            color: #ffffff;
+            font-size: 18px;
+        }
+        .dpad-btn:active {
+            background: #1e293b;
+            transform: translate(2px, 2px);
+        }
+        .jump-btn {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+            border: 3px solid #ffffff;
+            box-shadow: inset -3px -3px 0px #991b1b, inset 3px 3px 0px #fca5a5, 2px 2px 0px #000000;
+            color: #ffffff;
+            text-shadow: 2px 2px #000000;
+            font-size: 15px;
+        }
+        .jump-btn:active {
+            background: #b91c1c;
+            transform: translate(2px, 2px);
+        }
+        /* Scrollable Dialog Box */
+        .snes-box {
+            background-color: #020617;
+            border: 3px solid #fbbf24;
+            box-shadow: inset -3px -3px 0px #b45309, inset 3px 3px 0px #fef08a, 0 4px 10px rgba(0,0,0,0.6);
+            border-radius: 6px;
+        }
+        /* Custom Scrollbar for HUD Choices */
+        .hud-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .hud-scroll::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="icon-container">🔒</div>
-        <h1>Early Access Restricted</h1>
-        <p>
-            Sorry, this link is currently not available right now. This page is reserved for advanced access and is not yet open to the public. Please check back later!
-        </p>
-        <a href="javascript:history.back()" class="btn">Go Back</a>
+    <div class="mobile-container relative flex flex-col justify-between">
+        <!-- CRT Scanline Screen Overlay -->
+        <div class="scanlines"></div>
+
+        <!-- Canvas Game & Dialog UI Container -->
+        <div class="relative w-full h-full flex-1 overflow-hidden flex flex-col">
+            
+            <!-- TOP QUESTION HUD & CHOICE LIST -->
+            <div id="questionHud" class="snes-box mx-2 mt-2 p-2.5 z-20 flex-shrink-0 flex flex-col hidden">
+                <div class="flex justify-between items-center text-[9px] text-yellow-400 mb-1 pb-1 border-b border-yellow-600/50">
+                    <span id="hudCategory">TOPIC: FINITE MATH</span>
+                    <span id="hudStage">STAGE 1 (1/5)</span>
+                </div>
+                <!-- Main Question Text (VT323 Pixel Font for High Readability) -->
+                <div id="hudQuestionText" class="hud-text-font text-[17px] leading-snug text-white font-semibold my-1">
+                    Question text goes here...
+                </div>
+                <!-- Full Answer Choices Display -->
+                <div id="hudChoicesContainer" class="hud-scroll max-h-[110px] overflow-y-auto space-y-1 mt-1 pt-1 border-t border-slate-800 hud-text-font text-[15px]">
+                    <div id="choiceA" class="text-sky-200 leading-snug"><span class="text-yellow-400 font-bold font-sans text-xs">[A]</span> Choice text A</div>
+                    <div id="choiceB" class="text-sky-200 leading-snug"><span class="text-yellow-400 font-bold font-sans text-xs">[B]</span> Choice text B</div>
+                    <div id="choiceC" class="text-sky-200 leading-snug"><span class="text-yellow-400 font-bold font-sans text-xs">[C]</span> Choice text C</div>
+                    <div id="choiceD" class="text-sky-200 leading-snug"><span class="text-yellow-400 font-bold font-sans text-xs">[D]</span> Choice text D</div>
+                </div>
+            </div>
+
+            <!-- Main Canvas Stage -->
+            <div class="relative flex-1 w-full h-full">
+                <canvas id="gameCanvas"></canvas>
+
+                <!-- Feedback Popup Overlay -->
+                <div id="feedbackPopup" class="absolute inset-x-4 top-1/3 -translate-y-1/2 hidden z-20 flex-col items-center justify-center p-3 snes-box text-center pointer-events-none transition-all duration-200">
+                    <div id="feedbackTitle" class="text-xs font-bold animate-bounce mb-1 text-emerald-400">CORRECT!</div>
+                    <div id="feedbackSubtitle" class="text-[9px] text-yellow-300 mb-1">+100 PTS</div>
+                    <div id="feedbackNextHint" class="text-[7px] text-slate-300">ENTERING WARP PIPE...</div>
+                </div>
+
+                <!-- UI Overlays (Start, Stage Clear, Game Over, Victory) -->
+                <div id="uiOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/85 p-4 text-center z-30">
+                    
+                    <!-- Start Screen -->
+                    <div id="startScreen" class="flex flex-col items-center gap-4">
+                        <h1 class="text-xl text-yellow-400 leading-relaxed tracking-wider text-shadow">SUPER<br><span class="text-white text-2xl text-red-500">QUIZ WORLD</span></h1>
+                        <p class="text-[9px] text-emerald-400 animate-pulse">FINITE MATH 2 EDITION</p>
+                        
+                        <div class="my-2 text-left text-[9px] text-slate-200 space-y-1.5 bg-slate-900/90 p-3 rounded border-2 border-amber-400 max-w-[280px]">
+                            <p class="text-yellow-300 font-bold">🎮 HOW TO PLAY:</p>
+                            <p>1. Read Question & Options (A,B,C,D) in the Top Box.</p>
+                            <p>2. Jump into Block [A],[B],[C] or [D] to answer!</p>
+                            <p>3. Grab 🍄 Extra Life & 🌟 Power-Ups floating in the level!</p>
+                        </div>
+                        
+                        <button id="startBtn" class="retro-btn px-6 py-3 text-xs font-bold uppercase rounded cursor-pointer mt-1">
+                            PRESS START
+                        </button>
+                        <div class="text-[9px] text-slate-400 mt-1">HIGH SCORE: <span id="startHighScore">000000</span></div>
+                    </div>
+
+                    <!-- Stage Clear Summary Screen -->
+                    <div id="stageClearScreen" class="hidden flex-col items-center gap-3">
+                        <h2 class="text-lg text-yellow-300 animate-pulse">STAGE CLEAR!</h2>
+                        <div id="starRating" class="text-yellow-400 text-lg">⭐⭐⭐</div>
+                        <div class="bg-slate-900 p-3 rounded border-2 border-amber-400 w-full max-w-[270px] text-[9px] space-y-2 text-left">
+                            <p class="flex justify-between"><span>STAGE:</span> <span id="summaryStageName" class="text-sky-300">STAGE 1</span></p>
+                            <p class="flex justify-between"><span>CURRENT SCORE:</span> <span id="summaryScore" class="text-yellow-400">000000</span></p>
+                            <p class="flex justify-between"><span>TIME BONUS:</span> <span id="summaryTimeBonus" class="text-emerald-400">+500</span></p>
+                            <p class="flex justify-between border-t border-slate-700 pt-1"><span>TOTAL SCORE:</span> <span id="summaryTotalScore" class="text-yellow-300 font-bold">000000</span></p>
+                        </div>
+                        <button id="nextStageBtn" class="retro-btn px-5 py-3 text-xs font-bold uppercase rounded mt-2">
+                            NEXT STAGE ➔
+                        </button>
+                    </div>
+
+                    <!-- Game Over Screen -->
+                    <div id="gameOverScreen" class="hidden flex-col items-center gap-4">
+                        <h2 class="text-2xl text-red-500 animate-bounce">GAME OVER</h2>
+                        <p class="text-[10px] text-slate-300">OUT OF LIVES OR TIME!</p>
+                        <div class="bg-slate-900 p-3 rounded border-2 border-white w-full max-w-[260px] text-[9px] space-y-2">
+                            <p>FINAL SCORE: <span id="finalScore" class="text-yellow-400">000000</span></p>
+                            <p>HIGH SCORE: <span id="finalHighScore" class="text-emerald-400">000000</span></p>
+                        </div>
+                        <button id="restartBtn" class="retro-btn px-5 py-3 text-xs font-bold uppercase rounded mt-2">
+                            TRY AGAIN
+                        </button>
+                    </div>
+
+                    <!-- Victory Screen -->
+                    <div id="victoryScreen" class="hidden flex-col items-center gap-4">
+                        <h2 class="text-xl text-yellow-300 animate-pulse">ALL STAGES CLEAR!</h2>
+                        <p class="text-[10px] text-emerald-300">YOU ARE A QUIZ MASTER!</p>
+                        <div class="bg-slate-900 p-3 rounded border-2 border-amber-400 w-full max-w-[260px] text-[9px] space-y-2">
+                            <p>FINAL SCORE: <span id="vicScore" class="text-yellow-400">000000</span></p>
+                            <p>BONUS LIVES: <span id="vicLives" class="text-emerald-400">0</span></p>
+                            <p>HIGH SCORE: <span id="vicHighScore" class="text-amber-300">000000</span></p>
+                        </div>
+                        <button id="victoryBtn" class="retro-btn px-5 py-3 text-xs font-bold uppercase rounded mt-2">
+                            PLAY AGAIN
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Touch Controls Bar (Mobile Portrait) -->
+        <div id="touchControls" class="h-24 bg-slate-950 border-t-4 border-slate-800 px-4 py-2 flex justify-between items-center z-10 flex-shrink-0">
+            <!-- D-Pad Left/Right -->
+            <div class="flex gap-2">
+                <button id="btnLeft" class="dpad-btn w-13 h-13 rounded-lg flex items-center justify-center select-none active:scale-95">◀</button>
+                <button id="btnRight" class="dpad-btn w-13 h-13 rounded-lg flex items-center justify-center select-none active:scale-95">▶</button>
+            </div>
+            
+            <!-- Mute Toggle -->
+            <button id="btnSound" class="text-[9px] bg-slate-900 text-yellow-400 border border-slate-700 px-2 py-2 rounded">🔊 SOUND</button>
+            
+            <!-- Jump Button -->
+            <div>
+                <button id="btnJump" class="jump-btn w-15 h-15 rounded-full flex items-center justify-center font-bold text-xs select-none active:scale-95">JUMP</button>
+            </div>
+        </div>
     </div>
 
+    <script>
+        /* ==========================================================================
+           QUIZ DATABASE (DEPED FINITE MATH 2 SUMMATIVE TEST 2 - ALL 30 ITEMS)
+           ========================================================================== */
+        const STAGES = [
+            {
+                stageName: "STAGE 1: SAMPLE SPACES & COUNTING",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "A QA auditor inspects 2 consecutive embroidery pieces (P or F). What is the total cardinality n(S)?",
+                        answers: ["n(S) = 2", "n(S) = 4", "n(S) = 6", "n(S) = 8"],
+                        correct: 1
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "If inspecting 3 sequential RTW garments for defects (Pass or Fail), what is n(S)?",
+                        answers: ["n(S) = 8", "n(S) = 6", "n(S) = 12", "n(S) = 16"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "A dressmaker offers 3 fabrics, 2 sleeve designs, & 4 embroidery patterns. How many dress variations?",
+                        answers: ["9 variations", "14 variations", "24 variations", "48 variations"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Evaluated purely as a numerical factorial expression, what is the value of 6!?",
+                        answers: ["120", "40,320", "5,040", "720"],
+                        correct: 3
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "How many distinct ways can 3 delivery trucks be assigned to 3 priority slots out of 6 trucks?",
+                        answers: ["P(6,3) = 120", "C(6,3) = 20", "6^3 = 216", "6! = 720"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                stageName: "STAGE 2: COMBINATIONS & COMPLEMENTS",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "What is the value of C(12, 5), representing choosing a subset of 5 items from 12?",
+                        answers: ["60", "3,960", "792", "95,040"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "If the probability of an event occurring is P(A) = 0.35, what is its complement P(A')?",
+                        answers: ["0.65", "0.35", "0.70", "1.35"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "A bag has 7 green swatches & 5 yellow. Drawing 1 swatch, what is P(NOT drawing green)?",
+                        answers: ["7/12", "5/7", "5/12", "7/5"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "In drawing 1 card from 52 cards, what is the probability of NOT drawing a heart P(not heart)?",
+                        answers: ["1/4", "13/52", "39/12", "3/4"],
+                        correct: 3
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Two mutually exclusive events A & B have P(A) = 0.30 & P(B) = 0.40. What is P(A ∪ B)?",
+                        answers: ["0.70", "0.12", "0.80", "1.00"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                stageName: "STAGE 3: PROBABILITY & EVENTS",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "Events X and Y have P(X)=0.50, P(Y)=0.50, and P(X ∩ Y)=0.167. What is P(X ∪ Y)?",
+                        answers: ["0.333", "1.000", "0.833", "1.167"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "A fair 6-sided die is rolled. Event A is even {2,4,6}, Event B is >3 {4,5,6}. What is P(A ∩ B)?",
+                        answers: ["1/3", "1/6", "1/2", "2/3"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Inspecting 3 rolls (F or D). Which subset represents 'At least two defective fabric rolls'?",
+                        answers: [
+                            "{(D,D,D)}",
+                            "{(F,D,D), (D,F,D), (D,D,F)}",
+                            "{(F,D,D), (D,F,D), (D,D,F), (D,D,D)}",
+                            "{(F,F,D), (F,D,F), (D,F,F), (D,D,D)}"
+                        ],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "During an audit of 3 garments (P, F), Event E_2 is 'Exactly two pass'. What is n(E_2)?",
+                        answers: ["n(E_2) = 3", "n(E_2) = 1", "n(E_2) = 4", "n(E_2) = 8"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Out of 20 embroiderers, a committee of 4 is formed. What is total distinct committees n(S)=C(20,4)?",
+                        answers: ["80", "116,280", "160,000", "4,845"],
+                        correct: 3
+                    }
+                ]
+            },
+            {
+                stageName: "STAGE 4: ADVANCED COMBINATORICS",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "Out of 20 embroiderers, 5 are from Bagong Barrio. Probability a 4-member committee is all 5 from BB?",
+                        answers: ["1/969", "1/4,845", "5/969", "1/20"],
+                        correct: 1
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "50 shirts (42 Flawless, 8 Defective). Inspector pulls 5. Ways to choose exactly 3 Flawless & 2 Defective?",
+                        answers: ["11,480 + 28 = 11,508", "42 × 8 = 336", "11,480 × 28 = 321,440", "C(50,5) = 2,118,760"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "With n(E) = 321,440 and n(S) = C(50,5) = 2,118,760, what is P(3 Flawless & 2 Defective)?",
+                        answers: ["0.1517", "0.0515", "0.3214", "0.6428"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "20 shawls (15 Grade-A, 5 Grade-B). 4 selected. Ways to get Case 1: Exactly 3 Grade-A & 1 Grade-B?",
+                        answers: ["C(15,3) + C(5,1) = 460", "C(20,4) = 4,845", "15 × 5 = 75", "C(15,3) × C(5,1) = 2,275"],
+                        correct: 3
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Using parameters from Item 19, how many combinations yield Case 2: Exactly 4 Grade-A & 0 Grade-B?",
+                        answers: ["1,365", "2,275", "3,640", "4,845"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                stageName: "STAGE 5: APPLIED PROBABILITY",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "Select 5 collar patterns from 12. Favorable combinations n(E) that include the 2 most popular?",
+                        answers: ["C(12,5) = 792", "C(10,5) = 252", "2 × 10 = 20", "C(2,2) × C(10,3) = 120"],
+                        correct: 3
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "From 25 labels (18 Green, 7 Yellow), 4 drawn. Expression for n(E) to draw EXACTLY 3 Green & 1 Yellow?",
+                        answers: ["C(18,3) × C(7,1)", "C(18,3) + C(7,1)", "C(25,4)", "P(18,3) × P(7,1)"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Six officers sit randomly in a line. Probability the President and VP sit directly next to each other?",
+                        answers: ["1/6", "1/2", "1/3", "2/3"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "100 stalls: 70 sell Barongs (A), 50 sell Curtains (B), 20 sell BOTH. P(sells Barongs OR Curtains)?",
+                        answers: ["0.50", "0.80", "1.00", "1.20"],
+                        correct: 1
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "50 dresses: 30 Cotton (C), 15 Flawed (F), 10 Cotton & Flawed (n(C ∩ F)=10). What is P(C ∪ F)?",
+                        answers: ["0.70", "0.50", "0.80", "0.90"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                stageName: "STAGE 6: CONDITIONAL & SET PROBABILITY",
+                questions: [
+                    {
+                        category: "FINITE MATH",
+                        question: "200 packages: 120 Express (E), 80 Fragile (F), 40 BOTH (E ∩ F). What is P(E ∪ F)?",
+                        answers: ["0.60", "0.85", "0.80", "1.00"],
+                        correct: 2
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Using package data where P(E ∪ F) = 0.80, what is P(NEITHER special handling) P((E ∪ F)')?",
+                        answers: ["0.20", "0.10", "0.40", "0.80"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Risk of Dye Stain P(A)=0.18, Weave Tear P(B)=0.12, both P(A ∩ B)=0.05. Overall defect P(A ∪ B)?",
+                        answers: ["0.25", "0.20", "0.30", "0.35"],
+                        correct: 0
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "Three vans dispatch. Each has route delay P=0.20. Probability ALL THREE arrive without delay?",
+                        answers: ["0.488", "0.600", "0.800", "0.512"],
+                        correct: 3
+                    },
+                    {
+                        category: "FINITE MATH",
+                        question: "80 students: 20 in Math Club. Of those 20, 12 in Science Club. Conditional P(Science | Math)?",
+                        answers: ["0.60", "0.15", "0.75", "0.80"],
+                        correct: 0
+                    }
+                ]
+            }
+        ];
+
+        /* Game Engine Core State Variables */
+        const GAME_WIDTH = 256;
+        const GAME_HEIGHT = 270;
+        const GROUND_Y = 224;
+        const BLOCK_Y = 135;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+
+        let activeStages = [];
+        let currentStageIdx = 0;
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let lives = 3;
+        let timer = 60;
+        let timerInterval = null;
+        let gameState = 'START';
+        let highScore = parseInt(localStorage.getItem('snes_quiz_highscore') || '0', 10);
+        let streakMultiplier = 1;
+        let warpTimeout = null;
+
+        // Active Power-up States
+        let powerups = [];
+        let isStarActive = false;
+        let starTimer = null;
+
+        document.getElementById('startHighScore').innerText = String(highScore).padStart(6, '0');
+
+        // Player Physical Entity
+        const player = {
+            x: 20,
+            y: GROUND_Y - 22,
+            width: 14,
+            height: 22,
+            vx: 0,
+            vy: 0,
+            speed: 2.2,
+            jumpStrength: -8.8,
+            gravity: 0.48,
+            isGrounded: false,
+            facing: 'right',
+            animFrame: 0,
+            animTimer: 0
+        };
+
+        const keys = { left: false, right: false, jump: false };
+        let blocks = [];
+        let particles = [];
+
+        const pipe = { x: GAME_WIDTH - 42, y: GROUND_Y - 32, width: 28, height: 32 };
+        const clouds = [
+            { x: 20, y: 30, speed: 0.2 },
+            { x: 120, y: 50, speed: 0.15 },
+            { x: 200, y: 25, speed: 0.25 }
+        ];
+
+        // UI Element References
+        const questionHud = document.getElementById('questionHud');
+        const uiOverlay = document.getElementById('uiOverlay');
+        const startScreen = document.getElementById('startScreen');
+        const stageClearScreen = document.getElementById('stageClearScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const victoryScreen = document.getElementById('victoryScreen');
+        const feedbackPopup = document.getElementById('feedbackPopup');
+
+        /* Fisher-Yates Random Shuffle Engine */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        /* Prepares fresh randomized questions and shuffled choices */
+        function initializeRandomizedQuiz() {
+            activeStages = JSON.parse(JSON.stringify(STAGES));
+
+            activeStages.forEach(stage => {
+                shuffleArray(stage.questions);
+                stage.questions.forEach(q => {
+                    const originalCorrectText = q.answers[q.correct];
+                    shuffleArray(q.answers);
+                    q.correct = q.answers.indexOf(originalCorrectText);
+                });
+            });
+        }
+
+        function showFeedback(title, subtitle, nextHint, isCorrect) {
+            document.getElementById('feedbackTitle').innerText = title;
+            document.getElementById('feedbackTitle').className = `text-xs font-bold animate-bounce mb-1 ${isCorrect ? 'text-emerald-400' : 'text-red-400'}`;
+            document.getElementById('feedbackSubtitle').innerText = subtitle;
+            document.getElementById('feedbackNextHint').innerText = nextHint;
+
+            feedbackPopup.classList.remove('hidden');
+            feedbackPopup.classList.add('flex');
+        }
+
+        function hideFeedback() {
+            feedbackPopup.classList.add('hidden');
+            feedbackPopup.classList.remove('flex');
+        }
+
+        /* Spawn Floating Power-Up Items */
+        function trySpawnPowerup() {
+            powerups = [];
+            // Random chance (approx 60%) to spawn a power-up item above a block
+            if (Math.random() < 0.6) {
+                const types = ['MUSHROOM', 'STAR', 'FLOWER'];
+                const selectedType = types[Math.floor(Math.random() * types.length)];
+                const randomBlock = blocks[Math.floor(Math.random() * blocks.length)];
+
+                powerups.push({
+                    x: randomBlock.x + 4,
+                    y: randomBlock.y - 35,
+                    width: 14,
+                    height: 14,
+                    type: selectedType,
+                    bounceY: 0,
+                    floatTimer: 0
+                });
+            }
+        }
+
+        /* Setup Stage and Question Data */
+        function setupQuestion(stageIdx, qIdx) {
+            hideFeedback();
+            if (warpTimeout) clearTimeout(warpTimeout);
+
+            const stageData = activeStages[stageIdx];
+            const qData = stageData.questions[qIdx];
+
+            // Update Top HUD Display
+            document.getElementById('hudCategory').innerText = `TOPIC: ${qData.category}`;
+            document.getElementById('hudStage').innerText = `${stageData.stageName.split(':')[0]} (${qIdx + 1}/${stageData.questions.length})`;
+            document.getElementById('hudQuestionText').innerText = qData.question;
+
+            document.getElementById('choiceA').innerHTML = `<span class="text-yellow-400 font-bold font-sans text-xs">[A]</span> ${qData.answers[0]}`;
+            document.getElementById('choiceB').innerHTML = `<span class="text-yellow-400 font-bold font-sans text-xs">[B]</span> ${qData.answers[1]}`;
+            document.getElementById('choiceC').innerHTML = `<span class="text-yellow-400 font-bold font-sans text-xs">[C]</span> ${qData.answers[2]}`;
+            document.getElementById('choiceD').innerHTML = `<span class="text-yellow-400 font-bold font-sans text-xs">[D]</span> ${qData.answers[3]}`;
+
+            // Create In-Game Question Blocks
+            blocks = [];
+            const blockWidth = 24;
+            const blockHeight = 24;
+            const startX = 16;
+            const gap = (GAME_WIDTH - 32 - (4 * blockWidth)) / 3;
+
+            for (let i = 0; i < 4; i++) {
+                blocks.push({
+                    x: Math.round(startX + i * (blockWidth + gap)),
+                    y: BLOCK_Y,
+                    width: blockWidth,
+                    height: blockHeight,
+                    label: ['A', 'B', 'C', 'D'][i],
+                    isCorrect: i === qData.correct,
+                    state: 'QUESTION',
+                    bounceY: 0
+                });
+            }
+
+            trySpawnPowerup();
+
+            // Reset Player Position & Physics
+            player.x = 20;
+            player.y = GROUND_Y - player.height;
+            player.vx = 0;
+            player.vy = 0;
+
+            // Reset Timer to 60s
+            clearInterval(timerInterval);
+            timer = 60;
+            gameState = 'PLAYING';
+
+            timerInterval = setInterval(() => {
+                if (gameState === 'PLAYING') {
+                    timer--;
+                    if (timer <= 0) {
+                        handleWrongAnswer(null, true);
+                    }
+                }
+            }, 1000);
+        }
+
+        /* Particle Sparkle Generators */
+        function createParticles(x, y, color, count = 10) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 3.5,
+                    vy: (Math.random() - 0.8) * 4.5,
+                    size: Math.random() * 3 + 1,
+                    color: color,
+                    life: 25 + Math.random() * 10
+                });
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.22;
+                p.life--;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+        }
+
+        /* Update Engine Loop */
+        function update() {
+            // Animate Parallax Clouds
+            clouds.forEach(c => {
+                c.x += c.speed;
+                if (c.x > GAME_WIDTH + 20) c.x = -40;
+            });
+
+            if (gameState !== 'PLAYING' && gameState !== 'WARPING') return;
+
+            // Horizontal Movement Logic
+            if (keys.left) {
+                player.vx = -player.speed;
+                player.facing = 'left';
+            } else if (keys.right) {
+                player.vx = player.speed;
+                player.facing = 'right';
+            } else {
+                player.vx *= 0.68;
+            }
+
+            // Jump Physics
+            if (keys.jump && player.isGrounded && gameState === 'PLAYING') {
+                player.vy = player.jumpStrength;
+                player.isGrounded = false;
+                audio.jump();
+            }
+
+            // Apply Gravity
+            player.vy += player.gravity;
+
+            // Position Updates
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Screen Boundary Clamping
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > GAME_WIDTH) player.x = GAME_WIDTH - player.width;
+
+            // Ground Collision
+            if (player.y + player.height >= GROUND_Y) {
+                player.y = GROUND_Y - player.height;
+                player.vy = 0;
+                player.isGrounded = true;
+            }
+
+            // Animation Timers
+            if (Math.abs(player.vx) > 0.3) {
+                player.animTimer++;
+                if (player.animTimer % 5 === 0) {
+                    player.animFrame = (player.animFrame + 1) % 3;
+                }
+            } else {
+                player.animFrame = 0;
+            }
+
+            // Power-Up Collection Collision Detection
+            if (gameState === 'PLAYING') {
+                for (let i = powerups.length - 1; i >= 0; i--) {
+                    const item = powerups[i];
+                    item.floatTimer += 0.08;
+                    item.bounceY = Math.sin(item.floatTimer) * 3;
+
+                    if (player.x < item.x + item.width &&
+                        player.x + player.width > item.x &&
+                        player.y < item.y + item.height + item.bounceY &&
+                        player.y + player.height > item.y + item.bounceY) {
+                        
+                        // Collect Powerup!
+                        collectPowerup(item);
+                        powerups.splice(i, 1);
+                    }
+                }
+            }
+
+            // Block Head Bump Collision Logic
+            if (gameState === 'PLAYING') {
+                blocks.forEach(block => {
+                    if (player.x + player.width > block.x + 2 &&
+                        player.x < block.x + block.width - 2 &&
+                        player.y <= block.y + block.height &&
+                        player.y + player.height > block.y &&
+                        player.vy < 0) {
+
+                        block.bounceY = -8;
+                        setTimeout(() => block.bounceY = 0, 120);
+                        player.vy = 1.5;
+
+                        if (block.isCorrect) {
+                            handleCorrectAnswer(block);
+                        } else {
+                            handleWrongAnswer(block);
+                        }
+                    }
+                });
+            }
+
+            // Warp Pipe Transition Sequence
+            if (gameState === 'WARPING') {
+                const pipeCenterX = pipe.x + pipe.width / 2 - player.width / 2;
+                if (Math.abs(player.x - pipeCenterX) > 2) {
+                    player.x += (player.x < pipeCenterX) ? 1.4 : -1.4;
+                } else {
+                    player.x = pipeCenterX;
+                    player.y += 1.4; // Slide down into pipe
+                    if (player.y > GROUND_Y) {
+                        advanceProgression();
+                    }
+                }
+            }
+
+            updateParticles();
+        }
+
+        /* Collect Power-up Logic */
+        function collectPowerup(item) {
+            audio.powerup();
+            createParticles(item.x + 7, item.y + 7, '#facc15', 12);
+
+            if (item.type === 'MUSHROOM') {
+                lives++;
+                showFeedback('1-UP MUSHROOM!', 'EXTRA LIFE GAINED! (+1 LIFE)', 'KEEP GOING!', true);
+                setTimeout(hideFeedback, 1200);
+            } else if (item.type === 'STAR') {
+                isStarActive = true;
+                if (starTimer) clearTimeout(starTimer);
+                showFeedback('SUPER STAR!', 'INVINCIBLE & DOUBLE POINTS!', 'STAR POWER ACTIVE!', true);
+                setTimeout(hideFeedback, 1200);
+                starTimer = setTimeout(() => {
+                    isStarActive = false;
+                }, 10000);
+            } else if (item.type === 'FLOWER') {
+                timer += 15;
+                showFeedback('TIME FLOWER!', '+15 SECONDS ADDED TO TIMER!', 'MORE TIME!', true);
+                setTimeout(hideFeedback, 1200);
+            }
+        }
+
+        /* Advance to next question or end stage */
+        function advanceProgression() {
+            hideFeedback();
+            currentQuestionIdx++;
+            const currentStage = activeStages[currentStageIdx];
+
+            if (currentQuestionIdx < currentStage.questions.length) {
+                setupQuestion(currentStageIdx, currentQuestionIdx);
+            } else {
+                triggerStageClear();
+            }
+        }
+
+        /* Correct Answer Handler */
+        function handleCorrectAnswer(block) {
+            gameState = 'WARPING';
+            block.state = 'HIT_CORRECT';
+            audio.coin();
+            
+            const starBonus = isStarActive ? 2 : 1;
+            const gainedScore = (1000 + (timer * 50)) * streakMultiplier * starBonus;
+            score += gainedScore;
+            streakMultiplier++;
+
+            createParticles(block.x + block.width / 2, block.y, '#facc15', 14);
+            showFeedback('CORRECT!', `+${gainedScore} PTS! (STREAK x${streakMultiplier})`, 'ENTERING WARP PIPE...', true);
+
+            audio.pipe();
+
+            warpTimeout = setTimeout(() => {
+                if (gameState === 'WARPING') {
+                    advanceProgression();
+                }
+            }, 2500);
+        }
+
+        /* Wrong Answer Handler */
+        function handleWrongAnswer(block, isTimeOut = false) {
+            // Star Power prevents life loss on wrong answer once!
+            if (isStarActive) {
+                if (block) block.state = 'HIT_WRONG';
+                audio.wrong();
+                showFeedback('STAR SAVED YOU!', 'STAR POWER PREVENTED LIFE LOSS!', 'TRY AGAIN!', true);
+                setTimeout(() => {
+                    hideFeedback();
+                    player.x = 20;
+                    player.y = GROUND_Y - player.height;
+                }, 1000);
+                return;
+            }
+
+            streakMultiplier = 1;
+            if (block) block.state = 'HIT_WRONG';
+            audio.wrong();
+            if (block) createParticles(block.x + block.width / 2, block.y, '#ef4444', 12);
+
+            lives--;
+            showFeedback('WRONG!', isTimeOut ? 'TIME EXPIRED!' : '-1 LIFE', lives > 0 ? 'RETRYING QUESTION...' : 'NO LIVES LEFT!', false);
+
+            if (lives <= 0) {
+                setTimeout(() => triggerGameOver(), 1200);
+            } else {
+                setTimeout(() => {
+                    hideFeedback();
+                    player.x = 20;
+                    player.y = GROUND_Y - player.height;
+                    player.vx = 0;
+                    player.vy = 0;
+                }, 1200);
+            }
+        }
+
+        /* Trigger Stage Clear Summary */
+        function triggerStageClear() {
+            gameState = 'STAGE_CLEAR';
+            audio.victory();
+            clearInterval(timerInterval);
+
+            const timeBonus = lives * 500;
+            const totalStageScore = score + timeBonus;
+            score = totalStageScore;
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('snes_quiz_highscore', highScore);
+            }
+
+            const stars = lives >= 3 ? '⭐⭐⭐' : lives === 2 ? '⭐⭐' : '⭐';
+            document.getElementById('starRating').innerText = stars;
+            document.getElementById('summaryStageName').innerText = activeStages[currentStageIdx].stageName;
+            document.getElementById('summaryScore').innerText = String(score - timeBonus).padStart(6, '0');
+            document.getElementById('summaryTimeBonus').innerText = `+${timeBonus}`;
+            document.getElementById('summaryTotalScore').innerText = String(score).padStart(6, '0');
+
+            questionHud.classList.add('hidden');
+            uiOverlay.classList.remove('hidden');
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            victoryScreen.classList.add('hidden');
+            stageClearScreen.classList.remove('hidden');
+            stageClearScreen.classList.add('flex');
+        }
+
+        /* Trigger Game Over State */
+        function triggerGameOver() {
+            gameState = 'GAMEOVER';
+            audio.gameOver();
+            clearInterval(timerInterval);
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('snes_quiz_highscore', highScore);
+            }
+
+            document.getElementById('finalScore').innerText = String(score).padStart(6, '0');
+            document.getElementById('finalHighScore').innerText = String(highScore).padStart(6, '0');
+
+            questionHud.classList.add('hidden');
+            uiOverlay.classList.remove('hidden');
+            startScreen.classList.add('hidden');
+            stageClearScreen.classList.add('hidden');
+            victoryScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('flex');
+        }
+
+        /* Trigger Game Completion Victory */
+        function triggerVictory() {
+            gameState = 'VICTORY';
+            audio.victory();
+            clearInterval(timerInterval);
+
+            score += lives * 2000;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('snes_quiz_highscore', highScore);
+            }
+
+            document.getElementById('vicScore').innerText = String(score).padStart(6, '0');
+            document.getElementById('vicLives').innerText = lives;
+            document.getElementById('vicHighScore').innerText = String(highScore).padStart(6, '0');
+
+            questionHud.classList.add('hidden');
+            uiOverlay.classList.remove('hidden');
+            startScreen.classList.add('hidden');
+            stageClearScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            victoryScreen.classList.remove('hidden');
+            victoryScreen.classList.add('flex');
+        }
+
+        /* ==========================================================================
+           RETRO AUDIO SYNTHESIZER (Web Audio API)
+           ========================================================================== */
+        class RetroSNESAudio {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTone(freq, type = 'square', duration = 0.1, gainVal = 0.1) {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+
+            jump() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(450, this.ctx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.12);
+                } catch(e) {}
+            }
+
+            coin() {
+                this.playTone(987.77, 'square', 0.08, 0.12);
+                setTimeout(() => this.playTone(1318.51, 'square', 0.25, 0.12), 80);
+            }
+
+            powerup() {
+                this.playTone(330, 'square', 0.08, 0.12);
+                setTimeout(() => this.playTone(392, 'square', 0.08, 0.12), 70);
+                setTimeout(() => this.playTone(659, 'square', 0.15, 0.12), 140);
+            }
+
+            pipe() {
+                this.playTone(220, 'triangle', 0.1, 0.15);
+                setTimeout(() => this.playTone(180, 'triangle', 0.15, 0.15), 90);
+            }
+
+            wrong() {
+                this.playTone(160, 'sawtooth', 0.15, 0.15);
+                setTimeout(() => this.playTone(110, 'sawtooth', 0.25, 0.15), 140);
+            }
+
+            victory() {
+                if (this.muted || !this.ctx) return;
+                const notes = [523, 659, 783, 1046];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 'triangle', 0.15, 0.15), i * 110);
+                });
+            }
+
+            gameOver() {
+                if (this.muted || !this.ctx) return;
+                const notes = [440, 415, 392, 349];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 'sawtooth', 0.22, 0.15), i * 140);
+                });
+            }
+        }
+
+        const audio = new RetroSNESAudio();
+
+        /* ==========================================================================
+           16-BIT ART CANVAS DRAWING FUNCTIONS
+           ========================================================================== */
+        function render() {
+            // Gradient SNES Sky
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+            skyGrad.addColorStop(0, '#38bdf8');
+            skyGrad.addColorStop(1, '#60a5fa');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+            // Parallax Clouds
+            clouds.forEach(c => drawSNESCloud(c.x, c.y));
+
+            // Distant Hills
+            drawDistantHills();
+
+            // Ground Platforms
+            ctx.fillStyle = '#ea580c';
+            ctx.fillRect(0, GROUND_Y, GAME_WIDTH, GAME_HEIGHT - GROUND_Y);
+
+            // Green SNES Grass Top
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(0, GROUND_Y, GAME_WIDTH, 8);
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(0, GROUND_Y, GAME_WIDTH, 3);
+
+            // Draw Warp Pipe
+            drawPipe(pipe.x, pipe.y, pipe.width, pipe.height);
+
+            // Draw Choice Blocks
+            blocks.forEach(block => drawSNESBlock(block));
+
+            // Draw Powerups
+            powerups.forEach(item => drawPowerupItem(item));
+
+            // Particles
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+
+            // Draw 16-Bit Mario
+            if (gameState === 'PLAYING' || gameState === 'WARPING') {
+                draw16BitMario(player.x, player.y + (player.animFrame * 0.5), player.facing, player.isGrounded);
+            }
+
+            // HUD Bottom Metrics
+            drawHUDMetrics();
+
+            requestAnimationFrame(renderLoop);
+        }
+
+        /* Distant Hill Graphics */
+        function drawDistantHills() {
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.arc(60, GROUND_Y + 10, 45, Math.PI, 0, false);
+            ctx.fill();
+
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.arc(170, GROUND_Y + 10, 55, Math.PI, 0, false);
+            ctx.fill();
+        }
+
+        /* SNES Style Cloud */
+        function drawSNESCloud(x, y) {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x + 6, y, 20, 14);
+            ctx.fillRect(x, y + 4, 32, 10);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fillRect(x + 2, y + 10, 28, 4);
+        }
+
+        /* Draw Floating Power-Up Items */
+        function drawPowerupItem(item) {
+            const drawY = item.y + item.bounceY;
+            if (item.type === 'MUSHROOM') {
+                // 1-UP Extra Life Mushroom
+                ctx.fillStyle = '#22c55e'; // Green Cap
+                ctx.fillRect(item.x + 2, drawY, 10, 8);
+                ctx.fillStyle = '#ffffff'; // White Spots
+                ctx.fillRect(item.x + 4, drawY + 2, 3, 3);
+                ctx.fillRect(item.x + 8, drawY + 2, 3, 3);
+                ctx.fillStyle = '#fde047'; // Stem
+                ctx.fillRect(item.x + 4, drawY + 8, 6, 6);
+            } else if (item.type === 'STAR') {
+                // Star Power
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(item.x + 4, drawY, 6, 14);
+                ctx.fillRect(item.x, drawY + 4, 14, 6);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(item.x + 5, drawY + 2, 4, 10);
+            } else if (item.type === 'FLOWER') {
+                // Fire Flower (Time Boost)
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(item.x + 3, drawY, 8, 8);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(item.x + 5, drawY + 2, 4, 4);
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(item.x + 6, drawY + 8, 2, 6);
+            }
+        }
+
+        /* 16-Bit Mario Character Sprite */
+        function draw16BitMario(x, y, facing, isGrounded) {
+            ctx.save();
+            if (facing === 'left') {
+                ctx.translate(x + player.width, y);
+                ctx.scale(-1, 1);
+                x = 0;
+                y = 0;
+            }
+
+            // Rainbow Aura if Star Power active
+            if (isStarActive) {
+                ctx.fillStyle = ['#facc15', '#ef4444', '#3b82f6', '#22c55e'][Math.floor(Date.now() / 100) % 4];
+                ctx.fillRect(x - 2, y - 2, player.width + 4, player.height + 4);
+            }
+
+            // Red Cap
+            ctx.fillStyle = isStarActive ? '#facc15' : '#ef4444';
+            ctx.fillRect(x + 3, y, 9, 4);
+
+            // Face / Skin
+            ctx.fillStyle = '#fde047';
+            ctx.fillRect(x + 3, y + 4, 8, 4);
+            // Moustache
+            ctx.fillStyle = '#451a03';
+            ctx.fillRect(x + 6, y + 6, 5, 2);
+
+            // Red Shirt
+            ctx.fillStyle = isStarActive ? '#3b82f6' : '#dc2626';
+            ctx.fillRect(x + 2, y + 8, 10, 5);
+
+            // Blue Overalls
+            ctx.fillStyle = isStarActive ? '#22c55e' : '#2563eb';
+            ctx.fillRect(x + 3, y + 12, 8, 7);
+            // Overall Straps & Buttons
+            ctx.fillStyle = '#facc15';
+            ctx.fillRect(x + 4, y + 13, 2, 2);
+
+            // Boots
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(x + 2, y + 18, 4, 4);
+            ctx.fillRect(x + 8, y + 18, 4, 4);
+
+            ctx.restore();
+        }
+
+        /* SNES Question Block */
+        function drawSNESBlock(block) {
+            const drawY = block.y + block.bounceY;
+
+            if (block.state === 'QUESTION') {
+                ctx.fillStyle = '#f59e0b';
+                ctx.fillRect(block.x, drawY, block.width, block.height);
+
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(block.x, drawY, block.width, 2);
+                ctx.fillRect(block.x, drawY, 2, block.height);
+
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(block.x, drawY + block.height - 2, block.width, 2);
+                ctx.fillRect(block.x + block.width - 2, drawY, 2, block.height);
+
+                ctx.fillStyle = '#000000';
+                ctx.font = 'bold 12px "Press Start 2P"';
+                ctx.textAlign = 'center';
+                ctx.fillText(block.label, block.x + block.width / 2 + 1, drawY + 17);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(block.label, block.x + block.width / 2, drawY + 16);
+
+            } else if (block.state === 'HIT_CORRECT') {
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(block.x, drawY, block.width, block.height);
+                ctx.fillStyle = '#4ade80';
+                ctx.fillText('✓', block.x + block.width / 2, drawY + 16);
+            } else {
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(block.x, drawY, block.width, block.height);
+                ctx.fillStyle = '#ef4444';
+                ctx.fillText('X', block.x + block.width / 2, drawY + 16);
+            }
+        }
+
+        /* Pipe Sprite */
+        function drawPipe(x, y, w, h) {
+            ctx.fillStyle = '#16a34a';
+            ctx.fillRect(x - 2, y, w + 4, 12);
+            ctx.fillStyle = '#86efac';
+            ctx.fillRect(x, y + 2, 4, 8);
+            ctx.fillStyle = '#14532d';
+            ctx.fillRect(x + w - 4, y + 2, 4, 8);
+
+            ctx.fillStyle = '#16a34a';
+            ctx.fillRect(x, y + 12, w, h - 12);
+            ctx.fillStyle = '#86efac';
+            ctx.fillRect(x + 2, y + 12, 3, h - 12);
+            ctx.fillStyle = '#14532d';
+            ctx.fillRect(x + w - 5, y + 12, 3, h - 12);
+        }
+
+        /* Bottom Status Metrics */
+        function drawHUDMetrics() {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '7px "Press Start 2P"';
+
+            ctx.textAlign = 'left';
+            ctx.fillText(`SCORE:${String(score).padStart(6, '0')}`, 8, 252);
+
+            ctx.textAlign = 'right';
+            ctx.fillText(`TIME:${String(timer).padStart(2, '0')}`, GAME_WIDTH - 8, 252);
+
+            for (let i = 0; i < lives; i++) {
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(8 + (i * 9), 8, 7, 7);
+            }
+
+            if (isStarActive) {
+                ctx.fillStyle = '#facc15';
+                ctx.fillText('⭐STAR', GAME_WIDTH / 2 - 20, 15);
+            }
+        }
+
+        function renderLoop() {
+            update();
+            render();
+        }
+
+        /* ==========================================================================
+           CONTROLS & EVENT LISTENERS
+           ========================================================================== */
+        window.addEventListener('keydown', e => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') keys.jump = true;
+        });
+
+        window.addEventListener('keyup', e => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') keys.jump = false;
+        });
+
+        const bindTouch = (elem, keyName) => {
+            elem.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+            elem.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            elem.addEventListener('mousedown', () => { keys[keyName] = true; });
+            elem.addEventListener('mouseup', () => { keys[keyName] = false; });
+        };
+
+        bindTouch(document.getElementById('btnLeft'), 'left');
+        bindTouch(document.getElementById('btnRight'), 'right');
+        bindTouch(document.getElementById('btnJump'), 'jump');
+
+        const btnSound = document.getElementById('btnSound');
+        btnSound.addEventListener('click', () => {
+            audio.init();
+            audio.muted = !audio.muted;
+            btnSound.innerText = audio.muted ? '🔇 MUTE' : '🔊 SOUND';
+        });
+
+        // Stage Progression Next Button
+        document.getElementById('nextStageBtn').addEventListener('click', () => {
+            currentStageIdx++;
+            if (currentStageIdx < activeStages.length) {
+                uiOverlay.classList.add('hidden');
+                stageClearScreen.classList.add('hidden');
+                questionHud.classList.remove('hidden');
+                currentQuestionIdx = 0;
+                setupQuestion(currentStageIdx, currentQuestionIdx);
+            } else {
+                triggerVictory();
+            }
+        });
+
+        // Start Game Handler
+        document.getElementById('startBtn').addEventListener('click', () => {
+            audio.init();
+            initializeRandomizedQuiz();
+            uiOverlay.classList.add('hidden');
+            startScreen.classList.add('hidden');
+            questionHud.classList.remove('hidden');
+            score = 0;
+            lives = 3;
+            streakMultiplier = 1;
+            currentStageIdx = 0;
+            currentQuestionIdx = 0;
+            setupQuestion(currentStageIdx, currentQuestionIdx);
+        });
+
+        // Restart Game Handler
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            initializeRandomizedQuiz();
+            uiOverlay.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            questionHud.classList.remove('hidden');
+            score = 0;
+            lives = 3;
+            streakMultiplier = 1;
+            currentStageIdx = 0;
+            currentQuestionIdx = 0;
+            setupQuestion(currentStageIdx, currentQuestionIdx);
+        });
+
+        // Play Again Handler
+        document.getElementById('victoryBtn').addEventListener('click', () => {
+            initializeRandomizedQuiz();
+            uiOverlay.classList.add('hidden');
+            victoryScreen.classList.add('hidden');
+            questionHud.classList.remove('hidden');
+            score = 0;
+            lives = 3;
+            streakMultiplier = 1;
+            currentStageIdx = 0;
+            currentQuestionIdx = 0;
+            setupQuestion(currentStageIdx, currentQuestionIdx);
+        });
+
+        window.onload = function() {
+            requestAnimationFrame(renderLoop);
+        };
+    </script>
 </body>
 </html>
