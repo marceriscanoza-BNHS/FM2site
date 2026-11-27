@@ -117,7 +117,7 @@
         <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px] bg-amber-400 shadow-[0_0_8px_#ffb703]"></div>
       </div>
 
-      <!-- 2. Compact Score / Progress / Lives / Utility Bar -->
+      <!-- 2. Compact Score / Progress / Mode Timer / Utility Bar -->
       <div class="flex items-center justify-between gap-1.5 pointer-events-auto">
         <!-- Score & Streak -->
         <div class="glass-hud rounded-2xl px-3 py-1.5 flex items-center gap-2.5">
@@ -132,19 +132,19 @@
           </div>
         </div>
 
-        <!-- Question Counter & Timer Bar -->
-        <div class="glass-hud rounded-2xl px-3 py-1.5 flex-1 max-w-[165px] flex flex-col items-center">
-          <div class="text-[10px] font-arcade font-bold tracking-wider text-slate-200">
-            Q <span id="hudQIndex" class="text-teal-300">1</span>/<span id="hudQTotal">8</span>
+        <!-- Question Counter (1/60) & Mode Timer Bar -->
+        <div class="glass-hud rounded-2xl px-3 py-1.5 flex-1 max-w-[185px] flex flex-col items-center">
+          <div class="w-full flex items-center justify-between text-[10px] font-arcade font-bold tracking-wider text-slate-200">
+            <span>Q <span id="hudQIndex" class="text-teal-300">1</span>/<span id="hudQTotal">60</span></span>
+            <span id="hudTimerText" class="text-amber-300">25s</span>
           </div>
-          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 border border-slate-700">
+          <div id="hudTimerTrack" class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 border border-slate-700">
             <div id="hudTimerFill" class="h-full bg-gradient-to-r from-teal-300 via-cyan-400 to-amber-400 transition-all duration-100" style="width: 100%;"></div>
           </div>
         </div>
 
-        <!-- Lives + Recenter + Quit -->
+        <!-- Recenter + Quit -->
         <div class="glass-hud rounded-2xl px-2.5 py-1.5 flex items-center gap-1.5">
-          <div id="hudLives" class="text-xs sm:text-sm tracking-tighter" title="Shield Lives">❤️❤️❤️</div>
           <button id="recenterBtn" class="p-1.5 rounded-xl bg-slate-800/90 active:bg-teal-600 border border-teal-400/40 text-teal-300 text-xs font-bold" title="Recenter Forward Direction">
             🧭
           </button>
@@ -157,15 +157,20 @@
       <!-- 3. Collapsible Question Banner -->
       <div id="questionCard" class="glass-hud rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3 pointer-events-auto border-teal-400/50 transition-all">
         <div class="flex items-center justify-between gap-2 mb-1">
-          <span id="hudCategoryBadge" class="px-2 py-0.5 rounded-full bg-teal-400/15 border border-teal-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-widest text-teal-300">
-            GENERAL KNOWLEDGE
-          </span>
+          <div class="flex items-center gap-1.5">
+            <span id="hudModeBadge" class="px-2 py-0.5 rounded-full bg-teal-400/15 border border-teal-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-widest text-teal-300">
+              ⚡ RAPID FIRE
+            </span>
+            <span id="hudDriftBadge" class="px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-wider text-amber-300">
+              DRIFT: CALM
+            </span>
+          </div>
           <button id="toggleQuestionBtn" class="text-[10px] font-bold text-slate-300 hover:text-white px-2 py-0.5 rounded-lg bg-slate-800/80 border border-slate-600/60">
             Hide ▲
           </button>
         </div>
-        <h2 id="hudQuestionText" class="text-sm sm:text-lg font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
-          Scanning sector for trivia transmission...
+        <h2 id="hudQuestionText" class="text-xs sm:text-base font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+          Scanning sector for exam transmission...
         </h2>
       </div>
     </div>
@@ -194,109 +199,42 @@
   </div>
 
   <!-- =====================================================================
-       START / LOBBY SCREEN (Mobile-First)
+       STREAMLINED MINIMALIST START / LANDING SCREEN
   ====================================================================== -->
-  <div id="startModal" class="fixed inset-0 z-20 flex items-center justify-center p-3.5 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
-    <div class="glass-hud w-full max-w-lg rounded-3xl p-5 sm:p-7 border-teal-400/40 my-auto">
-      <div class="text-center mb-5">
-        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-400/15 border border-teal-400/40 text-teal-300 text-[10px] sm:text-xs font-arcade font-bold tracking-widest uppercase mb-2">
-          📱 360° REAR CAMERA AR FPS
-        </div>
-        <h1 class="font-arcade text-2xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-teal-300 via-white to-amber-300 bg-clip-text text-transparent">
-          360° AR QUIZ SHOOTER
-        </h1>
-        <p class="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
-          Look around your real room in <span class="text-teal-300 font-bold">360 degrees</span> through your phone's back camera to spot floating <span class="text-amber-300 font-bold">A, B, C, D</span> targets and blast the right answer!
-        </p>
+  <div id="startModal" class="fixed inset-0 z-20 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+    <div class="glass-hud w-full max-w-md rounded-3xl p-6 sm:p-8 border-teal-400/40 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-400/15 border border-teal-400/40 text-teal-300 text-[10px] font-arcade font-bold tracking-widest uppercase mb-3">
+        60-ITEM EXAM EDITION • REAR CAMERA AR
       </div>
-
-      <!-- Mission Settings -->
-      <div class="space-y-3 mb-4">
-        <!-- Category Deck -->
-        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700/80">
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-[11px] font-arcade font-bold uppercase tracking-wider text-teal-300">1. Trivia Category</label>
-            <button id="openCustomBuilderBtn" class="text-[11px] font-bold text-amber-300 hover:text-amber-200 underline">
-              + Custom Quiz (<span id="customDeckCount">3</span>)
-            </button>
-          </div>
-          <select id="categorySelect" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-teal-400">
-            <option value="general">🌍 General Knowledge</option>
-            <option value="science">🚀 Science & Space</option>
-            <option value="gaming">🎮 Pop Culture & Gaming</option>
-            <option value="geography">🗺️ Geography & World</option>
-            <option value="math">⚡ Quick Math</option>
-            <option value="custom">✏️ My Custom Quiz</option>
-          </select>
-        </div>
-
-        <!-- 360 Spread Mode -->
-        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700/80">
-          <label class="block text-[11px] font-arcade font-bold uppercase tracking-wider text-teal-300 mb-1.5">2. Room Scan Area</label>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" id="spread360Btn" class="spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition">
-              🔄 Full 360° Spin
-            </button>
-            <button type="button" id="spread180Btn" class="spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition">
-              ↔️ Front 180° Room
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Mobile Instructions -->
-      <div class="grid grid-cols-3 gap-2 mb-5 text-center">
-        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
-          <div class="text-lg">📱</div>
-          <div class="text-[11px] font-bold text-white">Turn 360°</div>
-          <div class="text-[9px] text-slate-400">Follow edge radar arrows</div>
-        </div>
-        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
-          <div class="text-lg">🎯</div>
-          <div class="text-[11px] font-bold text-white">Lock On</div>
-          <div class="text-[9px] text-slate-400">Center reticle on A/B/C/D</div>
-        </div>
-        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
-          <div class="text-lg">🔥</div>
-          <div class="text-[11px] font-bold text-white">Tap FIRE</div>
-          <div class="text-[9px] text-slate-400">Blast before timer ends</div>
-        </div>
-      </div>
-
-      <div id="permissionNotice" class="hidden mb-3 p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] text-center"></div>
-
-      <!-- Primary iOS/Android Sensor & Camera Activation CTA -->
-      <button id="launchArBtn" class="btn-primary-ar w-full py-3.5 sm:py-4 rounded-2xl font-arcade text-sm sm:text-base font-black tracking-wider text-slate-950 uppercase cursor-pointer">
-        📷 ENABLE 360° GYRO & REAR CAMERA
-      </button>
-      <p class="text-center text-[10px] text-slate-400 mt-2">
-        No gyroscope or camera? Touch-drag / mouse-drag 360° look-around activates automatically!
+      <h1 class="font-arcade text-2xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-teal-300 via-white to-amber-300 bg-clip-text text-transparent">
+        360° AR QUIZ SHOOTER
+      </h1>
+      <p class="text-slate-300 text-xs sm:text-sm mt-2 mb-6 leading-relaxed">
+        Look around in <span class="text-teal-300 font-bold">360°</span> through your rear camera to spot dodging <span class="text-amber-300 font-bold">A, B, C, D</span> targets and shoot the right answer.
       </p>
-    </div>
-  </div>
 
-  <!-- =====================================================================
-       CUSTOM QUIZ CREATOR MODAL
-  ====================================================================== -->
-  <div id="customQuizModal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-    <div class="glass-hud w-full max-w-lg rounded-3xl p-5 border-amber-400/50">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="font-arcade text-base sm:text-lg font-bold text-amber-300">✏️ Custom 360° Quiz Builder</h3>
-        <button id="closeCustomQuizBtn" class="text-slate-400 hover:text-white text-xl font-bold px-2">✕</button>
-      </div>
-      <p class="text-[11px] text-slate-300 mb-2.5">
-        One question per line:<br>
-        <code class="text-teal-300 bg-slate-900 px-1.5 py-0.5 rounded">Question | Option A | Option B | Option C | Option D | A/B/C/D</code>
-      </p>
-      <textarea id="customQuizInput" rows="6" class="w-full bg-slate-900/95 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-teal-400">What is the capital of the Philippines? | Cebu | Manila | Davao | Baguio | B
-Which planet is closest to the Sun? | Venus | Mars | Mercury | Jupiter | C
-How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
-      <div id="customQuizError" class="hidden text-rose-400 text-xs mt-1.5"></div>
-      <div class="flex justify-end gap-2 mt-3">
-        <button id="saveCustomQuizBtn" class="btn-primary-ar px-5 py-2 rounded-xl font-arcade font-bold text-xs text-slate-950 uppercase">
-          Save & Select
+      <!-- Clean 2-Mode Selector -->
+      <div class="grid grid-cols-2 gap-3 mb-6 text-left">
+        <button type="button" id="modeRapidBtn" class="p-3.5 rounded-2xl border-2 border-teal-400 bg-teal-400/15 transition cursor-pointer">
+          <div class="text-xl mb-1">⚡</div>
+          <div class="font-arcade text-xs sm:text-sm font-black text-teal-300">RAPID FIRE</div>
+          <div class="text-[11px] text-slate-300 mt-0.5 leading-tight">25s timer per item + speed bonus</div>
+        </button>
+
+        <button type="button" id="modeCowboyBtn" class="p-3.5 rounded-2xl border-2 border-slate-700 bg-slate-900/75 hover:border-slate-500 transition cursor-pointer">
+          <div class="text-xl mb-1">🤠</div>
+          <div class="font-arcade text-xs sm:text-sm font-black text-amber-300">COWBOY MODE</div>
+          <div class="text-[11px] text-slate-300 mt-0.5 leading-tight">No timer — solve & aim carefully</div>
         </button>
       </div>
+
+      <!-- Single Prominent Start CTA -->
+      <button id="launchArBtn" class="btn-primary-ar w-full py-4 rounded-2xl font-arcade text-sm sm:text-base font-black tracking-wider text-slate-950 uppercase cursor-pointer">
+        🎯 START EXAM (60 ITEMS)
+      </button>
+      <p class="text-[10px] text-slate-400 mt-2.5">
+        Questions shuffle automatically every trial • Targets dodge faster as you progress
+      </p>
     </div>
   </div>
 
@@ -307,7 +245,7 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
     <div class="glass-hud w-full max-w-md rounded-3xl p-5 sm:p-7 border-teal-400/50 my-auto">
       <div class="text-center mb-4">
         <div id="debriefBadge" class="inline-block px-3 py-1 rounded-full bg-teal-400/20 border border-teal-400/40 text-teal-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5">
-          SECTOR CLEARED
+          60-ITEM EXAM COMPLETE
         </div>
         <h2 id="debriefTitle" class="font-arcade text-2xl sm:text-3xl font-black text-white">
           360° SHARPSHOOTER
@@ -321,8 +259,8 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
           <div id="debriefScore" class="font-arcade text-xl sm:text-2xl font-black text-teal-300">0</div>
         </div>
         <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
-          <div class="text-[10px] uppercase text-slate-400 font-bold">Accuracy</div>
-          <div id="debriefAccuracy" class="font-arcade text-xl sm:text-2xl font-black text-emerald-400">0%</div>
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Correct / 60</div>
+          <div id="debriefAccuracy" class="font-arcade text-xl sm:text-2xl font-black text-emerald-400">0/60 (0%)</div>
         </div>
         <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
           <div class="text-[10px] uppercase text-slate-400 font-bold">Fastest Lock-On</div>
@@ -336,16 +274,16 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
       <!-- Question-by-Question Review List -->
       <div class="mb-5">
-        <div class="text-[10px] font-arcade uppercase tracking-wider text-slate-400 mb-1.5">Mission Log Review</div>
-        <div id="debriefReviewList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
+        <div class="text-[10px] font-arcade uppercase tracking-wider text-slate-400 mb-1.5">Exam Log Review</div>
+        <div id="debriefReviewList" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
       </div>
 
       <div class="flex gap-2.5">
         <button id="playAgainBtn" class="btn-primary-ar flex-1 py-3.5 rounded-2xl font-arcade text-xs sm:text-sm font-black text-slate-950 uppercase cursor-pointer">
-          🔄 Play Again
+          🔄 PLAY AGAIN (SHUFFLED)
         </button>
-        <button id="switchCategoryBtn" class="px-4 py-3.5 rounded-2xl bg-slate-800 active:bg-slate-700 border border-slate-600 font-bold text-xs text-white cursor-pointer">
-          Categories
+        <button id="switchModeBtn" class="px-4 py-3.5 rounded-2xl bg-slate-800 active:bg-slate-700 border border-slate-600 font-bold text-xs text-white cursor-pointer">
+          Modes
         </button>
       </div>
     </div>
@@ -354,76 +292,313 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
   <script>
     /**
      * ============================================================================
-     * 360° AR QUIZ SHOOTER — SPHERICAL AR ENGINE & MOBILE FPS CONTROLLER
+     * 360° AR QUIZ SHOOTER — 60-ITEM EXAM EDITION & EVASIVE DODGING ENGINE
      * ============================================================================
-     * Core Systems:
-     * 1. Rear Camera Passthrough (`facingMode: { ideal: 'environment' }`)
-     * 2. True 3D Spherical Projection (Azimuth Yaw 0-360° & Elevation Pitch -90 to +90°)
-     *    driven by DeviceOrientationEvent + screen.orientation compensation &
-     *    quaternion-based camera rotation matrix (eliminates gimbal lock when looking up/down).
-     * 3. Seamless Touch-Drag / Mouse-Drag / WASD 360° look fallback for desktop/non-gyro.
-     * 4. 360° Compass Strip & Screen-Edge Directional Radar Arrows for off-screen targets.
-     * 5. Center Crosshair Aim-Assist Lock-On + Haptic Feedback + Synthesized Sci-Fi Audio.
      */
 
-    // --- 1. TRIVIA DECKS ---
-    const TRIVIA_DECKS = {
-      general: [
-        { q: "Which ocean is the largest on Earth?", options: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"], answer: 2 },
-        { q: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Titanium"], answer: 2 },
-        { q: "Which country is famous for the Kangaroo?", options: ["South Africa", "Australia", "Brazil", "New Zealand"], answer: 1 },
-        { q: "What is the chemical symbol for water?", options: ["O2", "CO2", "H2O", "NaCl"], answer: 2 },
-        { q: "How many continents are there on Earth?", options: ["5", "6", "7", "8"], answer: 2 },
-        { q: "Which city is known as the 'City of Light'?", options: ["Rome", "Paris", "Tokyo", "Madrid"], answer: 1 },
-        { q: "What is the tallest mountain above sea level?", options: ["K2", "Mount Fuji", "Mount Everest", "Kilimanjaro"], answer: 2 },
-        { q: "Which instrument has 88 black and white keys?", options: ["Guitar", "Violin", "Piano", "Harp"], answer: 2 }
-      ],
-      science: [
-        { q: "Which planet is closest to the Sun?", options: ["Venus", "Mercury", "Mars", "Earth"], answer: 1 },
-        { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"], answer: 2 },
-        { q: "Which planet has the most prominent ring system?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], answer: 1 },
-        { q: "What gas do plants absorb during photosynthesis?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], answer: 2 },
-        { q: "What is the chemical symbol for Gold?", options: ["Go", "Gd", "Au", "Ag"], answer: 2 },
-        { q: "How many bones are in the adult human body?", options: ["186", "206", "226", "246"], answer: 1 },
-        { q: "What force keeps planets orbiting the Sun?", options: ["Magnetism", "Gravity", "Friction", "Inertia"], answer: 1 },
-        { q: "What is the speed of light approximately?", options: ["300,000 km/s", "150,000 km/s", "30,000 km/s", "3,000 km/s"], answer: 0 }
-      ],
-      gaming: [
-        { q: "What is the best-selling video game of all time?", options: ["Tetris", "Minecraft", "GTA V", "Super Mario Bros"], answer: 1 },
-        { q: "Which Pokémon is #025 in the National Pokédex?", options: ["Charmander", "Squirtle", "Bulbasaur", "Pikachu"], answer: 3 },
-        { q: "In Minecraft, what pickaxe mines Obsidian?", options: ["Iron", "Gold", "Diamond", "Stone"], answer: 2 },
-        { q: "What color is the Pac-Man ghost named Blinky?", options: ["Pink", "Red", "Cyan", "Orange"], answer: 1 },
-        { q: "Who is Nintendo's famous Italian plumber?", options: ["Sonic", "Mario", "Link", "Kirby"], answer: 1 },
-        { q: "Which game features the 'Battle Bus'?", options: ["Apex Legends", "Fortnite", "PUBG", "Overwatch"], answer: 1 },
-        { q: "What year was the original PlayStation released?", options: ["1992", "1994", "1996", "1998"], answer: 1 },
-        { q: "What is the name of Link's princess in Zelda?", options: ["Peach", "Zelda", "Daisy", "Samus"], answer: 1 }
-      ],
-      geography: [
-        { q: "What is the capital city of Japan?", options: ["Osaka", "Kyoto", "Tokyo", "Seoul"], answer: 2 },
-        { q: "Which river is the longest in Africa?", options: ["Congo", "Nile", "Zambezi", "Niger"], answer: 1 },
-        { q: "In which country are the Pyramids of Giza?", options: ["Morocco", "Jordan", "Egypt", "Peru"], answer: 2 },
-        { q: "What is the largest hot desert in the world?", options: ["Gobi", "Mojave", "Sahara", "Arabian"], answer: 2 },
-        { q: "Which country has the largest population?", options: ["USA", "India", "Indonesia", "Brazil"], answer: 1 },
-        { q: "What is the smallest country in the world?", options: ["Monaco", "Vatican City", "San Marino", "Malta"], answer: 1 },
-        { q: "Which strait separates Asia and North America?", options: ["Bering Strait", "Malacca Strait", "Gibraltar", "Hormuz"], answer: 0 },
-        { q: "Mount Kilimanjaro is located in which country?", options: ["Kenya", "Tanzania", "Uganda", "Ethiopia"], answer: 1 }
-      ],
-      math: [
-        { q: "What is 16 × 5?", options: ["70", "75", "80", "85"], answer: 2 },
-        { q: "What is the square root of 169?", options: ["11", "12", "13", "14"], answer: 2 },
-        { q: "Solve: 54 ÷ 6 + 11 = ?", options: ["18", "19", "20", "21"], answer: 2 },
-        { q: "How many degrees are in a triangle?", options: ["90°", "180°", "270°", "360°"], answer: 1 },
-        { q: "What is 30% of 250?", options: ["65", "70", "75", "80"], answer: 2 },
-        { q: "Which of these numbers is prime?", options: ["27", "31", "33", "39"], answer: 1 },
-        { q: "What is 2 to the power of 6 (2⁶)?", options: ["32", "48", "64", "128"], answer: 2 },
-        { q: "What is the value of Pi (π) to two decimals?", options: ["3.12", "3.14", "3.16", "3.18"], answer: 1 }
-      ],
-      custom: [
-        { q: "What is the capital of the Philippines?", options: ["Cebu", "Manila", "Davao", "Baguio"], answer: 1 },
-        { q: "Which planet is closest to the Sun?", options: ["Venus", "Mars", "Mercury", "Jupiter"], answer: 2 },
-        { q: "How many degrees are in a full circle?", options: ["90", "180", "270", "360"], answer: 3 }
-      ]
-    };
+    // --- 1. HARDCODED 60-ITEM EXAM BANK (NUMBERING REMOVED, ANSWER KEY MAPPED) ---
+    const EXAM_QUESTIONS = [
+      {
+        q: "If 6 | 42, which multiplication statement correctly demonstrates the Multiplication Property of Divisibility for 6 | 42(-3)?",
+        options: ["-126 = 6(7 - 3)", "-126 = 6(-21)", "-126 = 6(-10)", "-126 = 6(21)"],
+        answer: 0 // 1: A
+      },
+      {
+        q: "Given that 4 | 20 and 20 | 100, what is the resulting integer multiplier k in the expression 100 = 4k using the Transitive Property?",
+        options: ["k = 20", "k = 10", "k = 25", "k = 50"],
+        answer: 2 // 2: C
+      },
+      {
+        q: "If 5 | 25 and 5 | 40, evaluate the linear combination 25(-2) + 40(3) and express it as a multiple of 5.",
+        options: ["170 = 5(34)", "70 = 5(14)", "-170 = 5(-34)", "65 = 5(13)"],
+        answer: 0 // 3: A
+      },
+      {
+        q: "What is the canonical prime factorization of 144?",
+        options: ["2³ × 3²", "2² × 3⁴", "2⁴ × 3²", "2⁴ × 3³"],
+        answer: 1 // 4: B
+      },
+      {
+        q: "Which expression shows the prime factorization of 252 in exponential notation?",
+        options: ["2³ × 3 × 7", "2 × 3² × 7²", "2² × 3 × 7²", "2² × 3² × 7"],
+        answer: 0 // 5: A
+      },
+      {
+        q: "How many positive divisors does the integer 72 have?",
+        options: ["12", "6", "9", "18"],
+        answer: 2 // 6: C
+      },
+      {
+        q: "Find the total number of positive divisors of 180.",
+        options: ["12", "16", "24", "18"],
+        answer: 2 // 7: C
+      },
+      {
+        q: "Given the prime factorizations 84 = 2² × 3 × 7 and 126 = 2 × 3² × 7, what is GCD(84, 126)?",
+        options: ["42", "21", "63", "252"],
+        answer: 1 // 8: B
+      },
+      {
+        q: "Find the Least Common Multiple (LCM) of 36 and 60 using prime factorization.",
+        options: ["12", "90", "360", "180"],
+        answer: 2 // 9: C
+      },
+      {
+        q: "Using the Division Algorithm a = bq + r with 0 ≤ r < b, express 95 divided by 12.",
+        options: ["95 = 12(8) - 1", "95 = 12(7) + 11", "95 = 12(6) + 23", "95 = 12(7) + 9"],
+        answer: 0 // 10: A
+      },
+      {
+        q: "Find GCD(252, 105) using the Euclidean Algorithm.",
+        options: ["7", "15", "42", "21"],
+        answer: 2 // 11: C
+      },
+      {
+        q: "Which Linear Diophantine Equation has NO integer solutions?",
+        options: ["12x + 18y = 30", "25x + 40y = 100", "16x + 24y = 15", "21x + 57y = 9"],
+        answer: 1 // 12: B
+      },
+      {
+        q: "What is the prime factorization of 360?",
+        options: ["2² × 3² × 5", "2³ × 3 × 5²", "2² × 3³ × 5", "2³ × 3² × 5"],
+        answer: 1 // 13: B
+      },
+      {
+        q: "How many positive divisors does 32 have?",
+        options: ["6", "5", "8", "10"],
+        answer: 1 // 14: B
+      },
+      {
+        q: "Find the Greatest Common Divisor of 48 and 72.",
+        options: ["12", "16", "36", "24"],
+        answer: 2 // 15: C
+      },
+      {
+        q: "What is the Least Common Multiple of 15 and 20?",
+        options: ["60", "45", "30", "120"],
+        answer: 2 // 16: C
+      },
+      {
+        q: "A rice mill in Bulacan has 48 sacks of white rice and 72 sacks of brown rice, both divisible by 12. When the batches are combined into 48 + 72, what integer multiplier k satisfies 48 + 72 = 12k?",
+        options: ["k = 8", "k = 12", "k = 15", "k = 10"],
+        answer: 1 // 17: B
+      },
+      {
+        q: "If 6 | b and 6 | c, which factored expression proves that 6 | (4b - 5c) where b = 6m and c = 6n?",
+        options: ["6(m - n)", "6(4m - 5n)", "6(24m - 30n)", "6(4m + 5n)"],
+        answer: 0 // 18: A
+      },
+      {
+        q: "Given a | b and c | d such that b = am and d = cn for integers m and n, which expression establishes that ac | bd?",
+        options: ["bd = (ac)(m + n)", "bd = a(cmn)", "bd = (ac)(mn)", "bd = c(amn)"],
+        answer: 1 // 19: B
+      },
+      {
+        q: "Farmers in Bulacan harvested 198 sacks of rice. What is the prime factorization of 198?",
+        options: ["2² × 3 × 11", "2 × 3 × 11²", "3² × 2²", "2 × 3² × 11"],
+        answer: 0 // 20: A
+      },
+      {
+        q: "A school received 144 notebooks and wants to pack them into equal group sizes with none left over. How many different equal group sizes are possible?",
+        options: ["15", "12", "10", "18"],
+        answer: 2 // 21: C
+      },
+      {
+        q: "If the integer n = 2ᵃ × 3² has exactly 12 positive divisors, what is the value of the exponent a?",
+        options: ["2", "4", "6", "3"],
+        answer: 1 // 22: B
+      },
+      {
+        q: "Find the Greatest Common Divisor (GCD) and Least Common Multiple (LCM) of 72 and 120.",
+        options: ["GCD = 12, LCM = 720", "GCD = 36, LCM = 240", "GCD = 24, LCM = 720", "GCD = 24, LCM = 360"],
+        answer: 1 // 23: B
+      },
+      {
+        q: "Two positive integers have a product of 7,200 and a Greatest Common Divisor of 12. What is their Least Common Multiple?",
+        options: ["600", "480", "720", "840"],
+        answer: 1 // 24: B
+      },
+      {
+        q: "Delivery Truck A visits a warehouse every 8 days, and Truck B visits every 12 days. If both trucks visited today, after how many days will they visit on the same day again?",
+        options: ["16 days", "20 days", "48 days", "24 days"],
+        answer: 2 // 25: C
+      },
+      {
+        q: "A local enterprise has 96 bottled products and 144 packaged snacks to arrange into identical gift packages with nothing left over. What is the greatest number of identical packages that can be made?",
+        options: ["24 packages", "48 packages", "32 packages", "96 packages"],
+        answer: 2 // 26: C
+      },
+      {
+        q: "A rectangular floor in Malolos measures 420 cm by 300 cm and will be covered completely with identical square tiles of the largest possible size without cutting any tiles. How many total tiles are required?",
+        options: ["35 tiles", "28 tiles", "42 tiles", "60 tiles"],
+        answer: 1 // 27: B
+      },
+      {
+        q: "Using the Euclidean Algorithm, find GCD(924, 630).",
+        options: ["21", "63", "126", "42"],
+        answer: 1 // 28: B
+      },
+      {
+        q: "Given that GCD(1,071, 462) = 21, compute LCM(1,071, 462).",
+        options: ["11,781", "21,420", "47,124", "23,562"],
+        answer: 2 // 29: C
+      },
+      {
+        q: "In applying the Extended Euclidean Algorithm to 252x + 105y = 21, back-substitution gives 21 = 105 - 2(42) where 42 = 252 - 2(105). Which particular integer solution (x, y) satisfies this equation?",
+        options: ["(2, -5)", "(-2, 5)", "(-5, 2)", "(5, -2)"],
+        answer: 0 // 30: A
+      },
+      {
+        q: "Find a particular integer solution (x, y) for the Linear Diophantine Equation 35x + 50y = 25.",
+        options: ["(-15, 10)", "(15, -10)", "(3, -2)", "(10, -7)"],
+        answer: 0 // 31: A
+      },
+      {
+        q: "Given the particular solution (9, -6) for 30x + 42y = 18 where GCD(30, 42) = 6, which pair of equations represents the general integer solution for any integer t?",
+        options: ["x = 9 + 5t, y = -6 - 7t", "x = 9 + 7t, y = -6 - 5t", "x = 9 + 42t, y = -6 - 30t", "x = 9 - 7t, y = -6 - 5t"],
+        answer: 0 // 32: A
+      },
+      {
+        q: "A student evaluates d(100) by writing 100 = 2² × 5² and calculating d(100) = 2 × 2 = 4. What is the error and the correct number of positive divisors?",
+        options: ["Multiplied bases instead of exponents; correct is 10.", "Incomplete prime factorization; correct is 6.", "Forgot to add 1 to each exponent; correct is 9.", "Added exponents instead of multiplying; correct is 4."],
+        answer: 1 // 33: B
+      },
+      {
+        q: "A learner computes GCD(48, 72) from 48 = 2⁴ × 3 and 72 = 2³ × 3² by picking the larger exponents to get 2⁴ × 3² = 144. What mistake did the learner make, and what is the true GCD?",
+        options: ["Missed common prime factor 5; true GCD is 120.", "Used larger exponents instead of smaller; true GCD is 24.", "Multiplied the numbers directly; true GCD is 12.", "Used smaller for 2 and larger for 3; true GCD is 72."],
+        answer: 0 // 34: A
+      },
+      {
+        q: "Four students proposed different positive integers, each claiming to be the smallest integer with exactly 12 positive divisors. After examining their prime factorizations and verifying the number of divisors, which student's answer should be accepted?",
+        options: ["72", "60", "48", "84"],
+        answer: 1 // 35: B
+      },
+      {
+        q: "A school fundraiser sells Product A at ₱21 per item and Product B at ₱57 per item to reach an exact revenue of ₱399, modeled by 21x + 57y = 399 with general solution x = 19 + 19t and y = -7t. How many nonnegative integer solutions (x ≥ 0, y ≥ 0) exist?",
+        options: ["1 solution", "3 solutions", "2 solutions", "Infinitely many solutions"],
+        answer: 1 // 36: B
+      },
+      {
+        q: "If 3 | b and b | c, which algebraic expression proves that 3 | c where b = 3m and c = bn for integers m and n?",
+        options: ["c = 3(m + n)", "c = b(3mn)", "c = 3(mn)", "c = 3(m - n)"],
+        answer: 1 // 37: B
+      },
+      {
+        q: "Given 84 blue ribbons and 126 red ribbons arranged into identical sets with none left over, what is the greatest number of identical sets that can be formed?",
+        options: ["42 sets", "21 sets", "63 sets", "84 sets"],
+        answer: 1 // 38: B
+      },
+      {
+        q: "Find the Greatest Common Divisor of 1,232 and 1,624 using the Euclidean Algorithm.",
+        options: ["28", "112", "56", "392"],
+        answer: 1 // 39: B
+      },
+      {
+        q: "Several students proposed different ordered pairs as solutions to the Diophantine equation 21x + 57y = 399. Which of the following pairs should be accepted as a valid nonnegative integer solution after evaluating the equation through substitution?",
+        options: ["(0, 7)", "(5, 5)", "(11, 3)", "(14, 2)"],
+        answer: 0 // 40: A
+      },
+      {
+        q: "A school canteen offers a merienda set consisting of 1 snack choice and 1 beverage choice. The available snacks are Inipit, Minasa, and Pastillas, while the available beverages are Buko Juice and Softdrink. How many total merienda combinations can a student form?",
+        options: ["5", "8", "6", "9"],
+        answer: 1 // 41: B
+      },
+      {
+        q: "A student ID code consists of 1 letter chosen from {A, B, C} followed by 2 digits. The first digit must be an odd number chosen from {1, 3, 5, 7, 9}, and the second digit must be an even number chosen from {0, 2, 4, 6, 8}. Assuming repetition of digits is allowed, how many distinct student ID codes can be generated?",
+        options: ["25", "75", "50", "100"],
+        answer: 2 // 42: C
+      },
+      {
+        q: "Evaluate P(10, 3), which represents the number of permutations of 10 distinct objects taken 3 at a time.",
+        options: ["120", "720", "504", "210"],
+        answer: 3 // 43: D
+      },
+      {
+        q: "A local footwear workshop in Pandi crafts custom shoes and has 8 distinct leather models available. In how many ways can an artisan select 4 models to feature as an unordered promotional product bundle in a catalog?",
+        options: ["70", "32", "1,680", "5,040"],
+        answer: 1 // 44: B
+      },
+      {
+        q: "A local business organization in Pandi has 10 active members. How many different 3-member delegation committees can be selected to meet the Municipal Mayor?",
+        options: ["30", "240", "120", "720"],
+        answer: 1 // 45: B
+      },
+      {
+        q: "How many distinct 8-letter arrangements can be formed using all the letters in the word \"BARANGAY\"?",
+        options: ["3,360", "20,160", "6,720", "40,320"],
+        answer: 1 // 46: B
+      },
+      {
+        q: "A municipal council convenes a strategic planning session with 6 department heads. In how many distinct ways can these 6 delegates be seated around a circular conference table?",
+        options: ["120", "36", "720", "5,040"],
+        answer: 1 // 47: B
+      },
+      {
+        q: "An inspector at a garment facility in Pandi audits a batch of 12 denim jackets, where 3 jackets have stitching defects and 9 are non-defective. In how many ways can the inspector draw a sample of 4 jackets such that it contains EXACTLY 1 defective jacket?",
+        options: ["87", "252", "105", "504"],
+        answer: 2 // 48: C
+      },
+      {
+        q: "A regional competition features 6 pyrotechnics manufacturers. In how many ways can the panel of judges award Gold, Silver, and Bronze trophies to the top 3 displays?",
+        options: ["18", "120", "20", "216"],
+        answer: 2 // 49: C
+      },
+      {
+        q: "A project manager forms a 4-person committee from 5 Software Engineers and 6 Data Scientists. The committee must include at least 2 Software Engineers. How many distinct committees can be formed?",
+        options: ["215", "150", "115", "330"],
+        answer: 2 // 50: C
+      },
+      {
+        q: "A Quality Assurance auditor inspects 2 consecutive embroidery pieces coming off a factory line in Pandi. Each piece can either Pass (P) or Fail (F). What is the total cardinality of the sample space, n(S)?",
+        options: ["n(S) = 2", "n(S) = 6", "n(S) = 4", "n(S) = 8"],
+        answer: 1 // 51: B
+      },
+      {
+        q: "A custom dressmaker offers 3 choices of fabric, 2 sleeve designs, and 4 embroidery patterns. Using the Fundamental Counting Principle, how many total unique dress configurations are possible?",
+        options: ["9 variations", "24 variations", "14 variations", "48 variations"],
+        answer: 2 // 52: C
+      },
+      {
+        q: "What is the value of C(12, 5), representing the total ways to choose a subset of 5 items from a pool of 12 items?",
+        options: ["792", "3,960", "60", "95,040"],
+        answer: 2 // 53: C
+      },
+      {
+        q: "If the probability of an event occurring is P(A) = 0.35, what is the probability of its complement, P(A')?",
+        options: ["0.35", "0.65", "0.70", "1.35"],
+        answer: 0 // 54: A
+      },
+      {
+        q: "A bag contains 7 green fabric swatches and 5 yellow swatches. If one swatch is drawn at random, what is the probability of NOT drawing a green swatch?",
+        options: ["7/12", "5/12", "5/7", "7/5"],
+        answer: 2 // 55: C
+      },
+      {
+        q: "If two events A and B are mutually exclusive (disjoint) with P(A) = 0.30 and P(B) = 0.40, what is P(A ∪ B)?",
+        options: ["0.12", "0.70", "0.80", "1.00"],
+        answer: 0 // 56: A
+      },
+      {
+        q: "Two events X and Y have P(X) = 0.50, P(Y) = 0.50, and P(X ∩ Y) = 0.167. What is P(X ∪ Y)?",
+        options: ["0.833", "1.000", "0.333", "1.167"],
+        answer: 2 // 57: C
+      },
+      {
+        q: "A fair 6-sided die is rolled once. Event A is rolling an even number ({2, 4, 6}), and Event B is rolling a number greater than 3 ({4, 5, 6}). What is the joint probability P(A ∩ B)?",
+        options: ["1/6", "1/3", "1/2", "2/3"],
+        answer: 0 // 58: A
+      },
+      {
+        q: "Out of 20 master embroiderers, a committee of 4 is to be randomly formed. What is the total number of possible distinct committees, n(S) = C(20, 4)?",
+        options: ["4,845", "116,280", "160,000", "80"],
+        answer: 3 // 59: D
+      },
+      {
+        q: "A shipment crate contains 50 shirts: 42 Flawless (F) and 8 Defective (D). A QA inspector pulls a sample batch of 5 shirts. How many ways can the inspector choose a sample containing exactly 3 Flawless and 2 Defective shirts?",
+        options: ["11,480 + 28 = 11,508", "11,480 × 28 = 321,440", "42 × 8 = 336", "C(50, 5) = 2,118,760"],
+        answer: 2 // 60: C
+      }
+    ];
 
     // --- 2. WEB AUDIO API SCI-FI SYNTHESIZER ---
     class TacticalAudio {
@@ -515,7 +690,6 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
     const startModal = document.getElementById('startModal');
     const inGameHud = document.getElementById('inGameHud');
     const debriefModal = document.getElementById('debriefModal');
-    const customQuizModal = document.getElementById('customQuizModal');
 
     // --- 4. SPHERICAL CAMERA & GAME STATE ---
     const DEG2RAD = Math.PI / 180;
@@ -525,20 +699,18 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       running: false,
       cameraActive: false,
       gyroActive: false,
-      spreadMode: '360', // '360' | '180'
-      category: 'general',
+      gameMode: 'rapid', // 'rapid' | 'cowboy'
       questions: [],
       qIndex: 0,
       score: 0,
       streak: 1,
       bestStreak: 1,
-      lives: 3,
       hits: 0,
       shotsFired: 0,
       fastestLockMs: null,
       reviewLog: [],
       questionStartTime: 0,
-      questionDurationMs: 18000,
+      questionDurationMs: 25000, // 25s for Rapid Fire mode
       transitionLock: false,
       questionCollapsed: false,
 
@@ -679,9 +851,6 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
     // --- 8. REAR CAMERA & GYRO PERMISSION ACTIVATION ---
     async function activateSensorsAndCamera() {
-      const notice = document.getElementById('permissionNotice');
-      notice.classList.add('hidden');
-
       // 1) Request iOS 13+ DeviceOrientation permission (must be triggered directly inside user click!)
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         try {
@@ -773,62 +942,23 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       };
     }
 
-    // --- 10. LOBBY & CUSTOM QUIZ HANDLERS ---
-    const spread360Btn = document.getElementById('spread360Btn');
-    const spread180Btn = document.getElementById('spread180Btn');
+    // --- 10. LANDING PAGE MODE SELECTORS ---
+    const modeRapidBtn = document.getElementById('modeRapidBtn');
+    const modeCowboyBtn = document.getElementById('modeCowboyBtn');
 
-    spread360Btn.addEventListener('click', () => {
-      state.spreadMode = '360';
-      spread360Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition";
-      spread180Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition";
+    modeRapidBtn.addEventListener('click', () => {
+      state.gameMode = 'rapid';
+      modeRapidBtn.className = "p-3.5 rounded-2xl border-2 border-teal-400 bg-teal-400/15 transition cursor-pointer";
+      modeCowboyBtn.className = "p-3.5 rounded-2xl border-2 border-slate-700 bg-slate-900/75 hover:border-slate-500 transition cursor-pointer";
     });
 
-    spread180Btn.addEventListener('click', () => {
-      state.spreadMode = '180';
-      spread180Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition";
-      spread360Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition";
+    modeCowboyBtn.addEventListener('click', () => {
+      state.gameMode = 'cowboy';
+      modeCowboyBtn.className = "p-3.5 rounded-2xl border-2 border-amber-400 bg-amber-400/15 transition cursor-pointer";
+      modeRapidBtn.className = "p-3.5 rounded-2xl border-2 border-slate-700 bg-slate-900/75 hover:border-slate-500 transition cursor-pointer";
     });
 
-    document.getElementById('openCustomBuilderBtn').addEventListener('click', () => {
-      customQuizModal.classList.remove('hidden');
-    });
-    document.getElementById('closeCustomQuizBtn').addEventListener('click', () => {
-      customQuizModal.classList.add('hidden');
-    });
-    document.getElementById('saveCustomQuizBtn').addEventListener('click', () => {
-      const rawLines = document.getElementById('customQuizInput').value.split('\n').map(l => l.trim()).filter(Boolean);
-      const errBox = document.getElementById('customQuizError');
-      const letterToIdx = { A: 0, B: 1, C: 2, D: 3 };
-      const parsed = [];
-
-      for (let i = 0; i < rawLines.length; i++) {
-        const parts = rawLines[i].split('|').map(p => p.trim());
-        if (parts.length !== 6 || !(parts[5].toUpperCase() in letterToIdx)) {
-          errBox.textContent = `Line ${i + 1} invalid. Use: Question | A | B | C | D | CorrectLetter`;
-          errBox.classList.remove('hidden');
-          return;
-        }
-        parsed.push({
-          q: parts[0],
-          options: [parts[1], parts[2], parts[3], parts[4]],
-          answer: letterToIdx[parts[5].toUpperCase()]
-        });
-      }
-
-      if (parsed.length === 0) {
-        errBox.textContent = "Please add at least 1 question.";
-        errBox.classList.remove('hidden');
-        return;
-      }
-
-      errBox.classList.add('hidden');
-      TRIVIA_DECKS.custom = parsed;
-      document.getElementById('customDeckCount').textContent = parsed.length;
-      document.getElementById('categorySelect').value = 'custom';
-      customQuizModal.classList.add('hidden');
-    });
-
-    // --- 11. GAME FLOW & 360° TARGET SPAWNING ---
+    // --- 11. GAME FLOW, FISHER-YATES SHUFFLE & 360° TARGET SPAWNING ---
     function shuffle(arr) {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -840,13 +970,12 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
     async function startMission() {
       audioFX.unlock();
-      state.category = document.getElementById('categorySelect').value;
-      state.questions = shuffle(TRIVIA_DECKS[state.category]);
+      // Fresh Fisher-Yates shuffle of all 60 exam questions every single trial
+      state.questions = shuffle(EXAM_QUESTIONS);
       state.qIndex = 0;
       state.score = 0;
       state.streak = 1;
       state.bestStreak = 1;
-      state.lives = 3;
       state.hits = 0;
       state.shotsFired = 0;
       state.fastestLockMs = null;
@@ -869,7 +998,7 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
     document.getElementById('launchArBtn').addEventListener('click', startMission);
     document.getElementById('playAgainBtn').addEventListener('click', startMission);
-    document.getElementById('switchCategoryBtn').addEventListener('click', () => {
+    document.getElementById('switchModeBtn').addEventListener('click', () => {
       stopRearCamera();
       debriefModal.classList.add('hidden');
       inGameHud.classList.add('hidden');
@@ -900,8 +1029,15 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       }
     });
 
+    function getDodgeTier(idx) {
+      if (idx < 10) return { level: 0, label: 'DRIFT: CALM', badgeClass: 'bg-teal-400/15 border-teal-400/40 text-teal-300' };
+      if (idx < 25) return { level: 1, label: 'DRIFT: SWAY', badgeClass: 'bg-sky-400/15 border-sky-400/40 text-sky-300' };
+      if (idx < 45) return { level: 2, label: 'DRIFT: EVASIVE', badgeClass: 'bg-amber-400/15 border-amber-400/40 text-amber-300' };
+      return { level: 3, label: 'DRIFT: HYPER-DODGE', badgeClass: 'bg-rose-500/20 border-rose-400/50 text-rose-300' };
+    }
+
     function loadQuestion(idx) {
-      if (idx >= state.questions.length || state.lives <= 0) {
+      if (idx >= state.questions.length) {
         finishMission();
         return;
       }
@@ -916,25 +1052,40 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       toggleQuestionBtn.textContent = 'Hide ▲';
 
       const qObj = state.questions[idx];
-      const deckTitles = {
-        general: '🌍 GENERAL KNOWLEDGE',
-        science: '🚀 SCIENCE & SPACE',
-        gaming: '🎮 POP CULTURE & GAMING',
-        geography: '🗺️ GEOGRAPHY & WORLD',
-        math: '⚡ QUICK MATH',
-        custom: '✏️ CUSTOM QUIZ'
-      };
+      const modeBadge = document.getElementById('hudModeBadge');
+      const timerText = document.getElementById('hudTimerText');
+      const timerFill = document.getElementById('hudTimerFill');
 
-      document.getElementById('hudCategoryBadge').textContent = deckTitles[state.category] || 'TRIVIA';
+      if (state.gameMode === 'rapid') {
+        modeBadge.textContent = '⚡ RAPID FIRE';
+        modeBadge.className = 'px-2 py-0.5 rounded-full bg-teal-400/15 border border-teal-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-widest text-teal-300';
+        timerText.textContent = '25s';
+        timerText.className = 'text-teal-300';
+        timerFill.style.width = '100%';
+      } else {
+        modeBadge.textContent = '🤠 COWBOY MODE';
+        modeBadge.className = 'px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-widest text-amber-300';
+        timerText.textContent = '∞ NO LIMIT';
+        timerText.className = 'text-amber-300';
+        timerFill.style.width = '100%';
+        timerFill.className = 'h-full bg-gradient-to-r from-amber-400 to-yellow-300';
+      }
+
+      // Progressive target dodging tier badge
+      const tier = getDodgeTier(idx);
+      const driftBadge = document.getElementById('hudDriftBadge');
+      driftBadge.textContent = tier.label;
+      driftBadge.className = `px-2 py-0.5 rounded-full border text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-wider ${tier.badgeClass}`;
+
       hudQuestionText.textContent = qObj.q;
       document.getElementById('hudQIndex').textContent = idx + 1;
       document.getElementById('hudQTotal').textContent = state.questions.length;
       updateHudNumbers();
 
-      spawn360Targets(qObj);
+      spawn360Targets(qObj, idx);
     }
 
-    function spawn360Targets(qObj) {
+    function spawn360Targets(qObj, qIdx) {
       const letters = ['A', 'B', 'C', 'D'];
       const themes = [
         { main: '#00f5d4', glow: 'rgba(0, 245, 212, 0.7)', fill: 'rgba(6, 40, 48, 0.88)' },   // Neon Cyan A
@@ -943,13 +1094,13 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
         { main: '#38bdf8', glow: 'rgba(56, 189, 248, 0.7)', fill: 'rgba(8, 38, 68, 0.88)' }   // Sky Blue D
       ];
 
-      // Distribute A, B, C, D around the player's current yaw!
+      // Distribute A, B, C, D around the player's current 360° yaw
       const baseHeading = state.yaw;
-      const yawOffsets = state.spreadMode === '360'
-        ? shuffle([-135, -45, 45, 135]) // Full 360° room panorama around the player
-        : shuffle([-72, -24, 24, 72]);  // Front 180° room arc
-
+      const yawOffsets = shuffle([-135, -45, 45, 135]);
       const pitchAngles = shuffle([-12, 6, 14, -4]);
+
+      // Progressive dodge multiplier from 0.0 (Q1) up to 1.0 (Q60)
+      const progressRatio = qIdx / Math.max(1, state.questions.length - 1);
 
       state.targets = qObj.options.map((optText, idx) => {
         const worldYaw = normalizeAngle360(baseHeading + yawOffsets[idx]);
@@ -965,8 +1116,12 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
           basePitch: worldPitch,
           yaw: worldYaw,
           pitch: worldPitch,
+          dodgeYawOffset: 0,
+          dodgePitchOffset: 0,
+          dashCooldown: 0,
+          progressRatio,
           distance: `${distMeters}m`,
-          phase: idx * 1.6,
+          phase: idx * 1.57 + Math.random() * 0.8,
           alive: true,
           scale: 0.05,
           screenX: 0,
@@ -985,7 +1140,6 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
     function updateHudNumbers() {
       document.getElementById('hudScore').textContent = String(state.score).padStart(4, '0');
       document.getElementById('hudStreak').textContent = `${state.streak}x`;
-      document.getElementById('hudLives').textContent = '❤️'.repeat(Math.max(0, state.lives)) + '🖤'.repeat(Math.max(0, 3 - state.lives));
     }
 
     // --- 12. INPUT CONTROLS: TOUCH-DRAG 360°, MOUSE-DRAG, TRIGGER BUTTON, KEYBOARD ---
@@ -1109,7 +1263,9 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
           state.fastestLockMs = elapsedMs;
         }
 
-        const speedBonus = Math.max(0, Math.round((1 - elapsedMs / state.questionDurationMs) * 150));
+        const speedBonus = state.gameMode === 'rapid'
+          ? Math.max(0, Math.round((1 - elapsedMs / state.questionDurationMs) * 150))
+          : 50;
         const points = (100 + speedBonus) * state.streak;
         state.score += points;
         state.hits++;
@@ -1126,38 +1282,39 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
         spawnExplosion(target.screenX, target.screenY, '#00f5d4', 36);
         spawnExplosion(target.screenX, target.screenY, '#ffb703', 20);
-        spawnPopup(target.screenX, target.screenY - 28, `TARGET DESTROYED! +${points}`, '#00f5d4');
+        spawnPopup(target.screenX, target.screenY - 28, `DIRECT HIT! +${points}`, '#00f5d4');
 
         setTimeout(() => {
           loadQuestion(state.qIndex + 1);
-        }, 950);
+        }, 850);
       } else {
-        // Wrong target blasted
+        // Wrong target blasted — advance to next exam question cleanly
+        state.transitionLock = true;
         target.alive = false;
         audioFX.playWrongBuzzer();
         if (navigator.vibrate) navigator.vibrate(140);
 
         state.streak = 1;
-        state.lives--;
         updateHudNumbers();
+
+        state.reviewLog.push({
+          q: currentQ.q,
+          correctAnswer: currentQ.options[currentQ.answer],
+          userCorrect: false,
+          timeSec: (elapsedMs / 1000).toFixed(1)
+        });
 
         document.body.classList.remove('shake-active');
         void document.body.offsetWidth;
         document.body.classList.add('shake-active');
 
+        const letters = ['A', 'B', 'C', 'D'];
         spawnExplosion(target.screenX, target.screenY, '#ff3366', 30);
-        spawnPopup(target.screenX, target.screenY - 22, `WRONG TARGET (${target.letter})!`, '#ff3366');
+        spawnPopup(target.screenX, target.screenY - 22, `WRONG (${target.letter}) • ANS: ${letters[currentQ.answer]}`, '#ff3366');
 
-        if (state.lives <= 0) {
-          state.transitionLock = true;
-          state.reviewLog.push({
-            q: currentQ.q,
-            correctAnswer: currentQ.options[currentQ.answer],
-            userCorrect: false,
-            timeSec: (elapsedMs / 1000).toFixed(1)
-          });
-          setTimeout(() => finishMission(), 850);
-        }
+        setTimeout(() => {
+          loadQuestion(state.qIndex + 1);
+        }, 1050);
       }
     }
 
@@ -1169,7 +1326,6 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
 
       const currentQ = state.questions[state.qIndex];
       state.streak = 1;
-      state.lives--;
       updateHudNumbers();
 
       state.reviewLog.push({
@@ -1183,29 +1339,21 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       spawnPopup(canvas.width / 2, canvas.height / 2, `TIME EXPIRED! ANS: ${letters[currentQ.answer]}`, '#ffb703');
 
       setTimeout(() => {
-        if (state.lives <= 0) {
-          finishMission();
-        } else {
-          loadQuestion(state.qIndex + 1);
-        }
-      }, 1100);
+        loadQuestion(state.qIndex + 1);
+      }, 1050);
     }
 
     function finishMission() {
       state.running = false;
       inGameHud.classList.add('hidden');
 
-      const won = state.lives > 0;
-      const acc = state.shotsFired > 0 ? Math.round((state.hits / state.shotsFired) * 100) : 0;
+      const total = state.questions.length;
+      const pct = Math.round((state.hits / total) * 100);
 
-      document.getElementById('debriefBadge').textContent = won ? '360° SECTOR SECURED' : 'SHIELDS DEPLETED';
-      document.getElementById('debriefBadge').className = won
-        ? 'inline-block px-3 py-1 rounded-full bg-teal-400/20 border border-teal-400/40 text-teal-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5'
-        : 'inline-block px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5';
-
-      document.getElementById('debriefTitle').textContent = won ? 'MISSION VICTORY!' : 'MISSION OVER';
+      document.getElementById('debriefBadge').textContent = state.gameMode === 'rapid' ? '⚡ RAPID FIRE COMPLETE' : '🤠 COWBOY MODE COMPLETE';
+      document.getElementById('debriefTitle').textContent = pct >= 75 ? '360° SHARPSHOOTER!' : 'EXAM COMPLETED';
       document.getElementById('debriefScore').textContent = state.score;
-      document.getElementById('debriefAccuracy').textContent = `${acc}%`;
+      document.getElementById('debriefAccuracy').textContent = `${state.hits}/${total} (${pct}%)`;
       document.getElementById('debriefFastest').textContent = state.fastestLockMs ? `${(state.fastestLockMs / 1000).toFixed(2)}s` : '--';
       document.getElementById('debriefStreak').textContent = `${state.bestStreak}x`;
 
@@ -1216,7 +1364,7 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
             <div class="font-bold text-slate-200">${i + 1}. ${item.q}</div>
             <div class="text-[11px] ${item.userCorrect ? 'text-teal-300' : 'text-amber-300'}">✔ ${item.correctAnswer}</div>
           </div>
-          <span class="text-[10px] font-arcade px-1.5 py-0.5 rounded ${item.userCorrect ? 'bg-teal-500/20 text-teal-300' : 'bg-rose-500/20 text-rose-300'}">
+          <span class="text-[10px] font-arcade px-1.5 py-0.5 rounded shrink-0 ${item.userCorrect ? 'bg-teal-500/20 text-teal-300' : 'bg-rose-500/20 text-rose-300'}">
             ${item.userCorrect ? item.timeSec + 's' : 'MISS'}
           </span>
         </div>
@@ -1327,10 +1475,37 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       state.targets.forEach((t, i) => {
         if (!t.alive) return;
 
-        // Smooth pop-in scale & organic holographic hover
+        // Smooth pop-in scale
         t.scale += (1 - t.scale) * 0.14;
-        t.yaw = normalizeAngle360(t.baseYaw + Math.sin(time * 0.0015 + t.phase) * 3.2);
-        t.pitch = t.basePitch + Math.cos(time * 0.002 + t.phase) * 2.4;
+
+        // PROGRESSIVE DODGING MECHANICS (scales smoothly across the 60 questions)
+        const p = t.progressRatio; // 0.0 at Q1 -> 1.0 at Q60
+        const swaySpeed = 0.0014 + p * 0.0028;
+        const yawAmp = 2.5 + p * 18.0;   // Up to +/- 20.5 deg horizontal dodge
+        const pitchAmp = 2.0 + p * 12.0; // Up to +/- 14 deg vertical dodge
+
+        // Figure-8 / Lissajous orbital motion at higher question numbers
+        const waveYaw = Math.sin(time * swaySpeed + t.phase) * yawAmp
+          + (p > 0.35 ? Math.sin(time * swaySpeed * 2.1 + t.phase * 1.7) * (yawAmp * 0.38) : 0);
+        const wavePitch = Math.cos(time * swaySpeed * 1.15 + t.phase) * pitchAmp
+          + (p > 0.55 ? Math.cos(time * swaySpeed * 2.4 + t.phase) * (pitchAmp * 0.35) : 0);
+
+        // Reactive Evasive Sidestep Dash when player's reticle approaches (Q20+)
+        if (p >= 0.32 && t.dashCooldown <= 0 && t.inFront) {
+          const aimDist = Math.hypot(t.screenX - cx, t.screenY - cy);
+          if (aimDist < 135 && aimDist > 42 && Math.random() < 0.025 + p * 0.045) {
+            const dodgeDir = Math.random() < 0.5 ? -1 : 1;
+            t.dodgeYawOffset = dodgeDir * (9 + p * 11);
+            t.dodgePitchOffset = (Math.random() - 0.5) * (8 + p * 8);
+            t.dashCooldown = 95; // frames before next reactive sidestep
+          }
+        }
+        if (t.dashCooldown > 0) t.dashCooldown--;
+        t.dodgeYawOffset *= 0.94;
+        t.dodgePitchOffset *= 0.94;
+
+        t.yaw = normalizeAngle360(t.baseYaw + waveYaw + t.dodgeYawOffset);
+        t.pitch = clamp(t.basePitch + wavePitch + t.dodgePitchOffset, -68, 68);
 
         const proj = projectSphericalToScreen(t.yaw, t.pitch);
         t.screenX = proj.x;
@@ -1759,16 +1934,23 @@ How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
       }
 
       if (state.running) {
-        // Countdown timer update
-        if (!state.transitionLock) {
+        // Countdown timer update (only active in Rapid Fire mode)
+        if (!state.transitionLock && state.gameMode === 'rapid') {
           const elapsed = time - state.questionStartTime;
+          const remainingSec = Math.max(0, Math.ceil((state.questionDurationMs - elapsed) / 1000));
           const ratio = Math.max(0, 1 - elapsed / state.questionDurationMs);
           const timerFill = document.getElementById('hudTimerFill');
+          const timerText = document.getElementById('hudTimerText');
+
           timerFill.style.width = `${ratio * 100}%`;
+          timerText.textContent = `${remainingSec}s`;
+
           if (ratio <= 0.25) {
             timerFill.className = 'h-full bg-rose-500 transition-all duration-100';
+            timerText.className = 'text-rose-400 animate-pulse';
           } else {
             timerFill.className = 'h-full bg-gradient-to-r from-teal-300 via-cyan-400 to-amber-400 transition-all duration-100';
+            timerText.className = 'text-teal-300';
           }
           if (ratio <= 0) {
             handleQuestionTimeout();
