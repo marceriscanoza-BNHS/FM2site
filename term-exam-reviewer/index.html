@@ -1,78 +1,1793 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Not Available</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 40px 30px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        .icon-container {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1a1a1a;
-        }
-        p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #666666;
-            margin-bottom: 24px;
-        }
-        .btn {
-            display: inline-block;
-            background-color: #0066cc;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: background-color 0.2s ease;
-            cursor: pointer;
-            border: none;
-        }
-        .btn:hover {
-            background-color: #0052a3;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>360° AR Quiz Shooter — Mobile Rear Camera FPS</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #030712;
+      font-family: 'Inter', sans-serif;
+      color: #ffffff;
+      touch-action: none;
+    }
+    .font-arcade {
+      font-family: 'Orbitron', sans-serif;
+    }
+    /* Rear Camera Feed (Un-mirrored for true AR passthrough) */
+    #rearCamera {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 1;
+    }
+    /* Fullscreen 360 AR Canvas Overlay */
+    #arCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+    /* Tactical HUD Edge Vignette */
+    .hud-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      background: radial-gradient(circle at center, transparent 58%, rgba(2, 6, 23, 0.68) 100%);
+      box-shadow: inset 0 0 45px rgba(0, 245, 212, 0.14);
+    }
+    .glass-hud {
+      background: rgba(6, 12, 28, 0.80);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 245, 212, 0.35);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 245, 212, 0.08);
+    }
+    .btn-primary-ar {
+      background: linear-gradient(135deg, #00f5d4 0%, #0ea5e9 100%);
+      box-shadow: 0 0 24px rgba(0, 245, 212, 0.45);
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+    .btn-primary-ar:active {
+      transform: scale(0.96);
+    }
+    /* Ergonomic Thumb FIRE Trigger */
+    .fire-trigger {
+      background: radial-gradient(circle at 35% 35%, #ff4d79 0%, #e11d48 65%, #881337 100%);
+      border: 3px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 0 0 28px rgba(255, 51, 102, 0.65), inset 0 0 16px rgba(255, 255, 255, 0.35);
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+    .fire-trigger:active, .fire-trigger.pressed {
+      transform: scale(0.91);
+      box-shadow: 0 0 42px rgba(255, 51, 102, 0.95), inset 0 0 22px rgba(255, 255, 255, 0.6);
+    }
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-9px, 5px); }
+      40% { transform: translate(9px, -5px); }
+      60% { transform: translate(-6px, -4px); }
+      80% { transform: translate(6px, 4px); }
+    }
+    .shake-active {
+      animation: screenShake 0.34s cubic-bezier(.36,.07,.19,.97) both;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="icon-container">🔒</div>
-        <h1>Early Access Restricted</h1>
-        <p>
-            Sorry, this link is currently not available right now. This page is reserved for advanced access and is not yet open to the public. Please check back later!
-        </p>
-        <a href="javascript:history.back()" class="btn">Go Back</a>
+  <!-- Live Rear Camera Passthrough -->
+  <video id="rearCamera" autoplay playsinline muted class="hidden"></video>
+
+  <!-- 360° Spatial AR Canvas -->
+  <canvas id="arCanvas"></canvas>
+
+  <!-- Subtle Tactical Vignette -->
+  <div class="hud-vignette"></div>
+
+  <!-- =====================================================================
+       IN-GAME 360° TACTICAL HUD
+  ====================================================================== -->
+  <div id="inGameHud" class="hidden fixed inset-0 z-10 pointer-events-none flex flex-col justify-between p-2.5 sm:p-4">
+
+    <!-- TOP CLUSTER: 360 Compass + Stats + Question Card -->
+    <div class="w-full max-w-2xl mx-auto flex flex-col gap-2">
+
+      <!-- 1. 360° Tactical Compass Strip -->
+      <div class="glass-hud rounded-full h-8 px-3 relative overflow-hidden flex items-center justify-center">
+        <canvas id="compassCanvas" class="w-full h-full block"></canvas>
+        <!-- Center Heading Pointer -->
+        <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px] bg-amber-400 shadow-[0_0_8px_#ffb703]"></div>
+      </div>
+
+      <!-- 2. Compact Score / Progress / Lives / Utility Bar -->
+      <div class="flex items-center justify-between gap-1.5 pointer-events-auto">
+        <!-- Score & Streak -->
+        <div class="glass-hud rounded-2xl px-3 py-1.5 flex items-center gap-2.5">
+          <div>
+            <div class="text-[9px] uppercase tracking-wider text-teal-300 font-bold">Score</div>
+            <div id="hudScore" class="font-arcade text-sm sm:text-lg font-black text-white leading-none">0000</div>
+          </div>
+          <div class="h-6 w-[1px] bg-teal-400/30"></div>
+          <div>
+            <div class="text-[9px] uppercase tracking-wider text-amber-300 font-bold">Streak</div>
+            <div id="hudStreak" class="font-arcade text-sm sm:text-base font-extrabold text-amber-400 leading-none">1x</div>
+          </div>
+        </div>
+
+        <!-- Question Counter & Timer Bar -->
+        <div class="glass-hud rounded-2xl px-3 py-1.5 flex-1 max-w-[165px] flex flex-col items-center">
+          <div class="text-[10px] font-arcade font-bold tracking-wider text-slate-200">
+            Q <span id="hudQIndex" class="text-teal-300">1</span>/<span id="hudQTotal">8</span>
+          </div>
+          <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 border border-slate-700">
+            <div id="hudTimerFill" class="h-full bg-gradient-to-r from-teal-300 via-cyan-400 to-amber-400 transition-all duration-100" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Lives + Recenter + Quit -->
+        <div class="glass-hud rounded-2xl px-2.5 py-1.5 flex items-center gap-1.5">
+          <div id="hudLives" class="text-xs sm:text-sm tracking-tighter" title="Shield Lives">❤️❤️❤️</div>
+          <button id="recenterBtn" class="p-1.5 rounded-xl bg-slate-800/90 active:bg-teal-600 border border-teal-400/40 text-teal-300 text-xs font-bold" title="Recenter Forward Direction">
+            🧭
+          </button>
+          <button id="quitGameBtn" class="p-1.5 rounded-xl bg-rose-950/85 active:bg-rose-700 border border-rose-500/40 text-rose-200 text-xs font-bold" title="Exit to Menu">
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Collapsible Question Banner -->
+      <div id="questionCard" class="glass-hud rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3 pointer-events-auto border-teal-400/50 transition-all">
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <span id="hudCategoryBadge" class="px-2 py-0.5 rounded-full bg-teal-400/15 border border-teal-400/40 text-[9px] sm:text-[10px] font-arcade font-bold uppercase tracking-widest text-teal-300">
+            GENERAL KNOWLEDGE
+          </span>
+          <button id="toggleQuestionBtn" class="text-[10px] font-bold text-slate-300 hover:text-white px-2 py-0.5 rounded-lg bg-slate-800/80 border border-slate-600/60">
+            Hide ▲
+          </button>
+        </div>
+        <h2 id="hudQuestionText" class="text-sm sm:text-lg font-extrabold text-white leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
+          Scanning sector for trivia transmission...
+        </h2>
+      </div>
     </div>
 
+    <!-- BOTTOM CLUSTER: Sensor Pill + Ergonomic Thumb FIRE Trigger -->
+    <div class="w-full max-w-2xl mx-auto flex items-end justify-between pb-1 sm:pb-3">
+      <!-- Left Status & Quick Action -->
+      <div class="flex flex-col gap-1.5 pointer-events-auto">
+        <div id="sensorBadge" class="glass-hud rounded-xl px-2.5 py-1.5 text-[10px] sm:text-xs font-semibold text-teal-200 flex items-center gap-1.5">
+          <span id="sensorDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="sensorModeText">360° Gyro Active</span>
+        </div>
+        <button id="recenterBottomBtn" class="glass-hud rounded-xl px-3 py-1.5 text-[11px] font-bold text-white active:bg-teal-500/30 border-teal-400/40 text-left">
+          🎯 Recenter Aim
+        </button>
+      </div>
+
+      <!-- Right Ergonomic Thumb FIRE Button -->
+      <div class="pointer-events-auto flex flex-col items-center gap-1">
+        <button id="fireBtn" class="fire-trigger w-20 h-20 sm:w-24 sm:h-24 rounded-full flex flex-col items-center justify-center text-white cursor-pointer">
+          <span class="font-arcade text-base sm:text-lg font-black tracking-wider drop-shadow">FIRE</span>
+          <span class="text-[9px] uppercase tracking-widest text-rose-100 font-bold opacity-90">BLAST</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       START / LOBBY SCREEN (Mobile-First)
+  ====================================================================== -->
+  <div id="startModal" class="fixed inset-0 z-20 flex items-center justify-center p-3.5 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+    <div class="glass-hud w-full max-w-lg rounded-3xl p-5 sm:p-7 border-teal-400/40 my-auto">
+      <div class="text-center mb-5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-400/15 border border-teal-400/40 text-teal-300 text-[10px] sm:text-xs font-arcade font-bold tracking-widest uppercase mb-2">
+          📱 360° REAR CAMERA AR FPS
+        </div>
+        <h1 class="font-arcade text-2xl sm:text-4xl font-black tracking-tight bg-gradient-to-r from-teal-300 via-white to-amber-300 bg-clip-text text-transparent">
+          360° AR QUIZ SHOOTER
+        </h1>
+        <p class="text-slate-300 text-xs sm:text-sm mt-1.5 leading-relaxed">
+          Look around your real room in <span class="text-teal-300 font-bold">360 degrees</span> through your phone's back camera to spot floating <span class="text-amber-300 font-bold">A, B, C, D</span> targets and blast the right answer!
+        </p>
+      </div>
+
+      <!-- Mission Settings -->
+      <div class="space-y-3 mb-4">
+        <!-- Category Deck -->
+        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700/80">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="text-[11px] font-arcade font-bold uppercase tracking-wider text-teal-300">1. Trivia Category</label>
+            <button id="openCustomBuilderBtn" class="text-[11px] font-bold text-amber-300 hover:text-amber-200 underline">
+              + Custom Quiz (<span id="customDeckCount">3</span>)
+            </button>
+          </div>
+          <select id="categorySelect" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-bold focus:outline-none focus:border-teal-400">
+            <option value="general">🌍 General Knowledge</option>
+            <option value="science">🚀 Science & Space</option>
+            <option value="gaming">🎮 Pop Culture & Gaming</option>
+            <option value="geography">🗺️ Geography & World</option>
+            <option value="math">⚡ Quick Math</option>
+            <option value="custom">✏️ My Custom Quiz</option>
+          </select>
+        </div>
+
+        <!-- 360 Spread Mode -->
+        <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700/80">
+          <label class="block text-[11px] font-arcade font-bold uppercase tracking-wider text-teal-300 mb-1.5">2. Room Scan Area</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="spread360Btn" class="spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition">
+              🔄 Full 360° Spin
+            </button>
+            <button type="button" id="spread180Btn" class="spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition">
+              ↔️ Front 180° Room
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Mobile Instructions -->
+      <div class="grid grid-cols-3 gap-2 mb-5 text-center">
+        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
+          <div class="text-lg">📱</div>
+          <div class="text-[11px] font-bold text-white">Turn 360°</div>
+          <div class="text-[9px] text-slate-400">Follow edge radar arrows</div>
+        </div>
+        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
+          <div class="text-lg">🎯</div>
+          <div class="text-[11px] font-bold text-white">Lock On</div>
+          <div class="text-[9px] text-slate-400">Center reticle on A/B/C/D</div>
+        </div>
+        <div class="bg-slate-900/65 rounded-xl p-2 border border-slate-800">
+          <div class="text-lg">🔥</div>
+          <div class="text-[11px] font-bold text-white">Tap FIRE</div>
+          <div class="text-[9px] text-slate-400">Blast before timer ends</div>
+        </div>
+      </div>
+
+      <div id="permissionNotice" class="hidden mb-3 p-2.5 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[11px] text-center"></div>
+
+      <!-- Primary iOS/Android Sensor & Camera Activation CTA -->
+      <button id="launchArBtn" class="btn-primary-ar w-full py-3.5 sm:py-4 rounded-2xl font-arcade text-sm sm:text-base font-black tracking-wider text-slate-950 uppercase cursor-pointer">
+        📷 ENABLE 360° GYRO & REAR CAMERA
+      </button>
+      <p class="text-center text-[10px] text-slate-400 mt-2">
+        No gyroscope or camera? Touch-drag / mouse-drag 360° look-around activates automatically!
+      </p>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       CUSTOM QUIZ CREATOR MODAL
+  ====================================================================== -->
+  <div id="customQuizModal" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+    <div class="glass-hud w-full max-w-lg rounded-3xl p-5 border-amber-400/50">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-arcade text-base sm:text-lg font-bold text-amber-300">✏️ Custom 360° Quiz Builder</h3>
+        <button id="closeCustomQuizBtn" class="text-slate-400 hover:text-white text-xl font-bold px-2">✕</button>
+      </div>
+      <p class="text-[11px] text-slate-300 mb-2.5">
+        One question per line:<br>
+        <code class="text-teal-300 bg-slate-900 px-1.5 py-0.5 rounded">Question | Option A | Option B | Option C | Option D | A/B/C/D</code>
+      </p>
+      <textarea id="customQuizInput" rows="6" class="w-full bg-slate-900/95 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-mono focus:outline-none focus:border-teal-400">What is the capital of the Philippines? | Cebu | Manila | Davao | Baguio | B
+Which planet is closest to the Sun? | Venus | Mars | Mercury | Jupiter | C
+How many degrees are in a full circle? | 90 | 180 | 270 | 360 | D</textarea>
+      <div id="customQuizError" class="hidden text-rose-400 text-xs mt-1.5"></div>
+      <div class="flex justify-end gap-2 mt-3">
+        <button id="saveCustomQuizBtn" class="btn-primary-ar px-5 py-2 rounded-xl font-arcade font-bold text-xs text-slate-950 uppercase">
+          Save & Select
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       END-OF-ROUND TACTICAL DEBRIEF MODAL
+  ====================================================================== -->
+  <div id="debriefModal" class="hidden fixed inset-0 z-20 flex items-center justify-center p-4 bg-slate-950/88 backdrop-blur-md overflow-y-auto">
+    <div class="glass-hud w-full max-w-md rounded-3xl p-5 sm:p-7 border-teal-400/50 my-auto">
+      <div class="text-center mb-4">
+        <div id="debriefBadge" class="inline-block px-3 py-1 rounded-full bg-teal-400/20 border border-teal-400/40 text-teal-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5">
+          SECTOR CLEARED
+        </div>
+        <h2 id="debriefTitle" class="font-arcade text-2xl sm:text-3xl font-black text-white">
+          360° SHARPSHOOTER
+        </h2>
+      </div>
+
+      <!-- Key Metrics Grid -->
+      <div class="grid grid-cols-2 gap-2.5 mb-4">
+        <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Total Score</div>
+          <div id="debriefScore" class="font-arcade text-xl sm:text-2xl font-black text-teal-300">0</div>
+        </div>
+        <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Accuracy</div>
+          <div id="debriefAccuracy" class="font-arcade text-xl sm:text-2xl font-black text-emerald-400">0%</div>
+        </div>
+        <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Fastest Lock-On</div>
+          <div id="debriefFastest" class="font-arcade text-base sm:text-lg font-bold text-amber-300">--</div>
+        </div>
+        <div class="bg-slate-900/85 p-3 rounded-2xl border border-slate-700/80 text-center">
+          <div class="text-[10px] uppercase text-slate-400 font-bold">Best Streak</div>
+          <div id="debriefStreak" class="font-arcade text-base sm:text-lg font-bold text-white">1x</div>
+        </div>
+      </div>
+
+      <!-- Question-by-Question Review List -->
+      <div class="mb-5">
+        <div class="text-[10px] font-arcade uppercase tracking-wider text-slate-400 mb-1.5">Mission Log Review</div>
+        <div id="debriefReviewList" class="max-h-36 overflow-y-auto space-y-1.5 pr-1 text-xs"></div>
+      </div>
+
+      <div class="flex gap-2.5">
+        <button id="playAgainBtn" class="btn-primary-ar flex-1 py-3.5 rounded-2xl font-arcade text-xs sm:text-sm font-black text-slate-950 uppercase cursor-pointer">
+          🔄 Play Again
+        </button>
+        <button id="switchCategoryBtn" class="px-4 py-3.5 rounded-2xl bg-slate-800 active:bg-slate-700 border border-slate-600 font-bold text-xs text-white cursor-pointer">
+          Categories
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * 360° AR QUIZ SHOOTER — SPHERICAL AR ENGINE & MOBILE FPS CONTROLLER
+     * ============================================================================
+     * Core Systems:
+     * 1. Rear Camera Passthrough (`facingMode: { ideal: 'environment' }`)
+     * 2. True 3D Spherical Projection (Azimuth Yaw 0-360° & Elevation Pitch -90 to +90°)
+     *    driven by DeviceOrientationEvent + screen.orientation compensation &
+     *    quaternion-based camera rotation matrix (eliminates gimbal lock when looking up/down).
+     * 3. Seamless Touch-Drag / Mouse-Drag / WASD 360° look fallback for desktop/non-gyro.
+     * 4. 360° Compass Strip & Screen-Edge Directional Radar Arrows for off-screen targets.
+     * 5. Center Crosshair Aim-Assist Lock-On + Haptic Feedback + Synthesized Sci-Fi Audio.
+     */
+
+    // --- 1. TRIVIA DECKS ---
+    const TRIVIA_DECKS = {
+      general: [
+        { q: "Which ocean is the largest on Earth?", options: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"], answer: 2 },
+        { q: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Titanium"], answer: 2 },
+        { q: "Which country is famous for the Kangaroo?", options: ["South Africa", "Australia", "Brazil", "New Zealand"], answer: 1 },
+        { q: "What is the chemical symbol for water?", options: ["O2", "CO2", "H2O", "NaCl"], answer: 2 },
+        { q: "How many continents are there on Earth?", options: ["5", "6", "7", "8"], answer: 2 },
+        { q: "Which city is known as the 'City of Light'?", options: ["Rome", "Paris", "Tokyo", "Madrid"], answer: 1 },
+        { q: "What is the tallest mountain above sea level?", options: ["K2", "Mount Fuji", "Mount Everest", "Kilimanjaro"], answer: 2 },
+        { q: "Which instrument has 88 black and white keys?", options: ["Guitar", "Violin", "Piano", "Harp"], answer: 2 }
+      ],
+      science: [
+        { q: "Which planet is closest to the Sun?", options: ["Venus", "Mercury", "Mars", "Earth"], answer: 1 },
+        { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"], answer: 2 },
+        { q: "Which planet has the most prominent ring system?", options: ["Jupiter", "Saturn", "Uranus", "Neptune"], answer: 1 },
+        { q: "What gas do plants absorb during photosynthesis?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], answer: 2 },
+        { q: "What is the chemical symbol for Gold?", options: ["Go", "Gd", "Au", "Ag"], answer: 2 },
+        { q: "How many bones are in the adult human body?", options: ["186", "206", "226", "246"], answer: 1 },
+        { q: "What force keeps planets orbiting the Sun?", options: ["Magnetism", "Gravity", "Friction", "Inertia"], answer: 1 },
+        { q: "What is the speed of light approximately?", options: ["300,000 km/s", "150,000 km/s", "30,000 km/s", "3,000 km/s"], answer: 0 }
+      ],
+      gaming: [
+        { q: "What is the best-selling video game of all time?", options: ["Tetris", "Minecraft", "GTA V", "Super Mario Bros"], answer: 1 },
+        { q: "Which Pokémon is #025 in the National Pokédex?", options: ["Charmander", "Squirtle", "Bulbasaur", "Pikachu"], answer: 3 },
+        { q: "In Minecraft, what pickaxe mines Obsidian?", options: ["Iron", "Gold", "Diamond", "Stone"], answer: 2 },
+        { q: "What color is the Pac-Man ghost named Blinky?", options: ["Pink", "Red", "Cyan", "Orange"], answer: 1 },
+        { q: "Who is Nintendo's famous Italian plumber?", options: ["Sonic", "Mario", "Link", "Kirby"], answer: 1 },
+        { q: "Which game features the 'Battle Bus'?", options: ["Apex Legends", "Fortnite", "PUBG", "Overwatch"], answer: 1 },
+        { q: "What year was the original PlayStation released?", options: ["1992", "1994", "1996", "1998"], answer: 1 },
+        { q: "What is the name of Link's princess in Zelda?", options: ["Peach", "Zelda", "Daisy", "Samus"], answer: 1 }
+      ],
+      geography: [
+        { q: "What is the capital city of Japan?", options: ["Osaka", "Kyoto", "Tokyo", "Seoul"], answer: 2 },
+        { q: "Which river is the longest in Africa?", options: ["Congo", "Nile", "Zambezi", "Niger"], answer: 1 },
+        { q: "In which country are the Pyramids of Giza?", options: ["Morocco", "Jordan", "Egypt", "Peru"], answer: 2 },
+        { q: "What is the largest hot desert in the world?", options: ["Gobi", "Mojave", "Sahara", "Arabian"], answer: 2 },
+        { q: "Which country has the largest population?", options: ["USA", "India", "Indonesia", "Brazil"], answer: 1 },
+        { q: "What is the smallest country in the world?", options: ["Monaco", "Vatican City", "San Marino", "Malta"], answer: 1 },
+        { q: "Which strait separates Asia and North America?", options: ["Bering Strait", "Malacca Strait", "Gibraltar", "Hormuz"], answer: 0 },
+        { q: "Mount Kilimanjaro is located in which country?", options: ["Kenya", "Tanzania", "Uganda", "Ethiopia"], answer: 1 }
+      ],
+      math: [
+        { q: "What is 16 × 5?", options: ["70", "75", "80", "85"], answer: 2 },
+        { q: "What is the square root of 169?", options: ["11", "12", "13", "14"], answer: 2 },
+        { q: "Solve: 54 ÷ 6 + 11 = ?", options: ["18", "19", "20", "21"], answer: 2 },
+        { q: "How many degrees are in a triangle?", options: ["90°", "180°", "270°", "360°"], answer: 1 },
+        { q: "What is 30% of 250?", options: ["65", "70", "75", "80"], answer: 2 },
+        { q: "Which of these numbers is prime?", options: ["27", "31", "33", "39"], answer: 1 },
+        { q: "What is 2 to the power of 6 (2⁶)?", options: ["32", "48", "64", "128"], answer: 2 },
+        { q: "What is the value of Pi (π) to two decimals?", options: ["3.12", "3.14", "3.16", "3.18"], answer: 1 }
+      ],
+      custom: [
+        { q: "What is the capital of the Philippines?", options: ["Cebu", "Manila", "Davao", "Baguio"], answer: 1 },
+        { q: "Which planet is closest to the Sun?", options: ["Venus", "Mars", "Mercury", "Jupiter"], answer: 2 },
+        { q: "How many degrees are in a full circle?", options: ["90", "180", "270", "360"], answer: 3 }
+      ]
+    };
+
+    // --- 2. WEB AUDIO API SCI-FI SYNTHESIZER ---
+    class TacticalAudio {
+      constructor() {
+        this.ctx = null;
+      }
+      unlock() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playLockPing() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1180, now);
+        osc.frequency.exponentialRampToValueAtTime(1560, now + 0.06);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.07);
+      }
+      playPlasmaShot() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.17);
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.19);
+      }
+      playShieldShatterAndWin() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        // Celebratory ascending arpeggio
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.055);
+          gain.gain.setValueAtTime(0.24, now + i * 0.055);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.055);
+          osc.stop(now + i * 0.055 + 0.26);
+        });
+      }
+      playWrongBuzzer() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(165, now);
+        osc.frequency.linearRampToValueAtTime(88, now + 0.34);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.36);
+      }
+    }
+
+    const audioFX = new TacticalAudio();
+
+    // --- 3. DOM REFERENCES ---
+    const videoEl = document.getElementById('rearCamera');
+    const canvas = document.getElementById('arCanvas');
+    const ctx = canvas.getContext('2d');
+    const compassCanvas = document.getElementById('compassCanvas');
+    const compassCtx = compassCanvas.getContext('2d');
+
+    const startModal = document.getElementById('startModal');
+    const inGameHud = document.getElementById('inGameHud');
+    const debriefModal = document.getElementById('debriefModal');
+    const customQuizModal = document.getElementById('customQuizModal');
+
+    // --- 4. SPHERICAL CAMERA & GAME STATE ---
+    const DEG2RAD = Math.PI / 180;
+    const RAD2DEG = 180 / Math.PI;
+
+    const state = {
+      running: false,
+      cameraActive: false,
+      gyroActive: false,
+      spreadMode: '360', // '360' | '180'
+      category: 'general',
+      questions: [],
+      qIndex: 0,
+      score: 0,
+      streak: 1,
+      bestStreak: 1,
+      lives: 3,
+      hits: 0,
+      shotsFired: 0,
+      fastestLockMs: null,
+      reviewLog: [],
+      questionStartTime: 0,
+      questionDurationMs: 18000,
+      transitionLock: false,
+      questionCollapsed: false,
+
+      // Camera Orientation (in degrees)
+      // yaw: 0..360 (horizontal heading), pitch: -85..+85 (vertical tilt)
+      yaw: 0,
+      pitch: 0,
+      targetYaw: 0,
+      targetPitch: 0,
+      yawOffset: 0, // Used by "Recenter View"
+      rawDeviceYaw: 0,
+      rawDevicePitch: 0,
+      hasInitialGyroReading: false,
+
+      // Touch / Mouse drag fallback
+      isDragging: false,
+      dragStartX: 0,
+      dragStartY: 0,
+      dragMoved: false,
+      keysPressed: {},
+
+      // Weapon & Visual FX
+      lockedTargetIndex: -1,
+      prevLockedTargetIndex: -1,
+      recoilOffset: 0,
+      plasmaBolts: [],
+      particles: [],
+      popups: [],
+
+      // 3D Targets in Spherical Space
+      targets: [],
+
+      // Virtual Dome Starfield (when rear camera isn't available)
+      domeStars: Array.from({ length: 140 }, () => ({
+        yaw: Math.random() * 360,
+        pitch: (Math.random() - 0.5) * 150,
+        size: Math.random() * 2.2 + 0.8,
+        alpha: Math.random() * 0.6 + 0.3
+      }))
+    };
+
+    // --- 5. CANVAS SIZING ---
+    function handleResize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      if (compassCanvas.parentElement) {
+        compassCanvas.width = compassCanvas.parentElement.clientWidth;
+        compassCanvas.height = compassCanvas.parentElement.clientHeight;
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    // --- 6. ANGLE MATH HELPERS ---
+    function normalizeAngle360(deg) {
+      return ((deg % 360) + 360) % 360;
+    }
+
+    // Shortest signed angular difference (-180 to +180)
+    function shortestAngleDiff(targetDeg, currentDeg) {
+      let diff = ((targetDeg - currentDeg + 540) % 360) - 180;
+      return diff;
+    }
+
+    function clamp(val, min, max) {
+      return Math.max(min, Math.min(max, val));
+    }
+
+    // --- 7. DEVICE ORIENTATION (360° GYROSCOPE WITH QUATERNION/MATRIX MATH) ---
+    // Converts phone alpha/beta/gamma + screen orientation into gimbal-lock-free Yaw & Pitch
+    function computeYawPitchFromDeviceOrientation(alpha, beta, gamma) {
+      const _x = beta ? beta * DEG2RAD : 0;   // beta: [-180, 180]
+      const _y = gamma ? gamma * DEG2RAD : 0; // gamma: [-90, 90]
+      const _z = alpha ? alpha * DEG2RAD : 0; // alpha: [0, 360]
+
+      const cX = Math.cos(_x), sX = Math.sin(_x);
+      const cY = Math.cos(_y), sY = Math.sin(_y);
+      const cZ = Math.cos(_z), sZ = Math.sin(_z);
+
+      // Rotation matrix Rz(alpha) * Rx(beta) * Ry(gamma)
+      const m13 = cZ * sY + sZ * sX * cY;
+      const m23 = sZ * sY - cZ * sX * cY;
+      const m33 = cX * cY;
+
+      // Screen orientation adjustment (portrait vs landscape)
+      const screenAngle = (window.screen && window.screen.orientation && typeof window.screen.orientation.angle === 'number')
+        ? window.screen.orientation.angle
+        : (typeof window.orientation === 'number' ? window.orientation : 0);
+
+      // Forward vector of the rear camera (-Z axis of device) in world coordinates
+      let vx = -m13;
+      let vy = -m23;
+      let vz = -m33;
+
+      // World heading (clockwise from North/initial reference)
+      let heading = Math.atan2(vx, vy) * RAD2DEG;
+      heading = normalizeAngle360(heading + screenAngle);
+
+      // World elevation pitch (-90 down to +90 up)
+      let pitch = Math.asin(clamp(vz, -1, 1)) * RAD2DEG;
+
+      return { yaw: heading, pitch };
+    }
+
+    function onDeviceOrientation(event) {
+      if (event.alpha === null || event.beta === null || event.gamma === null) return;
+
+      const { yaw, pitch } = computeYawPitchFromDeviceOrientation(event.alpha, event.beta, event.gamma);
+      state.rawDeviceYaw = yaw;
+      state.rawDevicePitch = pitch;
+
+      if (!state.hasInitialGyroReading) {
+        state.hasInitialGyroReading = true;
+        state.gyroActive = true;
+        // Set initial forward direction to 0° so targets spawn around the player's current facing!
+        state.yawOffset = yaw;
+        updateSensorStatusUI();
+      }
+
+      state.targetYaw = normalizeAngle360(yaw - state.yawOffset);
+      state.targetPitch = clamp(pitch, -82, 82);
+    }
+
+    function recenterView() {
+      audioFX.unlock();
+      if (state.gyroActive) {
+        state.yawOffset = state.rawDeviceYaw;
+        state.targetYaw = 0;
+        state.yaw = 0;
+        state.targetPitch = clamp(state.rawDevicePitch, -82, 82);
+      } else {
+        state.targetYaw = 0;
+        state.targetPitch = 0;
+      }
+      spawnPopup(canvas.width / 2, canvas.height * 0.42, "VIEW RECENTERED", "#00f5d4");
+      if (navigator.vibrate) navigator.vibrate(20);
+    }
+
+    // --- 8. REAR CAMERA & GYRO PERMISSION ACTIVATION ---
+    async function activateSensorsAndCamera() {
+      const notice = document.getElementById('permissionNotice');
+      notice.classList.add('hidden');
+
+      // 1) Request iOS 13+ DeviceOrientation permission (must be triggered directly inside user click!)
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const perm = await DeviceOrientationEvent.requestPermission();
+          if (perm === 'granted') {
+            window.addEventListener('deviceorientation', onDeviceOrientation, true);
+          }
+        } catch (err) {
+          console.warn("iOS Gyro permission error:", err);
+        }
+      } else if (typeof DeviceOrientationEvent !== 'undefined') {
+        window.addEventListener('deviceorientation', onDeviceOrientation, true);
+      }
+
+      // 2) Request Rear/Back Camera (`environment`)
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
+        videoEl.srcObject = stream;
+        await videoEl.play();
+        videoEl.classList.remove('hidden');
+        state.cameraActive = true;
+      } catch (err) {
+        console.warn("Rear camera unavailable, using 360° Tactical Dome:", err);
+        videoEl.classList.add('hidden');
+        state.cameraActive = false;
+      }
+
+      updateSensorStatusUI();
+    }
+
+    function stopRearCamera() {
+      if (videoEl.srcObject) {
+        videoEl.srcObject.getTracks().forEach(track => track.stop());
+        videoEl.srcObject = null;
+      }
+      videoEl.classList.add('hidden');
+      state.cameraActive = false;
+    }
+
+    function updateSensorStatusUI() {
+      const modeText = document.getElementById('sensorModeText');
+      const dot = document.getElementById('sensorDot');
+      if (state.gyroActive && state.cameraActive) {
+        modeText.textContent = "Rear Cam + 360° Gyro";
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+      } else if (state.gyroActive) {
+        modeText.textContent = "360° Gyro + Virtual Dome";
+        dot.className = "w-2 h-2 rounded-full bg-teal-400 animate-pulse";
+      } else if (state.cameraActive) {
+        modeText.textContent = "Rear Cam + Touch Drag 360°";
+        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+      } else {
+        modeText.textContent = "Drag / Arrows 360° Look";
+        dot.className = "w-2 h-2 rounded-full bg-amber-400";
+      }
+    }
+
+    // --- 9. 3D SPHERICAL PROJECTION (WORLD YAW/PITCH -> SCREEN X/Y) ---
+    function projectSphericalToScreen(targetYaw, targetPitch) {
+      const w = canvas.width;
+      const h = canvas.height;
+      // Horizontal Field of View (FOV) ~ 68 degrees (matches typical smartphone rear camera)
+      const fovX = 68;
+      const focalLength = (w / 2) / Math.tan((fovX / 2) * DEG2RAD);
+
+      const dYaw = shortestAngleDiff(targetYaw, state.yaw);
+      const dPitch = targetPitch - state.pitch;
+
+      // Check if target is in front hemisphere (within +/- 88 degrees of camera view)
+      const inFront = Math.abs(dYaw) < 88 && Math.abs(dPitch) < 85;
+
+      const screenX = (w / 2) + Math.tan(clamp(dYaw, -85, 85) * DEG2RAD) * focalLength;
+      const screenY = (h / 2) - Math.tan(clamp(dPitch, -80, 80) * DEG2RAD) * focalLength;
+
+      return {
+        x: screenX,
+        y: screenY,
+        dYaw,
+        dPitch,
+        inFront,
+        onScreen: inFront && screenX >= -40 && screenX <= w + 40 && screenY >= -40 && screenY <= h + 40
+      };
+    }
+
+    // --- 10. LOBBY & CUSTOM QUIZ HANDLERS ---
+    const spread360Btn = document.getElementById('spread360Btn');
+    const spread180Btn = document.getElementById('spread180Btn');
+
+    spread360Btn.addEventListener('click', () => {
+      state.spreadMode = '360';
+      spread360Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition";
+      spread180Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition";
+    });
+
+    spread180Btn.addEventListener('click', () => {
+      state.spreadMode = '180';
+      spread180Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-teal-400 bg-teal-400/20 text-teal-200 text-xs font-bold text-center transition";
+      spread360Btn.className = "spread-option py-2 px-2.5 rounded-xl border border-slate-700 bg-slate-800/70 text-slate-300 text-xs font-bold text-center transition";
+    });
+
+    document.getElementById('openCustomBuilderBtn').addEventListener('click', () => {
+      customQuizModal.classList.remove('hidden');
+    });
+    document.getElementById('closeCustomQuizBtn').addEventListener('click', () => {
+      customQuizModal.classList.add('hidden');
+    });
+    document.getElementById('saveCustomQuizBtn').addEventListener('click', () => {
+      const rawLines = document.getElementById('customQuizInput').value.split('\n').map(l => l.trim()).filter(Boolean);
+      const errBox = document.getElementById('customQuizError');
+      const letterToIdx = { A: 0, B: 1, C: 2, D: 3 };
+      const parsed = [];
+
+      for (let i = 0; i < rawLines.length; i++) {
+        const parts = rawLines[i].split('|').map(p => p.trim());
+        if (parts.length !== 6 || !(parts[5].toUpperCase() in letterToIdx)) {
+          errBox.textContent = `Line ${i + 1} invalid. Use: Question | A | B | C | D | CorrectLetter`;
+          errBox.classList.remove('hidden');
+          return;
+        }
+        parsed.push({
+          q: parts[0],
+          options: [parts[1], parts[2], parts[3], parts[4]],
+          answer: letterToIdx[parts[5].toUpperCase()]
+        });
+      }
+
+      if (parsed.length === 0) {
+        errBox.textContent = "Please add at least 1 question.";
+        errBox.classList.remove('hidden');
+        return;
+      }
+
+      errBox.classList.add('hidden');
+      TRIVIA_DECKS.custom = parsed;
+      document.getElementById('customDeckCount').textContent = parsed.length;
+      document.getElementById('categorySelect').value = 'custom';
+      customQuizModal.classList.add('hidden');
+    });
+
+    // --- 11. GAME FLOW & 360° TARGET SPAWNING ---
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    async function startMission() {
+      audioFX.unlock();
+      state.category = document.getElementById('categorySelect').value;
+      state.questions = shuffle(TRIVIA_DECKS[state.category]);
+      state.qIndex = 0;
+      state.score = 0;
+      state.streak = 1;
+      state.bestStreak = 1;
+      state.lives = 3;
+      state.hits = 0;
+      state.shotsFired = 0;
+      state.fastestLockMs = null;
+      state.reviewLog = [];
+      state.plasmaBolts = [];
+      state.particles = [];
+      state.popups = [];
+      state.transitionLock = false;
+
+      await activateSensorsAndCamera();
+
+      startModal.classList.add('hidden');
+      debriefModal.classList.add('hidden');
+      inGameHud.classList.remove('hidden');
+      handleResize();
+
+      state.running = true;
+      loadQuestion(0);
+    }
+
+    document.getElementById('launchArBtn').addEventListener('click', startMission);
+    document.getElementById('playAgainBtn').addEventListener('click', startMission);
+    document.getElementById('switchCategoryBtn').addEventListener('click', () => {
+      stopRearCamera();
+      debriefModal.classList.add('hidden');
+      inGameHud.classList.add('hidden');
+      startModal.classList.remove('hidden');
+    });
+
+    document.getElementById('quitGameBtn').addEventListener('click', () => {
+      state.running = false;
+      stopRearCamera();
+      inGameHud.classList.add('hidden');
+      startModal.classList.remove('hidden');
+    });
+
+    document.getElementById('recenterBtn').addEventListener('click', recenterView);
+    document.getElementById('recenterBottomBtn').addEventListener('click', recenterView);
+
+    // Collapsible Question Banner toggle
+    const toggleQuestionBtn = document.getElementById('toggleQuestionBtn');
+    const hudQuestionText = document.getElementById('hudQuestionText');
+    toggleQuestionBtn.addEventListener('click', () => {
+      state.questionCollapsed = !state.questionCollapsed;
+      if (state.questionCollapsed) {
+        hudQuestionText.classList.add('hidden');
+        toggleQuestionBtn.textContent = 'Show ▼';
+      } else {
+        hudQuestionText.classList.remove('hidden');
+        toggleQuestionBtn.textContent = 'Hide ▲';
+      }
+    });
+
+    function loadQuestion(idx) {
+      if (idx >= state.questions.length || state.lives <= 0) {
+        finishMission();
+        return;
+      }
+
+      state.qIndex = idx;
+      state.transitionLock = false;
+      state.questionStartTime = performance.now();
+
+      // Expand question automatically when a new question arrives
+      state.questionCollapsed = false;
+      hudQuestionText.classList.remove('hidden');
+      toggleQuestionBtn.textContent = 'Hide ▲';
+
+      const qObj = state.questions[idx];
+      const deckTitles = {
+        general: '🌍 GENERAL KNOWLEDGE',
+        science: '🚀 SCIENCE & SPACE',
+        gaming: '🎮 POP CULTURE & GAMING',
+        geography: '🗺️ GEOGRAPHY & WORLD',
+        math: '⚡ QUICK MATH',
+        custom: '✏️ CUSTOM QUIZ'
+      };
+
+      document.getElementById('hudCategoryBadge').textContent = deckTitles[state.category] || 'TRIVIA';
+      hudQuestionText.textContent = qObj.q;
+      document.getElementById('hudQIndex').textContent = idx + 1;
+      document.getElementById('hudQTotal').textContent = state.questions.length;
+      updateHudNumbers();
+
+      spawn360Targets(qObj);
+    }
+
+    function spawn360Targets(qObj) {
+      const letters = ['A', 'B', 'C', 'D'];
+      const themes = [
+        { main: '#00f5d4', glow: 'rgba(0, 245, 212, 0.7)', fill: 'rgba(6, 40, 48, 0.88)' },   // Neon Cyan A
+        { main: '#c084fc', glow: 'rgba(192, 132, 252, 0.7)', fill: 'rgba(46, 16, 78, 0.88)' }, // Neon Purple B
+        { main: '#ffb703', glow: 'rgba(255, 183, 3, 0.7)', fill: 'rgba(62, 36, 4, 0.88)' },    // Amber Gold C
+        { main: '#38bdf8', glow: 'rgba(56, 189, 248, 0.7)', fill: 'rgba(8, 38, 68, 0.88)' }   // Sky Blue D
+      ];
+
+      // Distribute A, B, C, D around the player's current yaw!
+      const baseHeading = state.yaw;
+      const yawOffsets = state.spreadMode === '360'
+        ? shuffle([-135, -45, 45, 135]) // Full 360° room panorama around the player
+        : shuffle([-72, -24, 24, 72]);  // Front 180° room arc
+
+      const pitchAngles = shuffle([-12, 6, 14, -4]);
+
+      state.targets = qObj.options.map((optText, idx) => {
+        const worldYaw = normalizeAngle360(baseHeading + yawOffsets[idx]);
+        const worldPitch = pitchAngles[idx];
+        const distMeters = (3.4 + Math.random() * 2.2).toFixed(1);
+
+        return {
+          index: idx,
+          letter: letters[idx],
+          text: optText,
+          isCorrect: idx === qObj.answer,
+          baseYaw: worldYaw,
+          basePitch: worldPitch,
+          yaw: worldYaw,
+          pitch: worldPitch,
+          distance: `${distMeters}m`,
+          phase: idx * 1.6,
+          alive: true,
+          scale: 0.05,
+          screenX: 0,
+          screenY: 0,
+          cardW: 210,
+          cardH: 92,
+          inFront: false,
+          onScreen: false,
+          dYaw: 0,
+          dPitch: 0,
+          theme: themes[idx]
+        };
+      });
+    }
+
+    function updateHudNumbers() {
+      document.getElementById('hudScore').textContent = String(state.score).padStart(4, '0');
+      document.getElementById('hudStreak').textContent = `${state.streak}x`;
+      document.getElementById('hudLives').textContent = '❤️'.repeat(Math.max(0, state.lives)) + '🖤'.repeat(Math.max(0, 3 - state.lives));
+    }
+
+    // --- 12. INPUT CONTROLS: TOUCH-DRAG 360°, MOUSE-DRAG, TRIGGER BUTTON, KEYBOARD ---
+    const fireBtn = document.getElementById('fireBtn');
+
+    fireBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      fireBtn.classList.add('pressed');
+      fireWeapon();
+    }, { passive: false });
+
+    fireBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      fireBtn.classList.remove('pressed');
+    });
+
+    fireBtn.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      fireWeapon();
+    });
+
+    // Canvas Touch/Mouse Drag for 360° Look-Around + Tap-to-Shoot
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!state.running) return;
+      state.isDragging = true;
+      state.dragMoved = false;
+      state.dragStartX = e.clientX;
+      state.dragStartY = e.clientY;
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!state.isDragging || !state.running) return;
+      const dx = e.clientX - state.dragStartX;
+      const dy = e.clientY - state.dragStartY;
+
+      if (Math.hypot(dx, dy) > 6) {
+        state.dragMoved = true;
+      }
+
+      // Dragging rotates the 360° camera view smoothly
+      const sensitivity = 0.24;
+      state.targetYaw = normalizeAngle360(state.targetYaw - dx * sensitivity);
+      state.targetPitch = clamp(state.targetPitch + dy * sensitivity, -80, 80);
+
+      state.dragStartX = e.clientX;
+      state.dragStartY = e.clientY;
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (state.isDragging && !state.dragMoved && state.running) {
+        // Quick tap without dragging also fires!
+        fireWeapon();
+      }
+      state.isDragging = false;
+    });
+
+    window.addEventListener('keydown', (e) => {
+      state.keysPressed[e.code] = true;
+      if (state.running && e.code === 'Space') {
+        e.preventDefault();
+        fireWeapon();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      state.keysPressed[e.code] = false;
+    });
+
+    // --- 13. SHOOTING & COLLISION LOGIC (CENTER RETICLE AIM-ASSIST) ---
+    function fireWeapon() {
+      if (!state.running || state.transitionLock) return;
+
+      audioFX.unlock();
+      audioFX.playPlasmaShot();
+      state.shotsFired++;
+      state.recoilOffset = 26;
+
+      if (navigator.vibrate) navigator.vibrate(18);
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const muzzleX = cx;
+      const muzzleY = canvas.height - 32;
+
+      // Spawn 3D plasma bolt from weapon muzzle to center crosshair
+      state.plasmaBolts.push({
+        x1: muzzleX,
+        y1: muzzleY,
+        x2: cx,
+        y2: cy,
+        alpha: 1.0,
+        color: state.lockedTargetIndex !== -1 ? '#ffb703' : '#00f5d4'
+      });
+
+      // Muzzle sparks
+      spawnExplosion(muzzleX, muzzleY - 12, '#00f5d4', 8);
+
+      if (state.lockedTargetIndex !== -1) {
+        const hitTarget = state.targets[state.lockedTargetIndex];
+        if (hitTarget && hitTarget.alive) {
+          resolveTargetHit(hitTarget);
+          return;
+        }
+      }
+
+      // Missed shot sparks at center reticle
+      spawnExplosion(cx, cy, '#94a3b8', 7);
+    }
+
+    function resolveTargetHit(target) {
+      const currentQ = state.questions[state.qIndex];
+      const elapsedMs = performance.now() - state.questionStartTime;
+
+      if (target.isCorrect) {
+        state.transitionLock = true;
+        target.alive = false;
+        audioFX.playShieldShatterAndWin();
+        if (navigator.vibrate) navigator.vibrate([30, 40, 60]);
+
+        if (state.fastestLockMs === null || elapsedMs < state.fastestLockMs) {
+          state.fastestLockMs = elapsedMs;
+        }
+
+        const speedBonus = Math.max(0, Math.round((1 - elapsedMs / state.questionDurationMs) * 150));
+        const points = (100 + speedBonus) * state.streak;
+        state.score += points;
+        state.hits++;
+        state.streak++;
+        if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+        updateHudNumbers();
+
+        state.reviewLog.push({
+          q: currentQ.q,
+          correctAnswer: currentQ.options[currentQ.answer],
+          userCorrect: true,
+          timeSec: (elapsedMs / 1000).toFixed(1)
+        });
+
+        spawnExplosion(target.screenX, target.screenY, '#00f5d4', 36);
+        spawnExplosion(target.screenX, target.screenY, '#ffb703', 20);
+        spawnPopup(target.screenX, target.screenY - 28, `TARGET DESTROYED! +${points}`, '#00f5d4');
+
+        setTimeout(() => {
+          loadQuestion(state.qIndex + 1);
+        }, 950);
+      } else {
+        // Wrong target blasted
+        target.alive = false;
+        audioFX.playWrongBuzzer();
+        if (navigator.vibrate) navigator.vibrate(140);
+
+        state.streak = 1;
+        state.lives--;
+        updateHudNumbers();
+
+        document.body.classList.remove('shake-active');
+        void document.body.offsetWidth;
+        document.body.classList.add('shake-active');
+
+        spawnExplosion(target.screenX, target.screenY, '#ff3366', 30);
+        spawnPopup(target.screenX, target.screenY - 22, `WRONG TARGET (${target.letter})!`, '#ff3366');
+
+        if (state.lives <= 0) {
+          state.transitionLock = true;
+          state.reviewLog.push({
+            q: currentQ.q,
+            correctAnswer: currentQ.options[currentQ.answer],
+            userCorrect: false,
+            timeSec: (elapsedMs / 1000).toFixed(1)
+          });
+          setTimeout(() => finishMission(), 850);
+        }
+      }
+    }
+
+    function handleQuestionTimeout() {
+      if (state.transitionLock) return;
+      state.transitionLock = true;
+      audioFX.playWrongBuzzer();
+      if (navigator.vibrate) navigator.vibrate(120);
+
+      const currentQ = state.questions[state.qIndex];
+      state.streak = 1;
+      state.lives--;
+      updateHudNumbers();
+
+      state.reviewLog.push({
+        q: currentQ.q,
+        correctAnswer: currentQ.options[currentQ.answer],
+        userCorrect: false,
+        timeSec: 'TIME'
+      });
+
+      const letters = ['A', 'B', 'C', 'D'];
+      spawnPopup(canvas.width / 2, canvas.height / 2, `TIME EXPIRED! ANS: ${letters[currentQ.answer]}`, '#ffb703');
+
+      setTimeout(() => {
+        if (state.lives <= 0) {
+          finishMission();
+        } else {
+          loadQuestion(state.qIndex + 1);
+        }
+      }, 1100);
+    }
+
+    function finishMission() {
+      state.running = false;
+      inGameHud.classList.add('hidden');
+
+      const won = state.lives > 0;
+      const acc = state.shotsFired > 0 ? Math.round((state.hits / state.shotsFired) * 100) : 0;
+
+      document.getElementById('debriefBadge').textContent = won ? '360° SECTOR SECURED' : 'SHIELDS DEPLETED';
+      document.getElementById('debriefBadge').className = won
+        ? 'inline-block px-3 py-1 rounded-full bg-teal-400/20 border border-teal-400/40 text-teal-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5'
+        : 'inline-block px-3 py-1 rounded-full bg-rose-500/20 border border-rose-400/40 text-rose-300 text-[10px] font-arcade font-bold uppercase tracking-widest mb-1.5';
+
+      document.getElementById('debriefTitle').textContent = won ? 'MISSION VICTORY!' : 'MISSION OVER';
+      document.getElementById('debriefScore').textContent = state.score;
+      document.getElementById('debriefAccuracy').textContent = `${acc}%`;
+      document.getElementById('debriefFastest').textContent = state.fastestLockMs ? `${(state.fastestLockMs / 1000).toFixed(2)}s` : '--';
+      document.getElementById('debriefStreak').textContent = `${state.bestStreak}x`;
+
+      const reviewList = document.getElementById('debriefReviewList');
+      reviewList.innerHTML = state.reviewLog.map((item, i) => `
+        <div class="p-2 rounded-xl bg-slate-900/90 border ${item.userCorrect ? 'border-teal-500/40' : 'border-rose-500/40'} flex items-start justify-between gap-2">
+          <div>
+            <div class="font-bold text-slate-200">${i + 1}. ${item.q}</div>
+            <div class="text-[11px] ${item.userCorrect ? 'text-teal-300' : 'text-amber-300'}">✔ ${item.correctAnswer}</div>
+          </div>
+          <span class="text-[10px] font-arcade px-1.5 py-0.5 rounded ${item.userCorrect ? 'bg-teal-500/20 text-teal-300' : 'bg-rose-500/20 text-rose-300'}">
+            ${item.userCorrect ? item.timeSec + 's' : 'MISS'}
+          </span>
+        </div>
+      `).join('');
+
+      debriefModal.classList.remove('hidden');
+    }
+
+    // --- 14. RENDERING: VIRTUAL 360° TACTICAL DOME (NON-CAMERA FALLBACK) ---
+    function drawVirtual360Dome() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, '#020617');
+      grad.addColorStop(0.5, '#07132c');
+      grad.addColorStop(1, '#020617');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Project 360° starfield
+      state.domeStars.forEach(star => {
+        const proj = projectSphericalToScreen(star.yaw, star.pitch);
+        if (proj.onScreen) {
+          ctx.fillStyle = `rgba(0, 245, 212, ${star.alpha})`;
+          ctx.beginPath();
+          ctx.arc(proj.x, proj.y, star.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Project 360° Horizon Ring & Latitude Lines
+      ctx.strokeStyle = 'rgba(0, 245, 212, 0.22)';
+      ctx.lineWidth = 1.5;
+      for (let yawDeg = 0; yawDeg < 360; yawDeg += 15) {
+        const p1 = projectSphericalToScreen(yawDeg, 0);
+        const p2 = projectSphericalToScreen(yawDeg + 15, 0);
+        if (p1.inFront && p2.inFront) {
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // --- 15. RENDERING: TOP 360° TACTICAL COMPASS STRIP ---
+    function draw360Compass() {
+      const cw = compassCanvas.width;
+      const ch = compassCanvas.height;
+      if (!cw || !ch) return;
+
+      compassCtx.clearRect(0, 0, cw, ch);
+      const pxPerDeg = cw / 140; // Shows 140° arc on the compass bar
+
+      // Cardinal markers N, E, S, W every 90° and minor ticks every 15°
+      const cardinals = { 0: 'N', 90: 'E', 180: 'S', 270: 'W' };
+      for (let deg = 0; deg < 360; deg += 15) {
+        const diff = shortestAngleDiff(deg, state.yaw);
+        if (Math.abs(diff) <= 75) {
+          const x = (cw / 2) + diff * pxPerDeg;
+          const isCardinal = deg in cardinals;
+          compassCtx.strokeStyle = isCardinal ? 'rgba(0, 245, 212, 0.8)' : 'rgba(148, 163, 184, 0.35)';
+          compassCtx.lineWidth = isCardinal ? 2 : 1;
+          compassCtx.beginPath();
+          compassCtx.moveTo(x, isCardinal ? 4 : 10);
+          compassCtx.lineTo(x, ch - (isCardinal ? 14 : 10));
+          compassCtx.stroke();
+
+          if (isCardinal) {
+            compassCtx.fillStyle = '#94a3b8';
+            compassCtx.font = '800 9px Orbitron, sans-serif';
+            compassCtx.textAlign = 'center';
+            compassCtx.fillText(cardinals[deg], x, ch - 3);
+          }
+        }
+      }
+
+      // Target Blips (A, B, C, D) on the 360° Compass!
+      state.targets.forEach(t => {
+        if (!t.alive) return;
+        const diff = shortestAngleDiff(t.yaw, state.yaw);
+        const clampedDiff = clamp(diff, -66, 66);
+        const bx = (cw / 2) + clampedDiff * pxPerDeg;
+
+        compassCtx.fillStyle = t.theme.main;
+        compassCtx.beginPath();
+        compassCtx.arc(bx, ch / 2, 8.5, 0, Math.PI * 2);
+        compassCtx.fill();
+
+        compassCtx.fillStyle = '#030712';
+        compassCtx.font = '900 9px Orbitron, sans-serif';
+        compassCtx.textAlign = 'center';
+        compassCtx.textBaseline = 'middle';
+        compassCtx.fillText(t.letter, bx, ch / 2 + 0.5);
+      });
+    }
+
+    // --- 16. RENDERING: 3D HOLOGRAPHIC TARGETS & OFF-SCREEN EDGE RADAR ARROWS ---
+    function updateAndDrawTargets(time) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      state.lockedTargetIndex = -1;
+      let closestDistToCenter = Infinity;
+
+      state.targets.forEach((t, i) => {
+        if (!t.alive) return;
+
+        // Smooth pop-in scale & organic holographic hover
+        t.scale += (1 - t.scale) * 0.14;
+        t.yaw = normalizeAngle360(t.baseYaw + Math.sin(time * 0.0015 + t.phase) * 3.2);
+        t.pitch = t.basePitch + Math.cos(time * 0.002 + t.phase) * 2.4;
+
+        const proj = projectSphericalToScreen(t.yaw, t.pitch);
+        t.screenX = proj.x;
+        t.screenY = proj.y;
+        t.inFront = proj.inFront;
+        t.onScreen = proj.onScreen;
+        t.dYaw = proj.dYaw;
+        t.dPitch = proj.dPitch;
+
+        const cardW = w < 640 ? 195 : 240;
+        const cardH = w < 640 ? 84 : 96;
+        t.cardW = cardW;
+        t.cardH = cardH;
+
+        // Check Center Reticle Lock-On (with generous aim-assist radius for mobile)
+        if (proj.inFront) {
+          const hitHalfW = cardW * 0.56;
+          const hitHalfH = cardH * 0.62;
+          if (Math.abs(proj.x - cx) <= hitHalfW && Math.abs(proj.y - cy) <= hitHalfH) {
+            const dist = Math.hypot(proj.x - cx, proj.y - cy);
+            if (dist < closestDistToCenter) {
+              closestDistToCenter = dist;
+              state.lockedTargetIndex = i;
+            }
+          }
+        }
+      });
+
+      // Trigger subtle haptic + audio ping on fresh lock-on
+      if (state.lockedTargetIndex !== -1 && state.lockedTargetIndex !== state.prevLockedTargetIndex) {
+        audioFX.playLockPing();
+        if (navigator.vibrate) navigator.vibrate(22);
+      }
+      state.prevLockedTargetIndex = state.lockedTargetIndex;
+
+      // Render On-Screen Targets & Off-Screen Edge Radar Arrows
+      state.targets.forEach((t, i) => {
+        if (!t.alive) return;
+        const isLocked = state.lockedTargetIndex === i;
+
+        if (t.onScreen) {
+          drawHolographicTarget(t, isLocked, time);
+        } else {
+          drawOffScreenRadarArrow(t);
+        }
+      });
+    }
+
+    function drawHolographicTarget(t, isLocked, time) {
+      const scale = t.scale * (isLocked ? 1.08 : 1.0);
+      const w = t.cardW;
+      const h = t.cardH;
+
+      ctx.save();
+      ctx.translate(t.screenX, t.screenY);
+      ctx.scale(scale, scale);
+
+      // Outer Energy Glow
+      ctx.shadowColor = isLocked ? '#ffb703' : t.theme.glow;
+      ctx.shadowBlur = isLocked ? 28 : 16;
+
+      // Dark High-Contrast Glass Card
+      ctx.fillStyle = t.theme.fill;
+      roundRect(ctx, -w / 2, -h / 2, w, h, 18);
+      ctx.fill();
+
+      // Sci-Fi Border
+      ctx.lineWidth = isLocked ? 3.5 : 2;
+      ctx.strokeStyle = isLocked ? '#ffb703' : t.theme.main;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Animated Rotating Holographic Ring around the Letter Badge
+      const badgeR = h * 0.30;
+      const badgeX = -w / 2 + badgeR + 14;
+      const badgeY = 0;
+
+      ctx.save();
+      ctx.translate(badgeX, badgeY);
+      ctx.rotate(time * 0.0025);
+      ctx.strokeStyle = isLocked ? '#ffb703' : t.theme.main;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([8, 5]);
+      ctx.beginPath();
+      ctx.arc(0, 0, badgeR + 5, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Solid Letter Badge Circle (A, B, C, D)
+      ctx.fillStyle = isLocked ? '#ffb703' : t.theme.main;
+      ctx.beginPath();
+      ctx.arc(badgeX, badgeY, badgeR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#020617';
+      ctx.font = `900 ${Math.round(badgeR * 1.15)}px Orbitron, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(t.letter, badgeX, badgeY + 1);
+
+      // Distance Tag at Top-Right of Card
+      ctx.fillStyle = isLocked ? '#ffb703' : t.theme.main;
+      ctx.font = '700 9px Orbitron, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(t.distance, w / 2 - 12, -h / 2 + 12);
+
+      // Answer Text (Crisp white with dark shadow for bright rooms)
+      const textX = badgeX + badgeR + 12;
+      const maxTextW = w - (textX + w / 2) - 10;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 14px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      drawWrappedLines(ctx, t.text, textX, 3, maxTextW, 17);
+
+      // Lock-On Corner Brackets
+      if (isLocked) {
+        const b = 12;
+        const pad = 7;
+        ctx.strokeStyle = '#ffb703';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        // Top-left
+        ctx.moveTo(-w / 2 - pad, -h / 2 - pad + b); ctx.lineTo(-w / 2 - pad, -h / 2 - pad); ctx.lineTo(-w / 2 - pad + b, -h / 2 - pad);
+        // Top-right
+        ctx.moveTo(w / 2 + pad - b, -h / 2 - pad); ctx.lineTo(w / 2 + pad, -h / 2 - pad); ctx.lineTo(w / 2 + pad, -h / 2 - pad + b);
+        // Bottom-left
+        ctx.moveTo(-w / 2 - pad, h / 2 + pad - b); ctx.lineTo(-w / 2 - pad, h / 2 + pad); ctx.lineTo(-w / 2 - pad + b, h / 2 + pad);
+        // Bottom-right
+        ctx.moveTo(w / 2 + pad - b, h / 2 + pad); ctx.lineTo(w / 2 + pad, h / 2 + pad); ctx.lineTo(w / 2 + pad, h / 2 + pad - b);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawOffScreenRadarArrow(t) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      // Compute direction angle toward the target in 360° space
+      const rad = Math.atan2(-t.dPitch, t.dYaw);
+      const marginX = 34;
+      const marginTop = 185;
+      const marginBottom = 115;
+
+      // Project onto an elliptical radar boundary hugging the screen edges
+      const rx = (w / 2) - marginX;
+      const ry = (h - marginTop - marginBottom) / 2;
+      const centerRadarY = marginTop + ry;
+
+      const edgeX = cx + Math.cos(rad) * rx;
+      const edgeY = centerRadarY + Math.sin(rad) * ry;
+
+      ctx.save();
+      ctx.translate(edgeX, edgeY);
+
+      // Glowing Radar Pill
+      ctx.fillStyle = 'rgba(4, 10, 24, 0.88)';
+      ctx.strokeStyle = t.theme.main;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = t.theme.glow;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(0, 0, 20, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Directional Triangle Pointer outside the pill
+      ctx.save();
+      ctx.rotate(rad);
+      ctx.fillStyle = t.theme.main;
+      ctx.beginPath();
+      ctx.moveTo(29, 0);
+      ctx.lineTo(21, -6);
+      ctx.lineTo(21, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // Target Letter (A, B, C, D)
+      ctx.fillStyle = t.theme.main;
+      ctx.font = '900 13px Orbitron, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(t.letter, 0, 1);
+
+      ctx.restore();
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawWrappedLines(ctx, text, x, centerY, maxW, lineH) {
+      const words = text.split(' ');
+      const lines = [];
+      let line = words[0] || '';
+      for (let i = 1; i < words.length; i++) {
+        const test = line + ' ' + words[i];
+        if (ctx.measureText(test).width <= maxW) {
+          line = test;
+        } else {
+          lines.push(line);
+          line = words[i];
+        }
+      }
+      lines.push(line);
+      let y = centerY - ((lines.length - 1) * lineH) / 2;
+      lines.forEach(l => {
+        ctx.fillText(l, x, y);
+        y += lineH;
+      });
+    }
+
+    // --- 17. RENDERING: CENTER RETICLE, BLASTER BARREL & FX ---
+    function drawCenterReticle() {
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const locked = state.lockedTargetIndex !== -1;
+      const color = locked ? '#ffb703' : '#00f5d4';
+      const radius = locked ? 30 : 22;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = locked ? 3 : 2;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 14;
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Tactical Crosshair Ticks
+      const inner = 7;
+      const outer = locked ? 19 : 14;
+      ctx.beginPath();
+      ctx.moveTo(-radius - outer + inner, 0); ctx.lineTo(-inner, 0);
+      ctx.moveTo(inner, 0); ctx.lineTo(radius + outer - inner, 0);
+      ctx.moveTo(0, -radius - outer + inner); ctx.lineTo(0, -inner);
+      ctx.moveTo(0, inner); ctx.lineTo(0, radius + outer - inner);
+      ctx.stroke();
+
+      // Center Dot
+      ctx.fillStyle = locked ? '#ffffff' : '#ff3366';
+      ctx.beginPath();
+      ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (locked) {
+        const target = state.targets[state.lockedTargetIndex];
+        ctx.font = '800 10px Orbitron, sans-serif';
+        ctx.fillStyle = '#ffb703';
+        ctx.textAlign = 'center';
+        ctx.fillText(`LOCKED: [${target.letter}]`, 0, radius + 18);
+      }
+
+      ctx.restore();
+    }
+
+    function drawFirstPersonBlasterBarrel() {
+      const cx = canvas.width / 2;
+      const bottomY = canvas.height;
+      state.recoilOffset *= 0.80;
+
+      const barrelW = canvas.width < 640 ? 74 : 96;
+      const barrelH = canvas.width < 640 ? 76 : 95;
+      const yOffset = bottomY - barrelH + state.recoilOffset;
+
+      ctx.save();
+      ctx.translate(cx, yOffset);
+
+      // Sleek Futuristic Holo-Blaster Muzzle at Bottom-Center
+      const grad = ctx.createLinearGradient(-barrelW / 2, 0, barrelW / 2, barrelH);
+      grad.addColorStop(0, '#1e293b');
+      grad.addColorStop(0.5, '#0f172a');
+      grad.addColorStop(1, '#020617');
+
+      ctx.fillStyle = grad;
+      ctx.strokeStyle = state.lockedTargetIndex !== -1 ? '#ffb703' : '#00f5d4';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(-barrelW * 0.28, 0);
+      ctx.lineTo(barrelW * 0.28, 0);
+      ctx.lineTo(barrelW * 0.55, barrelH + 20);
+      ctx.lineTo(-barrelW * 0.55, barrelH + 20);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Plasma Energy Core Vent
+      ctx.fillStyle = state.lockedTargetIndex !== -1 ? '#ffb703' : '#00f5d4';
+      ctx.shadowColor = state.lockedTargetIndex !== -1 ? '#ffb703' : '#00f5d4';
+      ctx.shadowBlur = 14;
+      ctx.fillRect(-5, 10, 10, barrelH * 0.55);
+      ctx.shadowBlur = 0;
+
+      ctx.restore();
+    }
+
+    function drawVisualEffects() {
+      // Plasma Bolts
+      for (let i = state.plasmaBolts.length - 1; i >= 0; i--) {
+        const b = state.plasmaBolts[i];
+        ctx.save();
+        ctx.strokeStyle = b.color;
+        ctx.shadowColor = b.color;
+        ctx.shadowBlur = 18;
+        ctx.lineWidth = 7 * b.alpha;
+        ctx.globalAlpha = b.alpha;
+        ctx.beginPath();
+        ctx.moveTo(b.x1, b.y1);
+        ctx.lineTo(b.x2, b.y2);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.5 * b.alpha;
+        ctx.stroke();
+        ctx.restore();
+
+        b.alpha -= 0.11;
+        if (b.alpha <= 0) state.plasmaBolts.splice(i, 1);
+      }
+
+      // Explosion Particles
+      for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.12;
+        p.life -= p.decay;
+        if (p.life <= 0) {
+          state.particles.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Floating Popups
+      for (let i = state.popups.length - 1; i >= 0; i--) {
+        const pop = state.popups[i];
+        pop.y -= 1.2;
+        pop.life -= 0.018;
+        if (pop.life <= 0) {
+          state.popups.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.globalAlpha = pop.life;
+        ctx.font = '900 18px Orbitron, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#020617';
+        ctx.fillText(pop.text, pop.x + 2, pop.y + 2);
+        ctx.fillStyle = pop.color;
+        ctx.fillText(pop.text, pop.x, pop.y);
+        ctx.restore();
+      }
+    }
+
+    function spawnExplosion(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 6 + 2;
+        state.particles.push({
+          x,
+          y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          size: Math.random() * 4 + 2,
+          color,
+          life: 1.0,
+          decay: Math.random() * 0.03 + 0.02
+        });
+      }
+    }
+
+    function spawnPopup(x, y, text, color) {
+      state.popups.push({ x, y, text, color, life: 1.0 });
+    }
+
+    // --- 18. MAIN 60FPS AR RENDER LOOP ---
+    function renderLoop(time) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Keyboard fallback for desktop testing
+      const keySpeed = 2.4;
+      if (state.keysPressed['ArrowLeft'] || state.keysPressed['KeyA']) {
+        state.targetYaw = normalizeAngle360(state.targetYaw - keySpeed);
+      }
+      if (state.keysPressed['ArrowRight'] || state.keysPressed['KeyD']) {
+        state.targetYaw = normalizeAngle360(state.targetYaw + keySpeed);
+      }
+      if (state.keysPressed['ArrowUp'] || state.keysPressed['KeyW']) {
+        state.targetPitch = clamp(state.targetPitch + keySpeed * 0.75, -80, 80);
+      }
+      if (state.keysPressed['ArrowDown'] || state.keysPressed['KeyS']) {
+        state.targetPitch = clamp(state.targetPitch - keySpeed * 0.75, -80, 80);
+      }
+
+      // Smooth low-pass interpolation for jitter-free 360° camera rotation
+      const yawDiff = shortestAngleDiff(state.targetYaw, state.yaw);
+      state.yaw = normalizeAngle360(state.yaw + yawDiff * 0.25);
+      state.pitch += (state.targetPitch - state.pitch) * 0.25;
+
+      // Render Virtual 360° Dome if rear camera isn't active
+      if (!state.cameraActive) {
+        drawVirtual360Dome();
+      }
+
+      if (state.running) {
+        // Countdown timer update
+        if (!state.transitionLock) {
+          const elapsed = time - state.questionStartTime;
+          const ratio = Math.max(0, 1 - elapsed / state.questionDurationMs);
+          const timerFill = document.getElementById('hudTimerFill');
+          timerFill.style.width = `${ratio * 100}%`;
+          if (ratio <= 0.25) {
+            timerFill.className = 'h-full bg-rose-500 transition-all duration-100';
+          } else {
+            timerFill.className = 'h-full bg-gradient-to-r from-teal-300 via-cyan-400 to-amber-400 transition-all duration-100';
+          }
+          if (ratio <= 0) {
+            handleQuestionTimeout();
+          }
+        }
+
+        draw360Compass();
+        updateAndDrawTargets(time);
+        drawVisualEffects();
+        drawFirstPersonBlasterBarrel();
+        drawCenterReticle();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    window.onload = function () {
+      requestAnimationFrame(renderLoop);
+    };
+  </script>
 </body>
 </html>
